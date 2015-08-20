@@ -1,0 +1,15 @@
+{
+  "name": "HelloOAuthNode",
+  "version": "0.0.0",
+  "description": "HelloOAuthNode",
+  "main": "app.js",
+  "author": {
+    "name": "Aron",
+    "email": ""
+  },
+  "dependencies": {
+    "express": "3.4.4",
+    "jade": "*",
+    "stylus": "*"
+  }
+}
