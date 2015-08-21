@@ -1,5 +1,23 @@
-﻿var express = require('express'),
-    app = express();
+﻿/// <reference path="typings/tsd.d.ts" />
+import express = require('express');
+import mongoose = require('mongoose');
+import routes = require('./routes/index');
+import user = require('./routes/userRoutes');
+import http = require('http');
+import path = require('path');
+
+var PORT = 3123;
+
+var app = express();
+
+var db = mongoose.connect("mongodb://moneycircles-bitreserve-poc-dev-user:iPBNE0ZeQRPbsHOVWEUi@ds035593.mongolab.com:35593/moneycircles-bitreserve-poc-dev");
+
+app.use(express.static(__dirname + '/views'));
+
+app.get('/', routes.index);
+app.get('/users', user.list);
+app.get('/users/:name', user.read);
+app.post('/users/:name', user.create);
 
 var oauth2 = require('simple-oauth2')({
     clientID: 'f117ca3a3a913dab3698',
@@ -41,6 +59,6 @@ app.get('/', function (req, res) {
     res.send('Hello<br><a href="/auth">Log in with Github</a>');
 });
 
-app.listen(3000);
+app.listen(PORT);
 
-console.log('Express server started on port 3000');
+console.log('Express server started on port ' + PORT);
