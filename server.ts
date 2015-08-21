@@ -10,7 +10,6 @@ import fs = require('fs');
 
 import indexRoute = require('./routes/index');
 import userController = require('./controllers/userController');
-var oauthController = require('./controllers/oauthController');
 //var githubOauthController = require('./controllers/oauthController'));
 
 // TODO: make configurable
@@ -22,28 +21,35 @@ var baseUrl = "https://localhost:" + HTTPS_PORT;
 // TODO: allow multiple instances using module.exports = function(){...}
 // https://stackoverflow.com/questions/28833808/how-to-get-multiple-instances-of-module-in-node-js
 
-oauthController.baseUrl = baseUrl
-oauthController.basePath = "/auth/github";
-oauthController.clientID = 'f117ca3a3a913dab3698';
-oauthController.clientSecret = '1c36a181dc91dacf275b0f1fc8b6fdb65ed92ec9';
-oauthController.scope =  'notifications';
-oauthController.oauthSite = "https://github.com/login";
-oauthController.oauthTokenPath = '/oauth/access_token';
-oauthController.oauthAuthorizationPath = '/oauth/authorize';
+var githubConfig = {
+    baseUrl: baseUrl,
+    basePath: "/auth/github",
+    clientID: 'f117ca3a3a913dab3698',
+    clientSecret: '1c36a181dc91dacf275b0f1fc8b6fdb65ed92ec9',
+    scope: 'notifications',
+    oauthSite: "https://github.com/login",
+    oauthTokenPath: '/oauth/access_token',
+    oauthAuthorizationPath: '/oauth/authorize',
+};
 
-//oauthController.baseUrl = baseUrl;
-//oauthController.basePath = "/auth/bitreserve";
-//oauthController.clientID = 'e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c';
-//oauthController.clientSecret = 'b3df38816602d936c304774c43420d56eda8358f';
+var githubOauthController = require('./controllers/oauthController')(githubConfig);
 
-//oauthController.scope = "cards:read,cards:write,transactions:read,transactions:write,user:read";
+var bitReserveConfig = {
+    baseUrl: baseUrl,
+    basePath: "/auth/bitreserve",
+    clientID: 'e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c',
+    clientSecret: 'b3df38816602d936c304774c43420d56eda8358f',
 
-//oauthController.oauthSite = "https://";
-//oauthController.oauthTokenPath = 'api.bitreserve.org/oauth2/token';
-//oauthController.oauthAuthorizationPath = 'bitreserve.org/authorize/' + oauthController.clientID;
+    scope: "cards:read,cards:write,transactions:read,transactions:write,user:read",
+    // BitReserve uses a different domain for the authorization URL. simple-oauth2 doesn't support that.
+    // The "site" parameter also may not be empty.
+    // As a workaround, we use the greatest common denominator of the two URLs: "https://".
+    oauthSite: "https://",
+    oauthTokenPath: 'api.bitreserve.org/oauth2/token',
+    oauthAuthorizationPath: 'bitreserve.org/authorize/' + 'e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c',
+}
 
-// Initialize the controller now we've set all options.
-oauthController.init();
+var bitReserveOauthController = require('./controllers/oauthController')(bitReserveConfig);
 
 var app = express();
 
@@ -58,8 +64,11 @@ app.get('/', indexRoute.index);
 app.get('/users/:name', userController.retrieveUser);
 app.post('/users/:name', userController.createUser);
 
-app.get(oauthController.getAuthRoute(), oauthController.auth);
-app.get(oauthController.getCallbackRoute(), oauthController.callback);
+app.get(githubOauthController.getAuthRoute(), githubOauthController.auth);
+app.get(githubOauthController.getCallbackRoute(), githubOauthController.callback);
+
+app.get(bitReserveOauthController.getAuthRoute(), bitReserveOauthController.auth);
+app.get(bitReserveOauthController.getCallbackRoute(), bitReserveOauthController.callback);
 
 var httpsOptions = {
     key: fs.readFileSync('key.pem'),
