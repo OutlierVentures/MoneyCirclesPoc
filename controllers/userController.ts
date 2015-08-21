@@ -28,3 +28,5 @@ export function retrieveUser(req: express.Request, res: express.Response) {
         }
     });
 }
+
+export var model = userModel;
