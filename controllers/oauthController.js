@@ -1,20 +1,55 @@
 var querystring = require('querystring');
 var userModel = require('../models/userModel');
-// TODO: remove duplicate with server.ts. Make base URL configurable.
-var PORT = 3123;
-var oauth2 = require('simple-oauth2')({
-    clientID: 'f117ca3a3a913dab3698',
-    clientSecret: '1c36a181dc91dacf275b0f1fc8b6fdb65ed92ec9',
-    site: 'https://github.com/login',
-    tokenPath: '/oauth/access_token',
-    authorizationPath: '/oauth/authorize'
-});
-// Authorization uri definition
-var authorization_uri = oauth2.authCode.authorizeURL({
-    redirect_uri: 'http://localhost:' + PORT + '/callback',
-    scope: 'notifications',
-    state: '3(#0/!~'
-});
+/**
+ * Base URL on our side, e.g. https://localhost:3124
+ */
+exports.baseUrl;
+/**
+ * Base path for this oauth controller on our side, e.g. /auth/github
+ */
+exports.basePath;
+/**
+ * URL of the external OAuth site, e.g. 'https://github.com/login'
+ */
+exports.oauthSite;
+exports.oauthTokenPath;
+exports.oauthAuthorizationPath;
+exports.clientID;
+exports.clientSecret;
+exports.scope = 'notifications';
+var oauth2;
+var authorization_uri;
+function init() {
+    oauth2 = require('simple-oauth2')({
+        clientID: exports.clientID,
+        clientSecret: exports.clientSecret,
+        site: exports.oauthSite,
+        tokenPath: exports.oauthTokenPath,
+        authorizationPath: exports.oauthAuthorizationPath,
+    });
+    // Authorization uri definition
+    authorization_uri = oauth2.authCode.authorizeURL({
+        redirect_uri: getCallbackPath(),
+        scope: exports.scope,
+        state: getState()
+    });
+}
+exports.init = init;
+function getAuthRoute() {
+    return exports.basePath;
+}
+exports.getAuthRoute = getAuthRoute;
+function getCallbackRoute() {
+    return exports.basePath + '/callback';
+}
+exports.getCallbackRoute = getCallbackRoute;
+function getCallbackPath() {
+    return exports.baseUrl + getCallbackRoute();
+}
+function getState() {
+    // TODO: make dynamic, session-specific; check on callback.
+    return '3(#0/!~';
+}
 // Initial page redirecting to Github
 function auth(req, res) {
     res.redirect(authorization_uri);
@@ -23,19 +58,34 @@ exports.auth = auth;
 ;
 // Callback service parsing the authorization token and asking for the access token
 function callback(req, res) {
+    if (req.query.error) {
+        res.send("Error returned by OAuth provider on callback: " + req.query.error);
+    }
     var code = req.query.code;
+    // TODO: check state passed in request.
+    var state = req.query.state;
     oauth2.authCode.getToken({
         code: code,
-        redirect_uri: 'http://localhost:' + PORT + '/callback'
+        redirect_uri: getCallbackPath()
     }, saveToken);
     function saveToken(error, result) {
         if (error) {
-            console.log('Access Token Error', error.message);
+            console.log('Access Token Error', error.error);
+            res.send("Error while getting token: " + error.error);
+            return;
         }
+        if (!result.expires_in)
+            result.expires_in = 9999999;
         var token = oauth2.accessToken.create(result);
-        // res.send("Yay! You\'ve authenticated. This is what we got back: " + token.token);
-        var parsed = querystring.parse(token.token);
-        var accessToken = parsed.access_token;
+        var accessToken;
+        if (token.token.access_token)
+            // BitReserve
+            accessToken = token.token.access_token;
+        else {
+            // GitHub
+            var parsed = querystring.parse(token.token);
+            accessToken = parsed.access_token;
+        }
         // Get the user from the OAuth provider
         var externalUserID = '123';
         // Get the user from our side, or create it.
