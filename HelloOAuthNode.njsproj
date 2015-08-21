@@ -34,8 +34,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="controllers\oauthController.ts" />
     <TypeScriptCompile Include="controllers\userController.ts" />
     <TypeScriptCompile Include="models\userModel.ts" />
+    <TypeScriptCompile Include="routes\oauthRoutes.ts" />
     <TypeScriptCompile Include="server.ts" />
     <TypeScriptCompile Include="routes\index.ts" />
     <TypeScriptCompile Include="routes\userRoutes.ts" />
