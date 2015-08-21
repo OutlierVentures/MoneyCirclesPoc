@@ -16,7 +16,7 @@ exports.oauthTokenPath;
 exports.oauthAuthorizationPath;
 exports.clientID;
 exports.clientSecret;
-exports.scope = 'notifications';
+exports.scope;
 var oauth2;
 var authorization_uri;
 function init() {
@@ -79,10 +79,11 @@ function callback(req, res) {
         var token = oauth2.accessToken.create(result);
         var accessToken;
         if (token.token.access_token)
-            // BitReserve
+            // Cases where the token response is parsed, e.g. BitReserve
             accessToken = token.token.access_token;
         else {
-            // GitHub
+            // Cases where the token response isn't parsed and arrives as a query string (access_token=...&scope=...), e.g. GitHub
+            // Parse it here to get the token.
             var parsed = querystring.parse(token.token);
             accessToken = parsed.access_token;
         }
