@@ -6,21 +6,15 @@ import path = require('path');
 
 import fs = require('fs');
 
-
-
 import indexRoute = require('./routes/index');
 import userController = require('./controllers/userController');
-//var githubOauthController = require('./controllers/oauthController'));
 
 // TODO: make configurable
 var HTTP_PORT = 3123;
 var HTTPS_PORT = HTTP_PORT + 1
 var baseUrl = "https://localhost:" + HTTPS_PORT;
 
-// The controller is currently a singleton.
-// TODO: allow multiple instances using module.exports = function(){...}
-// https://stackoverflow.com/questions/28833808/how-to-get-multiple-instances-of-module-in-node-js
-
+// OAuth controllers
 var githubConfig = {
     baseUrl: baseUrl,
     basePath: "/auth/github",
@@ -50,6 +44,10 @@ var bitReserveConfig = {
 }
 
 var bitReserveOauthController = require('./controllers/oauthController')(bitReserveConfig);
+
+var bitReserveService = require('./services/bitReserveService');
+
+bitReserveOauthController.setGetUserInfoFunction(bitReserveService().getUser);
 
 var app = express();
 

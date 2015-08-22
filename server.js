@@ -4,14 +4,11 @@ var mongoose = require('mongoose');
 var fs = require('fs');
 var indexRoute = require('./routes/index');
 var userController = require('./controllers/userController');
-//var githubOauthController = require('./controllers/oauthController'));
 // TODO: make configurable
 var HTTP_PORT = 3123;
 var HTTPS_PORT = HTTP_PORT + 1;
 var baseUrl = "https://localhost:" + HTTPS_PORT;
-// The controller is currently a singleton.
-// TODO: allow multiple instances using module.exports = function(){...}
-// https://stackoverflow.com/questions/28833808/how-to-get-multiple-instances-of-module-in-node-js
+// OAuth controllers
 var githubConfig = {
     baseUrl: baseUrl,
     basePath: "/auth/github",
@@ -37,6 +34,8 @@ var bitReserveConfig = {
     oauthAuthorizationPath: 'bitreserve.org/authorize/' + 'e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c',
 };
 var bitReserveOauthController = require('./controllers/oauthController')(bitReserveConfig);
+var bitReserveService = require('./services/bitReserveService');
+bitReserveOauthController.setGetUserInfoFunction(bitReserveService().getUser);
 var app = express();
 // TODO: store in config file.
 var db = mongoose.connect("mongodb://moneycircles-bitreserve-poc-dev-user:iPBNE0ZeQRPbsHOVWEUi@ds035593.mongolab.com:35593/moneycircles-bitreserve-poc-dev");

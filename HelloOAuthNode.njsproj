@@ -6,6 +6,8 @@
     <Name>HelloOAuthNode</Name>
     <RootNamespace>HelloOAuthNode</RootNamespace>
     <LaunchUrl>https://localhost:3124</LaunchUrl>
+    <Environment>
+    </Environment>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -34,35 +36,36 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="services\bitReserveService.ts" />
     <TypeScriptCompile Include="controllers\oauthController.ts" />
     <TypeScriptCompile Include="controllers\userController.ts" />
     <TypeScriptCompile Include="models\userModel.ts" />
     <TypeScriptCompile Include="server.ts" />
     <TypeScriptCompile Include="routes\index.ts" />
     <Content Include="package.json" />
-    <Content Include="public\stylesheets\style.styl" />
     <Content Include="README.md" />
     <Content Include="views\index.html" />
     <TypeScriptCompile Include="typings\express\express.d.ts" />
+    <TypeScriptCompile Include="typings\form-data\form-data.d.ts" />
     <TypeScriptCompile Include="typings\mime\mime.d.ts" />
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
+    <TypeScriptCompile Include="typings\request\request.d.ts" />
     <TypeScriptCompile Include="typings\serve-static\serve-static.d.ts" />
     <TypeScriptCompile Include="typings\tsd.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="models\" />
     <Folder Include="controllers\" />
-    <Folder Include="public\" />
-    <Folder Include="public\images\" />
-    <Folder Include="public\javascripts\" />
-    <Folder Include="public\stylesheets\" />
+    <Folder Include="services\" />
     <Folder Include="routes\" />
     <Folder Include="typings\" />
     <Folder Include="typings\express\" />
+    <Folder Include="typings\form-data\" />
     <Folder Include="typings\mime\" />
     <Folder Include="typings\mongoose\" />
     <Folder Include="typings\node\" />
+    <Folder Include="typings\request\" />
     <Folder Include="typings\serve-static\" />
     <Folder Include="views\" />
   </ItemGroup>

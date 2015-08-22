@@ -113,39 +113,85 @@ module.exports = function (configParam: IOAuthControllerConfig) {
                 accessToken = parsed.access_token;
             }
 
+            // TODO: clean up callback hell and duplication.
+
             // Get the user from the OAuth provider
-            var externalUserID = '123';
+            getUserInfo(accessToken, function (err, userInfo) {
+                var externalUserID: string;
+                var name = "New user";
+
+                if (err) {
+                    // TODO: handle error
+                } else if (userInfo) {
+                    name = userInfo.name;
+                    externalUserID = userInfo.externalID;
+                } else {
+                    // TODO: handle error, empty user info
+                }
         
-            // Get the user from our side, or create it.
-            userModel.repository.findOne({ externalID: externalUserID }, function (err, user) {
-                // TODO: use promise to wait for creating new user.
-                if (!user) {
-                    // User didn't exist yet
-                    userModel.repository.create({
-                        name: "New user",
-                        externalID: externalUserID,
-                        accessToken: accessToken,
-                    }, function (userErr, userRes) {
-                        // Handle result                    
-                        res.send("Welcome, new user " + userRes.name + " authenticated through " + config.basePath + "!");
-                    });
-                }
-                else {
-                    // Store the token
-                    user.accessToken = accessToken;
+                // Get the user from our side, or create it.
+                userModel.repository.findOne({ externalID: externalUserID }, function (err, user) {
 
-                    // Save it
-                    userModel.repository.update({ name: user.name }, user, function (saveErr, affectedRows, raw) {
-                        if (saveErr) {
-                            res.send("Something went wrong when storing your data :(");
-                        } else {
-                            res.send("Welcome back, user " + user.name + " authenticated through " + config.basePath + "!");
-                        }
-                    });
-                }
+                    // TODO: use promise to wait for creating new user.
+                    if (!user) {
+                        // User didn't exist yet
+                        userModel.repository.create({
+                            name: name,
+                            externalID: externalUserID,
+                            accessToken: accessToken,
+                        }, function (userErr, userRes) {
+                            // Handle result                    
+                            res.send("Welcome, new user " + userRes.name + " authenticated through " + config.basePath + "!");
+                        });
+                    }
+                    else {
+                        // Store the token
+                        user.accessToken = accessToken;
+
+                        // Save it
+                        userModel.repository.update({ name: user.name }, user, function (saveErr, affectedRows, raw) {
+                            if (saveErr) {
+                                res.send("Something went wrong when storing your data :(");
+                            } else {
+                                res.send("Welcome back, user " + user.name + " authenticated through " + config.basePath + "!");
+                            }
+                        });
+
+                    }
+                });
+
             });
-
         }
+    }
+
+    /**
+     * The function used to get user info from the oauth service.
+     */
+    var getUserInfoFunction = getUserInfoStub;
+
+    /** 
+     * Set the function used to get the user info from the oauth service.
+     */
+    function setGetUserInfoFunction(f) {
+        getUserInfoFunction = f;
+    }
+
+    function getUserInfo(authorizationCode: string, callback) {
+        getUserInfoFunction(authorizationCode, function (err, user) {
+            callback(err, user);
+        });
+    }
+
+    function getUserInfoStub(authorizationCode: string, callback) {
+        callback(null, null);
+    };
+
+
+    /**
+     * Get information about the current user in the form {name:'..', externalID:'..'}. To be overridden by implementors.
+     */
+    function getUserInfoInternal(authorizationCode: string, callback) {
+        callback(null, null);
     }
 
     // Only the functions below are exposed to callers.
@@ -154,5 +200,7 @@ module.exports = function (configParam: IOAuthControllerConfig) {
         'callback': callback,
         'getCallbackRoute': getCallbackRoute,
         'getAuthRoute': getAuthRoute,
+        'setGetUserInfoFunction': setGetUserInfoFunction,
+        'getUserInfo': getUserInfo,
     }
 }
