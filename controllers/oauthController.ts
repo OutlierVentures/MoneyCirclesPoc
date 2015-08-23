@@ -1,5 +1,6 @@
 ﻿import querystring = require('querystring');
 import userModel = require('../models/userModel');
+import express = require('express');
 
 interface IOAuthControllerConfig {
     /**
@@ -75,7 +76,7 @@ module.exports = function (configParam: IOAuthControllerConfig) {
     };
 
     // Callback service parsing the authorization token and asking for the access token
-    function callback(req, res) {
+    function callback(req: express.Request, res: express.Response) {
         if (req.query.error) {
             res.send("Error returned by OAuth provider on callback: " + req.query.error);
         }
@@ -141,7 +142,12 @@ module.exports = function (configParam: IOAuthControllerConfig) {
                             accessToken: accessToken,
                         }, function (userErr, userRes) {
                             // Handle result                    
-                            res.send("Welcome, new user " + userRes.name + " authenticated through " + config.basePath + "!");
+                            res.json({
+                                "status": "Ok",
+                                "user": userRes,
+                            });
+
+                            //res.send("Welcome, new user " + userRes.name + " authenticated through " + config.basePath + "!");
                         });
                     }
                     else {
@@ -151,9 +157,21 @@ module.exports = function (configParam: IOAuthControllerConfig) {
                         // Save it
                         userModel.repository.update({ name: user.name }, user, function (saveErr, affectedRows, raw) {
                             if (saveErr) {
-                                res.send("Something went wrong when storing your data :(");
+                                res.json(
+                                    401,
+                                    {
+                                        "error": "Error while saving user data: " + saveErr,
+                                        "status": "Error",
+                                        "user": user,
+                                    });;
+                                //res.send("Something went wrong when storing your data :(");
                             } else {
-                                res.send("Welcome back, user " + user.name + " authenticated through " + config.basePath + "!");
+                                res.json({
+                                    "status": "Ok",
+                                    "user": user,
+                                });
+
+                                //res.send("Welcome back, user " + user.name + " authenticated through " + config.basePath + "!");
                             }
                         });
 

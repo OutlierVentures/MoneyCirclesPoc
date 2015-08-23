@@ -6,3 +6,4 @@
 /// <reference path="mongoose/mongoose.d.ts" />
 /// <reference path="form-data/form-data.d.ts" />
 /// <reference path="request/request.d.ts" />
+/// <reference path="morgan/morgan.d.ts" />

@@ -31,6 +31,9 @@
     },
     "form-data/form-data.d.ts": {
       "commit": "8f081073e6cb416f901b272810d8b04d6e01c9e0"
+    },
+    "morgan/morgan.d.ts": {
+      "commit": "af81415504b4edce8dac8446d96857f8018c6e9f"
     }
   }
 }

@@ -95,7 +95,11 @@ module.exports = function (configParam) {
                             accessToken: accessToken,
                         }, function (userErr, userRes) {
                             // Handle result                    
-                            res.send("Welcome, new user " + userRes.name + " authenticated through " + config.basePath + "!");
+                            res.json({
+                                "status": "Ok",
+                                "user": userRes,
+                            });
+                            //res.send("Welcome, new user " + userRes.name + " authenticated through " + config.basePath + "!");
                         });
                     }
                     else {
@@ -104,10 +108,18 @@ module.exports = function (configParam) {
                         // Save it
                         userModel.repository.update({ name: user.name }, user, function (saveErr, affectedRows, raw) {
                             if (saveErr) {
-                                res.send("Something went wrong when storing your data :(");
+                                res.json(401, {
+                                    "error": "Error while saving user data: " + saveErr,
+                                    "status": "Error",
+                                    "user": user,
+                                });
+                                ;
                             }
                             else {
-                                res.send("Welcome back, user " + user.name + " authenticated through " + config.basePath + "!");
+                                res.json({
+                                    "status": "Ok",
+                                    "user": user,
+                                });
                             }
                         });
                     }

@@ -1,8 +1,8 @@
 /// <reference path="typings/tsd.d.ts" />
 var express = require('express');
 var mongoose = require('mongoose');
+var path = require('path');
 var fs = require('fs');
-var indexRoute = require('./routes/index');
 var userController = require('./controllers/userController');
 // TODO: make configurable
 var HTTP_PORT = 3123;
@@ -37,10 +37,20 @@ var bitReserveOauthController = require('./controllers/oauthController')(bitRese
 var bitReserveService = require('./services/bitReserveService');
 bitReserveOauthController.setGetUserInfoFunction(bitReserveService().getUser);
 var app = express();
-// TODO: store in config file.
+// Logging
+var morgan = require('morgan');
+app.use(morgan('dev'));
+// TODO: store Mongo config in config file.
+// TODO: make it work offline
 var db = mongoose.connect("mongodb://moneycircles-bitreserve-poc-dev-user:iPBNE0ZeQRPbsHOVWEUi@ds035593.mongolab.com:35593/moneycircles-bitreserve-poc-dev");
-app.use(express.static(__dirname + '/views'));
-app.get('/', indexRoute.index);
+// Client folder containing the Angular SPA, serve as static assets
+var clientDir = path.join(__dirname, 'client');
+app.use(express.static(clientDir));
+app.get('/', function (req, res) {
+    res.sendfile(path.join(clientDir, 'index.html'));
+});
+//app.use(express.static(__dirname + '/views'));
+//app.get('/', indexRoute.index);
 //app.get('/users', userController.list);
 app.get('/users/:name', userController.retrieveUser);
 app.post('/users/:name', userController.createUser);

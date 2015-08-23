@@ -42,6 +42,10 @@
     <TypeScriptCompile Include="models\userModel.ts" />
     <TypeScriptCompile Include="server.ts" />
     <TypeScriptCompile Include="routes\index.ts" />
+    <Content Include="client\css\bootstrap.css" />
+    <Content Include="client\css\bootstrap.css.map" />
+    <Content Include="client\css\bootstrap.min.css" />
+    <Content Include="client\index.html" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="views\index.html" />
@@ -49,14 +53,17 @@
     <TypeScriptCompile Include="typings\form-data\form-data.d.ts" />
     <TypeScriptCompile Include="typings\mime\mime.d.ts" />
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
+    <TypeScriptCompile Include="typings\morgan\morgan.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
     <TypeScriptCompile Include="typings\request\request.d.ts" />
     <TypeScriptCompile Include="typings\serve-static\serve-static.d.ts" />
     <TypeScriptCompile Include="typings\tsd.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="client\css\" />
     <Folder Include="models\" />
     <Folder Include="controllers\" />
+    <Folder Include="client\" />
     <Folder Include="services\" />
     <Folder Include="routes\" />
     <Folder Include="typings\" />
@@ -64,6 +71,7 @@
     <Folder Include="typings\form-data\" />
     <Folder Include="typings\mime\" />
     <Folder Include="typings\mongoose\" />
+    <Folder Include="typings\morgan\" />
     <Folder Include="typings\node\" />
     <Folder Include="typings\request\" />
     <Folder Include="typings\serve-static\" />
