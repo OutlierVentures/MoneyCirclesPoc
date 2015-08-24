@@ -55,9 +55,6 @@
     <TypeScriptCompile Include="server.ts" />
     <TypeScriptCompile Include="routes\index.ts" />
     <Content Include="client\bower.json" />
-    <Content Include="client\css\bootstrap.css" />
-    <Content Include="client\css\bootstrap.css.map" />
-    <Content Include="client\css\bootstrap.min.css" />
     <Content Include="client\index.html" />
     <Content Include="client\views\dashboard.html" />
     <Content Include="client\views\not-found.html" />
@@ -78,7 +75,6 @@
     <TypeScriptCompile Include="typings\tsd.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="client\css\" />
     <Folder Include="client\js\" />
     <Folder Include="client\views\" />
     <Folder Include="client\typings\" />

@@ -179,6 +179,7 @@ class DashboardController {
             console.log("Error on BitReserve call through our API:");
             console.log(error);
 
+            // TODO: further handling
         });
 
     }

@@ -2,6 +2,9 @@
 import userModel = require('../models/userModel');
 import express = require('express');
 
+/**
+ * Configuration data for the OAuth controller.
+ */
 interface IOAuthControllerConfig {
     /**
      * Base URL on our side, e.g. https://localhost:3124
@@ -17,14 +20,34 @@ interface IOAuthControllerConfig {
      * URL of the external OAuth site, e.g. 'https://github.com/login'
      */
     oauthSite: string;
+    
+    /**
+     * Path of the OAuth provider to request a token.
+     */
     oauthTokenPath: string;
+
+    /**
+     * Path of the OAuth provider to initiate OAuth authorization.
+     */
     oauthAuthorizationPath: string;
+
+    /**
+     * Client ID of this app.
+     */
     clientID: string;
+
+    /**
+     * Client secret of this app.
+     */
     clientSecret: string;
+
+    /**
+     * Scope of the OAuth authorization as defined by the provider. E.g. "cards:all"
+     */
     scope: string;
 }
 
-
+// TODO: convert to class
 module.exports = function (configParam: IOAuthControllerConfig) {
     var config: IOAuthControllerConfig;
     var oauth2;
@@ -129,8 +152,9 @@ module.exports = function (configParam: IOAuthControllerConfig) {
                 return;
             }
 
+            // Sometimes we receive a token without expiration date. Consider it to expire in 24 hours.
             if (!result.expires_in)
-                result.expires_in = 9999999;
+                result.expires_in = 60 * 60 * 24;
             var token = oauth2.accessToken.create(result);
 
             var accessToken: string;
@@ -227,12 +251,18 @@ module.exports = function (configParam: IOAuthControllerConfig) {
         getUserInfoFunction = f;
     }
 
+    /**
+     * Gets information about the current user from the configured function.
+     */
     function getUserInfo(authorizationCode: string, callback) {
         getUserInfoFunction(authorizationCode, function (err, user) {
             callback(err, user);
         });
     }
 
+    /**
+     * Stub function which returns null as user info.
+     */
     function getUserInfoStub(authorizationCode: string, callback) {
         callback(null, null);
     };

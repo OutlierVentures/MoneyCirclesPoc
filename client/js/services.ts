@@ -31,7 +31,6 @@ interface IIdentityProvider {
     decrypt(encryptedData: string): string;
 }
 
-
 /**
  * Identity provider for BitReserve using OAuth backend. The OAuth token is stored in the session storage.
  */
@@ -72,7 +71,6 @@ class BitReserveIdentityProvider implements IIdentityProvider {
 
     logon(): boolean {
         // We only require a token to function. If it's not empty, we're good to go.
-        // TODO: Could get oauth token from session storage here.
         return this._oauthToken != null;
     }
 
