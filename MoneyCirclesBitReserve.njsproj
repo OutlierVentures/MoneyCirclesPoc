@@ -3,7 +3,7 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>HelloOAuthNode</Name>
+    <Name>MoneyCirclesBitReserve</Name>
     <RootNamespace>HelloOAuthNode</RootNamespace>
     <LaunchUrl>https://localhost:3124</LaunchUrl>
     <Environment>
@@ -14,7 +14,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>cea2720c-81b6-46e8-940c-a1df6ffbcda4</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
+    <ProjectHome>
+    </ProjectHome>
     <StartupFile>server.ts</StartupFile>
     <SearchPath>
     </SearchPath>
