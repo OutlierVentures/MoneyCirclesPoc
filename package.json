@@ -1,11 +1,11 @@
 {
-  "name": "HelloOAuthNode",
-  "version": "0.0.0",
-  "description": "HelloOAuthNode",
-  "main": "app.js",
+  "name": "MoneyCirclesBitReserve",
+  "version": "0.1.0",
+  "description": "MoneyCircles BitReserve Proof of Concept implementation",
+  "main": "server.js",
   "author": {
-    "name": "Aron",
-    "email": ""
+    "name": "Aron van Ammers",
+    "email": "aron@blockstars.io"
   },
   "dependencies": {
     "express": "^4.13.3",
@@ -13,6 +13,15 @@
     "morgan": "^1.6.1",
     "request": "^2.61.0",
     "simple-oauth2": "*",
-    "stylus": "*"
+    "body-parser": "*"
+  },
+  "devDependencies": {
+	"grunt": "^0.4.5",
+    "grunt-ts": "*",
+    "grunt-tslint": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-nodemon": "*",
+    "grunt-concurrent": "*",
+    "grunt-newer": "*"	
   }
 }

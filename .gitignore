@@ -200,5 +200,6 @@ controllers/*.js
 services/*.js
 routes/*.js
 /*.js
+!GruntFile.js
 client/js/*.js
 

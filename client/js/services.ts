@@ -52,6 +52,7 @@ class BitReserveIdentityProvider implements IIdentityProvider {
         this._userInfo = userInfo;
         if (w)
             w.sessionStorage.setItem('bitReserveUserInfo', JSON.stringify(userInfo));
+
     }
 
     getUserInfo() {

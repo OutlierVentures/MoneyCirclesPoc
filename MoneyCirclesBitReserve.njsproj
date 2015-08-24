@@ -37,7 +37,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="client\js\app.ts" />
     <TypeScriptCompile Include="client\js\controllers.ts" />
     <TypeScriptCompile Include="client\js\models.ts" />
