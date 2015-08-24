@@ -1,20 +1,23 @@
 ﻿import request = require('request');
 import userModel = require('../models/userModel');
 
-module.exports = function () {
-    
+// Enable request debugging
+// TODO: make configurable (config debug option)
+require('request').debug = true;
+
+export class bitReserveService {
+    constructor(
+        private authorizationToken: string) {
+    }
     /**
      * Gets info about the current user.
      */
-    function getUser(authorizationToken: string, callback) {
-        // Enable request debugging
-        // TODO: make configurable (config debug option)
-        require('request').debug = true;
-        console.log("Calling API with token: " + authorizationToken);
+    getUser(callback) {
+        console.log("Calling API with token: " + this.authorizationToken);
         request.get('https://api.bitreserve.org/v0/me',
             {
                 headers: {
-                    "Authorization": "Bearer " + authorizationToken
+                    "Authorization": "Bearer " + this.authorizationToken
                 }
             }, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
@@ -36,7 +39,24 @@ module.exports = function () {
 
     }
 
-    return {
-        'getUser': getUser,
+    getCards(callback) {
+
+        console.log("Calling API with token: " + this.authorizationToken);
+        request.get('https://api.bitreserve.org/v0/me/cards',
+            {
+                headers: {
+                    "Authorization": "Bearer " + this.authorizationToken
+                }
+            }, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    var cards = JSON.parse(body);
+
+                    callback(null, cards);
+                } else {
+                    console.log("Error getting cards data: " + error);
+                    callback(error, null);
+                }
+            });
+
     }
 }

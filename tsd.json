@@ -34,6 +34,15 @@
     },
     "morgan/morgan.d.ts": {
       "commit": "af81415504b4edce8dac8446d96857f8018c6e9f"
+    },
+    "angularjs/angular.d.ts": {
+      "commit": "af81415504b4edce8dac8446d96857f8018c6e9f"
+    },
+    "jquery/jquery.d.ts": {
+      "commit": "af81415504b4edce8dac8446d96857f8018c6e9f"
+    },
+    "body-parser/body-parser.d.ts": {
+      "commit": "c5a2f44bab06cf9f2bcc14530171daac1cebff6c"
     }
   }
 }

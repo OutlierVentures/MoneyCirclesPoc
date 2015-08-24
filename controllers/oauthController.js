@@ -16,24 +16,42 @@ module.exports = function (configParam) {
         });
         // Authorization uri definition
         authorization_uri = oauth2.authCode.authorizeURL({
-            redirect_uri: getCallbackPath(),
+            redirect_uri: getCallbackUrl(),
             scope: config.scope,
             state: getState()
         });
     }
+    /**
+     * Gets the route this controller exposes to initiate an authentication request, e.g. /api/auth/bitreserve.
+     */
     function getAuthRoute() {
         return config.basePath;
     }
-    function getCallbackRoute() {
+    /**
+     * Gets the route used for callback calls.
+     */
+    function getCallbackApiRoute() {
         return config.basePath + '/callback';
     }
-    // TODO: don't expose, yet let them have access to config.
-    function getCallbackPath() {
-        return config.baseUrl + getCallbackRoute();
+    /**
+ * Gets the route used for callbacks.
+ */
+    function getCallbackPublicRoute() {
+        // The callback should be to the world-facing URL (e.g. /auth/bitreserve/callback) and not to 
+        // the API (e.g. /api/auth/bitreserve/callback). So strip '/api/'.
+        // TODO: allow configuring this specifically, or improve convention so that no string replace has to be done.
+        return config.basePath.replace('/api/', '/') + '/callback';
+    }
+    /**
+     * Gets the full callback URL that the OAuth provider has to redirect back to.
+     * Example: http://localhost:3124/#/auth/bitreserve/callback
+     */
+    function getCallbackUrl() {
+        return config.baseUrl + getCallbackPublicRoute();
     }
     function getState() {
         // TODO: make dynamic, session-specific; check on callback.
-        return '3(#0/!~';
+        return 'H()OEUHM*$(';
     }
     // Initial page redirecting to Github
     function auth(req, res) {
@@ -42,20 +60,29 @@ module.exports = function (configParam) {
     ;
     // Callback service parsing the authorization token and asking for the access token
     function callback(req, res) {
-        if (req.query.error) {
-            res.send("Error returned by OAuth provider on callback: " + req.query.error);
+        var reqData = req.body;
+        if (reqData.error) {
+            // The function was called with error data. Don't process any further.
+            res.json(400, {
+                "status": "Error",
+                "error": "Error returned by OAuth provider on callback: " + reqData.error
+            });
         }
-        var code = req.query.code;
+        var code = reqData.code;
         // TODO: check state passed in request.
-        var state = req.query.state;
+        var state = reqData.state;
         oauth2.authCode.getToken({
             code: code,
-            redirect_uri: getCallbackPath()
+            redirect_uri: getCallbackUrl()
         }, saveToken);
         function saveToken(error, result) {
             if (error) {
                 console.log('Access Token Error', error.error);
-                res.send("Error while getting token: " + error.error);
+                res.json(500, {
+                    "status": "Error",
+                    "error_location": "Getting token from OAuth provider",
+                    "error": error
+                });
                 return;
             }
             if (!result.expires_in)
@@ -71,7 +98,7 @@ module.exports = function (configParam) {
                 var parsed = querystring.parse(token.token);
                 accessToken = parsed.access_token;
             }
-            // TODO: clean up callback hell and duplication.
+            // TODO: clean up callback hell and duplication. Use Promises (Q library).
             // Get the user from the OAuth provider
             getUserInfo(accessToken, function (err, userInfo) {
                 var externalUserID;
@@ -83,6 +110,12 @@ module.exports = function (configParam) {
                     externalUserID = userInfo.externalID;
                 }
                 else {
+                    res.json(500, {
+                        "error": "User info is empty",
+                        "error_location": "getting user data",
+                        "status": "Error"
+                    });
+                    ;
                 }
                 // Get the user from our side, or create it.
                 userModel.repository.findOne({ externalID: externalUserID }, function (err, user) {
@@ -99,7 +132,6 @@ module.exports = function (configParam) {
                                 "status": "Ok",
                                 "user": userRes,
                             });
-                            //res.send("Welcome, new user " + userRes.name + " authenticated through " + config.basePath + "!");
                         });
                     }
                     else {
@@ -108,8 +140,9 @@ module.exports = function (configParam) {
                         // Save it
                         userModel.repository.update({ name: user.name }, user, function (saveErr, affectedRows, raw) {
                             if (saveErr) {
-                                res.json(401, {
-                                    "error": "Error while saving user data: " + saveErr,
+                                res.json(500, {
+                                    "error": saveErr,
+                                    "error_location": "saving user data",
                                     "status": "Error",
                                     "user": user,
                                 });
@@ -156,7 +189,8 @@ module.exports = function (configParam) {
     return {
         'auth': auth,
         'callback': callback,
-        'getCallbackRoute': getCallbackRoute,
+        'getCallbackApiRoute': getCallbackApiRoute,
+        'getCallbackPublicRoute': getCallbackPublicRoute,
         'getAuthRoute': getAuthRoute,
         'setGetUserInfoFunction': setGetUserInfoFunction,
         'getUserInfo': getUserInfo,
