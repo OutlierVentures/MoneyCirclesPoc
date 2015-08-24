@@ -191,3 +191,14 @@ ModelManifest.xml
 
 
 client/vendors/
+
+# Generated Javascript artifacts
+*.js.map
+
+models/*.js
+controllers/*.js
+services/*.js
+routes/*.js
+/*.js
+client/js/*.js
+
