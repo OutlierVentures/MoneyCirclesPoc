@@ -8,7 +8,7 @@ import path = require('path');
 import fs = require('fs');
 
 import indexRoute = require('./routes/index');
-import userController = require('./controllers/userController');
+import oauthController = require('./controllers/oauthController');
 
 // TODO: make configurable
 var HTTP_PORT = 3123;
@@ -28,7 +28,7 @@ var githubConfig = {
     oauthAuthorizationPath: '/oauth/authorize',
 };
 
-var githubOauthController = require('./controllers/oauthController')(githubConfig);
+var githubOauthController = new oauthController.OAuthController(githubConfig);
 
 var bitReserveConfig = {
     baseUrl: baseUrl,
@@ -45,7 +45,7 @@ var bitReserveConfig = {
     oauthAuthorizationPath: 'bitreserve.org/authorize/' + 'e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c',
 }
 
-var bitReserveOauthController = require('./controllers/oauthController')(bitReserveConfig);
+var bitReserveOauthController = new oauthController.OAuthController(bitReserveConfig);
 import bitReserveService = require('./services/bitReserveService');
 
 /**
@@ -80,12 +80,6 @@ app.use(express.static(clientDir));
 app.get('/', indexRoute.index);
 app.get('/user/profile', indexRoute.index);
 
-//app.get('/users', userController.list);
-//app.get('/users/:name', userController.retrieveUser);
-//app.post('/users/:name', userController.createUser);
-
-// TODO: make TypeScript check validity of these calls, on local files that are called using require() and 
-// expose their functions in module.exports.
 app.get(githubOauthController.getAuthRoute(), githubOauthController.auth);
 app.post(githubOauthController.getCallbackApiRoute(), githubOauthController.callback);
 app.get(githubOauthController.getCallbackPublicRoute(), indexRoute.index);

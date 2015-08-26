@@ -50,7 +50,6 @@
     <TypeScriptCompile Include="controllers\bitReserveController.ts" />
     <TypeScriptCompile Include="services\bitReserveService.ts" />
     <TypeScriptCompile Include="controllers\oauthController.ts" />
-    <TypeScriptCompile Include="controllers\userController.ts" />
     <TypeScriptCompile Include="models\userModel.ts" />
     <TypeScriptCompile Include="server.ts" />
     <TypeScriptCompile Include="routes\index.ts" />

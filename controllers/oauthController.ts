@@ -47,18 +47,24 @@ interface IOAuthControllerConfig {
     scope: string;
 }
 
-// TODO: convert to class
-module.exports = function (configParam: IOAuthControllerConfig) {
-    var config: IOAuthControllerConfig;
-    var oauth2;
-    var authorization_uri;
+export class OAuthController {
 
-    config = configParam;
 
-    init(config);
+    private config: IOAuthControllerConfig;
+    /** 
+     * The simple-oauth2 module, which has no typings.
+     */
+    private oauth2;
 
-    function init(config: IOAuthControllerConfig) {
-        oauth2 = require('simple-oauth2')({
+    private authorization_uri: string;
+
+    constructor(configParam: IOAuthControllerConfig) {
+        this.config = configParam;
+        this.init(this.config);
+    }
+
+    private init(config: IOAuthControllerConfig) {
+        this.oauth2 = require('simple-oauth2')({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
             site: config.oauthSite,
@@ -67,58 +73,137 @@ module.exports = function (configParam: IOAuthControllerConfig) {
         });
 
         // Authorization uri definition
-        authorization_uri = oauth2.authCode.authorizeURL({
-            redirect_uri: getCallbackUrl(),
+        this.authorization_uri = this.oauth2.authCode.authorizeURL({
+            redirect_uri: this.getCallbackUrl(),
             scope: config.scope,
-            state: getState()
+            state: this.getState()
         });
     }
 
     /**
      * Gets the route this controller exposes to initiate an authentication request, e.g. /api/auth/bitreserve.
      */
-    function getAuthRoute(): string {
-        return config.basePath;
+    getAuthRoute(): string {
+        return this.config.basePath;
     }
 
     /**
      * Gets the route used for callback calls.
      */
-    function getCallbackApiRoute(): string {
-        return config.basePath + '/callback';
+    getCallbackApiRoute(): string {
+        return this.config.basePath + '/callback';
     }
 
     /**
- * Gets the route used for callbacks.
- */
-    function getCallbackPublicRoute(): string {
+     * Gets the route used for callbacks.
+     */
+    getCallbackPublicRoute(): string {
         // The callback should be to the world-facing URL (e.g. /auth/bitreserve/callback) and not to 
         // the API (e.g. /api/auth/bitreserve/callback). So strip '/api/'.
         // TODO: allow configuring this specifically, or improve convention so that no string replace has to be done.
-        return config.basePath.replace('/api/', '/') + '/callback';
+        return this.config.basePath.replace('/api/', '/') + '/callback';
     }
-
 
     /**
      * Gets the full callback URL that the OAuth provider has to redirect back to.
      * Example: http://localhost:3124/#/auth/bitreserve/callback
      */
-    function getCallbackUrl(): string {
-        return config.baseUrl + getCallbackPublicRoute();
+    getCallbackUrl(): string {
+        return this.config.baseUrl + this.getCallbackPublicRoute();
     }
 
-    function getState() {
+    private getState() {
         // TODO: make dynamic, session-specific; check on callback.
         return 'H()OEUHM*$(';
     }
 
-    // Initial page redirecting to Github
-    function auth(req, res) {
-        res.redirect(authorization_uri);
+    /**
+     * The function used to get user info from the oauth service.
+     */
+    getUserInfoFunction = this.getUserInfoStub;
+
+    /** 
+     * Set the function used to get the user info from the oauth service.
+     */
+    setGetUserInfoFunction(f) {
+        this.getUserInfoFunction = f;
+    }
+
+    /**
+     * Gets information about the current user from the configured function.
+     */
+    private getUserInfo(authorizationCode: string, callback) {
+        this.getUserInfoFunction(authorizationCode, function (err, user) {
+            callback(err, user);
+        });
+    }
+
+    /**
+     * Stub function which returns null as user info.
+     */
+    private getUserInfoStub(authorizationCode: string, callback) {
+        callback(null, null);
     };
 
-    // Callback service parsing the authorization token and asking for the access token
-    function callback(req: express.Request, res: express.Response) {
+    /**
+     * Express request handlers below, all using fat arrow syntax:
+     * functionName = (req: express.Request, res: express.Response) => { ... }
+     */
+
+    // Express request handlers are called for routes for example like this:
+    // app.get("/a/path", controllerInstance.aFunction). If the function uses 
+    // a normal function signature ("aFunction(req: express.Request, res: express.Response)"),
+    // when called by Express it's called as a global function. The keyword 'this' 
+    // doesn't map to the class instance and the function can't access class members.
+    //
+    // This is explained by the fact that normal class functions get mapped to
+    // prototype functions, whereas the fat arrow syntax gets mapped to functions
+    // within the constructor. Examples below.
+    // 
+    // Function syntax:
+    // TypeScript: 
+    //class a {
+    //    memberA: string;
+    //    functionA(paramA: string) { return this.memberA; }
+    //}
+    // JavaScript: 
+    //var a = (function () {
+    //    function a() {
+    //    }
+    //    a.prototype.functionA = function (paramA) { return this.memberA; };
+    //    return a;
+    //})();
+    //
+    // Fat arrow syntax:
+    // TypeScript: 
+    //class b {
+    //    memberB: string;
+    //    b = (memberB: string) => { return this.memberB; }
+    //}
+    // JavaScript:
+    //var b = (function () {
+    //    function b() {
+    //        var _this = this;
+    //        this.b = function (memberB) { return _this.memberB; };
+    //    }
+    //    return b;
+    //})();
+    //
+    // More info:
+    // https://github.com/Microsoft/TypeScript/wiki/'this'-in-TypeScript
+
+    /**
+     * Redirect to the authorization URL of the OAuth provider
+     */
+    auth = (req: express.Request, res: express.Response) => {
+        res.redirect(this.authorization_uri);
+    };
+    
+    /**
+     * Callback operation parsing the authorization token and asking for the access token from
+     * the OAuth provider.
+     */
+    callback = (req: express.Request, res: express.Response) => {
         var reqData = req.body;
 
         if (reqData.error) {
@@ -132,14 +217,21 @@ module.exports = function (configParam: IOAuthControllerConfig) {
 
         var code = reqData.code;
 
-        // TODO: check state passed in request.
+        // TODO: check state passed in request. It should be a unique variable passed with the request
+        // to the authorization URL, which is passed back by the OAuth provider.
+        // As our backend API is stateless, the state should be generated in the front side app.
         var state = reqData.state;
 
-        oauth2.authCode.getToken({
+        this.oauth2.authCode.getToken({
             code: code,
-            redirect_uri: getCallbackUrl()
+            redirect_uri: this.getCallbackUrl()
         }, saveToken);
 
+        var t = this;
+
+        /**
+         * Callback for saving the token from the OAuth provider and returning the result.
+         */
         function saveToken(error, result) {
             if (error) {
                 console.log('Access Token Error', error.error);
@@ -155,7 +247,7 @@ module.exports = function (configParam: IOAuthControllerConfig) {
             // Sometimes we receive a token without expiration date. Consider it to expire in 24 hours.
             if (!result.expires_in)
                 result.expires_in = 60 * 60 * 24;
-            var token = oauth2.accessToken.create(result);
+            var token = t.oauth2.accessToken.create(result);
 
             var accessToken: string;
 
@@ -172,12 +264,18 @@ module.exports = function (configParam: IOAuthControllerConfig) {
             // TODO: clean up callback hell and duplication. Use Promises (Q library).
 
             // Get the user from the OAuth provider
-            getUserInfo(accessToken, function (err, userInfo) {
+            t.getUserInfo(accessToken, function (err, userInfo) {
                 var externalUserID: string;
                 var name = "New user";
 
                 if (err) {
-                    // TODO: handle error
+                    res.json(
+                        500,
+                        {
+                            "error": err,
+                            "error_location": "getting user data",
+                            "status": "Error"
+                        });;
                 } else if (userInfo) {
                     name = userInfo.name;
                     externalUserID = userInfo.externalID;
@@ -192,6 +290,11 @@ module.exports = function (configParam: IOAuthControllerConfig) {
                 }
         
                 // Get the user from our side, or create it.
+                // If the MongoDB connection fails, this call times out and the result is never sent.
+                // The MongoDB connection is currently only created at the node app startup. It could
+                // disconnect for some reason.
+                // TODO: make this more stable, in a way that doesn't require a specific call to Mongoose
+                // before every request (because that will be forgotten).
                 userModel.repository.findOne({ externalID: externalUserID }, function (err, user) {
 
                     // TODO: use promise to wait for creating new user.
@@ -237,52 +340,5 @@ module.exports = function (configParam: IOAuthControllerConfig) {
 
             });
         }
-    }
-
-    /**
-     * The function used to get user info from the oauth service.
-     */
-    var getUserInfoFunction = getUserInfoStub;
-
-    /** 
-     * Set the function used to get the user info from the oauth service.
-     */
-    function setGetUserInfoFunction(f) {
-        getUserInfoFunction = f;
-    }
-
-    /**
-     * Gets information about the current user from the configured function.
-     */
-    function getUserInfo(authorizationCode: string, callback) {
-        getUserInfoFunction(authorizationCode, function (err, user) {
-            callback(err, user);
-        });
-    }
-
-    /**
-     * Stub function which returns null as user info.
-     */
-    function getUserInfoStub(authorizationCode: string, callback) {
-        callback(null, null);
-    };
-
-
-    /**
-     * Get information about the current user in the form {name:'..', externalID:'..'}. To be overridden by implementors.
-     */
-    function getUserInfoInternal(authorizationCode: string, callback) {
-        callback(null, null);
-    }
-
-    // Only the functions below are exposed to callers.
-    return {
-        'auth': auth,
-        'callback': callback,
-        'getCallbackApiRoute': getCallbackApiRoute,
-        'getCallbackPublicRoute': getCallbackPublicRoute,
-        'getAuthRoute': getAuthRoute,
-        'setGetUserInfoFunction': setGetUserInfoFunction,
-        'getUserInfo': getUserInfo,
     }
 }
