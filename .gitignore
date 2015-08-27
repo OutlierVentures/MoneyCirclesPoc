@@ -203,3 +203,6 @@ routes/*.js
 !GruntFile.js
 client/js/*.js
 
+# TSD typings
+typings/
+client/typings
