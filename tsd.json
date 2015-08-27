@@ -5,9 +5,6 @@
   "path": "typings",
   "bundle": "typings/tsd.d.ts",
   "installed": {
-    "mysql/mysql.d.ts": {
-      "commit": "38fb591c6eba840e0b53d1110302b8e4fb04651c"
-    },
     "node/node.d.ts": {
       "commit": "38fb591c6eba840e0b53d1110302b8e4fb04651c"
     },
@@ -20,9 +17,6 @@
     "mime/mime.d.ts": {
       "commit": "dbf239733104cebd1fbb92578abdc929a8dac2da"
     },
-    "fs-extra/fs-extra.d.ts": {
-      "commit": "dbf239733104cebd1fbb92578abdc929a8dac2da"
-    },
     "mongoose/mongoose.d.ts": {
       "commit": "c87a7c70b463ba23e0ba0721daa37d1c460ddd58"
     },
@@ -33,12 +27,6 @@
       "commit": "8f081073e6cb416f901b272810d8b04d6e01c9e0"
     },
     "morgan/morgan.d.ts": {
-      "commit": "af81415504b4edce8dac8446d96857f8018c6e9f"
-    },
-    "angularjs/angular.d.ts": {
-      "commit": "af81415504b4edce8dac8446d96857f8018c6e9f"
-    },
-    "jquery/jquery.d.ts": {
       "commit": "af81415504b4edce8dac8446d96857f8018c6e9f"
     },
     "body-parser/body-parser.d.ts": {
