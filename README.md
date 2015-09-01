@@ -83,19 +83,17 @@ TypeScript compilation complete: 1.54s for 26 typescript files
 Done, without errors.
 ```
 
-### Live building
+### Running
 
-A ```grunt``` task is included to run the Node server, compile TypeScript files on change and restart Node when necessary.
+1. Start the node server:
 
-To run and watch for changes:
-
-```
+   ```
 grunt serve
 ```
 
-The output should look something like this:
+   The output should look something like this:
 
-```
+   ```
 aron@orangeblack:~/dev/MoneyCirclesBitReserve$ grunt serve
 Running "concurrent:watchers" (concurrent) task
     Running "watch" task
@@ -109,9 +107,11 @@ Running "concurrent:watchers" (concurrent) task
     https server started on port 3124
 ```
 
-Requests to the server are logged to the console like this:
+2. Open https://poc1-dev.moneycircles.com:3124 in a browser
 
-```
+   Requests to the server are logged to the console like this:
+
+   ```
     GET / 200 4.566 ms - 4123
     GET /vendors/bootstrap/dist/css/bootstrap.min.css 200 19.549 ms - 122540
     GET /vendors/angular-sanitize/angular-sanitize.min.js 200 22.721 ms - 6082
@@ -119,19 +119,56 @@ Requests to the server are logged to the console like this:
     ...
 ```
 
-## Running
-
-1. Start the server
-
-   ```
-grunt serve
-```
-
-2. Open https://poc1-dev.moneycircles.com:3124 in a browser
-
 Note: Because we currently use a self-signed certificate, the browser will prevent opening the page. Bypass these warnings to open the app.
 
-## Development guidelines
+### Live building
+
+The ```grunt serve``` task includes modules to detect changes to the TypeScript files, recompile them and restarting Node on the fly. You don't need to do anything beyond starting ```grunt serve```.
+
+When any .ts file is changed, a rebuild occurs, which looks like this:
+
+```
+    >> File "client/js/app.ts" changed.
+    >> File "server.ts" changed.
+
+    Running "ts:build" (ts) task
+    Compiling...
+    Using tsc v1.5.3
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] starting `node server.js`
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+
+
+
+    TypeScript compilation complete: 1.33s for 26 typescript files
+
+    Running "watch" task
+    Completed in 2.180s at Tue Sep 01 2015 20:28:49 GMT+0200 (CEST) - Waiting...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] restarting due to changes...
+    [nodemon] starting `node server.js`
+    http server started on port 3123
+    https server started on port 3124
+```
+
+
+# Development guidelines
 
 ### Common
 
