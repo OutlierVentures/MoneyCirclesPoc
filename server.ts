@@ -13,7 +13,7 @@ import oauthController = require('./controllers/oauthController');
 // TODO: make configurable
 var HTTP_PORT = 3123;
 var HTTPS_PORT = HTTP_PORT + 1
-var baseUrl = "https://localhost:" + HTTPS_PORT;
+var baseUrl = "https://poc1-dev.moneycircles.com:" + HTTPS_PORT;
 
 
 // OAuth controllers

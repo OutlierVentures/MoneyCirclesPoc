@@ -5,7 +5,7 @@
  * and for that case it's better to have it separately.
  */
 // TODO: make configurable.
-var apiUrl = "https://localhost:3124/api";
+var apiUrl = "https://poc1-dev.moneycircles.com:3124/api";
 
 interface MoneyCirclesRootScope extends ng.IRootScopeService {
     isLoggedIn: boolean;
