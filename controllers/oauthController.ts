@@ -291,10 +291,7 @@ export class OAuthController {
         
                 // Get the user from our side, or create it.
                 // If the MongoDB connection fails, this call times out and the result is never sent.
-                // The MongoDB connection is currently only created at the node app startup. It could
-                // disconnect for some reason.
-                // TODO: make this more stable, in a way that doesn't require a specific call to Mongoose
-                // before every request (because that will be forgotten).
+                // TODO: handle that.
                 userModel.repository.findOne({ externalID: externalUserID }, function (err, user) {
 
                     // TODO: use promise to wait for creating new user.
