@@ -10,13 +10,26 @@ import fs = require('fs');
 import indexRoute = require('./routes/index');
 import oauthController = require('./controllers/oauthController');
 
-// TODO: make configurable
-var HTTP_PORT = 3123;
-var HTTPS_PORT = HTTP_PORT + 1
-var baseUrl = "https://poc1-dev.moneycircles.com:" + HTTPS_PORT;
+/*************** Configuration ********************/
+var CONFIG_FILE = './config.json'
+var config;
+try {
+    // Strip the BOM character as readFileSync doesn't do that.
+    var configString = fs.readFileSync(CONFIG_FILE, 'utf8').replace(/^\uFEFF/, '');
+    config = JSON.parse(configString);
+}
+catch(e){
+    console.log("Error while parsing config file: " + e);
+}
+
+var HTTP_PORT = config.server.httpPort;
+var HTTPS_PORT = config.server.httpsPort;
+var baseUrl = config.server.baseUrl + ":" + HTTPS_PORT;
 
 
-// OAuth controllers
+/************** OAuth controllers ****************/
+
+// GitHub OAuth, just for testing the OAuth controller.
 var githubConfig = {
     baseUrl: baseUrl,
     basePath: "/api/auth/github",
@@ -33,8 +46,8 @@ var githubOauthController = new oauthController.OAuthController(githubConfig);
 var bitReserveConfig = {
     baseUrl: baseUrl,
     basePath: "/api/auth/bitreserve",
-    clientID: 'e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c',
-    clientSecret: 'b3df38816602d936c304774c43420d56eda8358f',
+    clientID: config.bitReserve.app.clientID,
+    clientSecret: config.bitReserve.app.clientSecret,
 
     scope: "cards:read,cards:write,transactions:read,transactions:write,user:read",
     // BitReserve uses a different domain for the authorization URL. simple-oauth2 doesn't support that.
@@ -42,7 +55,7 @@ var bitReserveConfig = {
     // As a workaround, we use the greatest common denominator of the two URLs: "https://".
     oauthSite: "https://",
     oauthTokenPath: 'api.bitreserve.org/oauth2/token',
-    oauthAuthorizationPath: 'bitreserve.org/authorize/' + 'e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c',
+    oauthAuthorizationPath: 'bitreserve.org/authorize/' + config.bitReserve.app.clientID,
 }
 
 var bitReserveOauthController = new oauthController.OAuthController(bitReserveConfig);
@@ -58,6 +71,9 @@ function getBitReserveUserInfo(token: string, callback) {
 
 bitReserveOauthController.setGetUserInfoFunction(getBitReserveUserInfo);
 
+
+/******** Express and route setup ***********/
+
 var app = express();
 app.use(bodyParser.json());
 
@@ -65,9 +81,13 @@ app.use(bodyParser.json());
 var morgan = require('morgan');
 app.use(morgan('dev'));
 
-// TODO: store Mongo config in config file.
-// TODO: make it work offline
-var db = mongoose.connect("mongodb://moneycircles-bitreserve-poc-dev-user:iPBNE0ZeQRPbsHOVWEUi@ds035593.mongolab.com:35593/moneycircles-bitreserve-poc-dev");
+// Initialize database connection.
+
+// The MongoDB connection is currently only created at the node app startup. It could
+// disconnect for some reason.
+// TODO: make this more stable, in a way that doesn't require a specific call to Mongoose
+// before every request (because that will be forgotten).
+var db = mongoose.connect(config.database.url);
 
 // Client folder containing the Angular SPA, serve as static assets
 var clientDir = path.join(__dirname, 'client')

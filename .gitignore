@@ -206,3 +206,4 @@ client/js/*.js
 # TSD typings
 typings/
 client/typings
+/config.json

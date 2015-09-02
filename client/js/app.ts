@@ -1,11 +1,10 @@
 ﻿/// <reference path="../typings/tsd.d.ts" />
 
 /**
- * URL of the backend API. Could be derived from our URL, but OTOH the API could be split from the client
- * and for that case it's better to have it separately.
+ * URL of the backend API. Currently a local URL, i.e. the static client files are hosted by the API server.
+ * In the future the API could be split from the client, which is when the API URL will be made configurable
  */
-// TODO: make configurable.
-var apiUrl = "https://poc1-dev.moneycircles.com:3124/api";
+var apiUrl = "/api";
 
 interface MoneyCirclesRootScope extends ng.IRootScopeService {
     isLoggedIn: boolean;

@@ -1,0 +1,17 @@
+﻿{
+    "__comment": "This is an example configuration file. Copy it to 'config.json' before running.",
+    "server": {
+        "httpPort": 3123,
+        "httpsPort": 3124,
+        "baseUrl": "https://poc1-dev.moneycircles.com"
+    },
+    "database": {
+        "url": "mongodb://moneycircles-bitreserve-poc-dev-user:iPBNE0ZeQRPbsHOVWEUi@ds035593.mongolab.com:35593/moneycircles-bitreserve-poc-dev"
+    },
+    "bitReserve": {
+        "app": {
+            "clientID": "e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c",
+            "clientSecret": "b3df38816602d936c304774c43420d56eda8358f"
+        }
+    }
+}
