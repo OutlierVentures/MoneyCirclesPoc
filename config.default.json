@@ -1,5 +1,5 @@
 ﻿{
-    "__comment": "This is an example configuration file. Copy it to 'config.json' before running.",
+    "__comment": "This is the default configuration file. If you want custom configuration, copy this file to 'config.json' and adapt.",
     "server": {
         "httpPort": 3123,
         "httpsPort": 3124,
