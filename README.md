@@ -11,22 +11,22 @@ The implementation consists of:
 
 The following instructions have been tested on a clean Ubuntu 14.04 installation.
 
+The installation steps assume the default configuration in [config.default.json](config.default.json). To use a different configuration, copy that file to `config.json` and change what you need.
+
 ### Prerequisites
 
 * An Ubuntu 14.04 install with root access (preferrably a virtual machine)
-* A MongoDB instance. An instance at MongoLab is configured in the current (hard-coded) configuration.
-* A BitReserve application. An existing application has been configured in the current (hard-coded) configuration, which requires the app to be using the URL https://poc1-dev.moneycircles.com:3124. To facilitate this, do one of the following:
- * Ensure that ```poc1-dev.moneycircles.com``` resolves to the IP of your development machine (e.g. by adding ```127.0.0.1 poc1-dev.moneycircles.com``` to your hosts file)
- * Create a BitReserve application of your own, configure it like you want it and configure its attributes like Client ID in ```server.js```.
+* A MongoDB instance. An instance at MongoLab is configured in the default configuration.
+* A BitReserve application. An existing application has been configured in the default configuration, which requires the app to be using the URL https://poc1-dev.moneycircles.com:3124. To facilitate this, do one of the following:
+ * Ensure that `poc1-dev.moneycircles.com` resolves to the IP of your development machine (e.g. by adding `127.0.0.1 poc1-dev.moneycircles.com` to your hosts file)
+ * Create a BitReserve application of your own, configure it like you want it and configure its attributes like Client ID in `config.json`.
 * A [BitReserve account](https://bitreserve.org/signup) for authenticating
-
-TODO: move configuration out of server.js to a non-version controlled config.json so configuration stays out of source code.
 
 ### Install instructions
 
 1. Install prerequisites:
 
-   ```sudo apt-get install git curl```
+   `sudo apt-get install git curl`
 
 2. Install Node 0.10 from the PPA using [these instructions](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-an-ubuntu-14-04-server). In summary:
    ```
@@ -35,10 +35,10 @@ sudo apt-get install nodejs
 sudo apt-get install build-essential
 ```
 
-3. ```git clone``` this repository into a folder, say ```~/dev/MoneyCirclesBitReserve```. As this is a private repository, make sure an SSH key or token has been configured.
-4. Install global dependencies from ```npm```:
+3. `git clone` this repository into a folder, say `~/dev/MoneyCirclesBitReserve`. As this is a private repository, make sure an SSH key or token has been configured.
+4. Install global dependencies from `npm`:
 
-   ```sudo npm install -g typescript nodemon grunt-cli tsd bower node-gyp```
+   `sudo npm install -g typescript nodemon grunt-cli tsd bower node-gyp`
 
 4. Run package installs for the server side:
 
@@ -60,13 +60,11 @@ TODO: automate the package installs with grunt tasks.
 
 ### Building
 
-As the code is written in TypeScript, it has to be compiled using ```tsc```. A ```grunt``` task has been included to facilitate this.
+As the code is written in TypeScript, it has to be compiled using `tsc`. A `grunt` task has been included to facilitate this.
 
 To build the code:
 
-```
-grunt
-```
+`grunt`
 
 The output should look something like this:
 
@@ -87,9 +85,7 @@ Done, without errors.
 
 1. Start the node server:
 
-   ```
-grunt serve
-```
+   `grunt serve`
 
    The output should look something like this:
 
@@ -123,7 +119,7 @@ Note: Because we currently use a self-signed certificate, the browser will preve
 
 ### Live building
 
-The ```grunt serve``` task includes modules to detect changes to the TypeScript files, recompile them and restarting Node on the fly. You don't need to do anything beyond starting ```grunt serve```.
+The `grunt serve` task includes modules to detect changes to the TypeScript files, recompile them and restarting Node on the fly. You don't need to do anything beyond starting `grunt serve`.
 
 When any .ts file is changed, a rebuild occurs, which looks like this:
 
@@ -172,17 +168,15 @@ When any .ts file is changed, a rebuild occurs, which looks like this:
 
 ### Common
 
-* Use ```tsd``` to search for and install TypeScript typings. These facilitate syntax completion and design-time error checking. Two separate ```tsd``` configurations are used: ```/tsd.json``` for the backend, ```/client/tsd.json``` for the front end.
+* Use `tsd` to search for and install TypeScript typings. These facilitate syntax completion and design-time error checking. Two separate `tsd` configurations are used: `/tsd.json` for the backend, `/client/tsd.json` for the front end.
 
 ### Backend
 
 * Use classes for controllers
-* Use fat arrow syntax (```someFunction = (req: express.Request, res: express.Response) => { ... }```) for functions that will be called by Express routes.
-* Use ```npm``` for all dependencies.
+* Use fat arrow syntax (`someFunction = (req: express.Request, res: express.Response) => { ... }`) for functions that will be called by Express routes.
+* Use `npm` for all dependencies.
 
 ### Frontend
 
 * Use classes for controllers, services, models
-* Use ```bower``` for all dependencies
-
-
+* Use `bower` for all dependencies
