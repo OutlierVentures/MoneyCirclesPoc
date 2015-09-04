@@ -292,12 +292,12 @@ export class OAuthController {
                 // Get the user from our side, or create it.
                 // If the MongoDB connection fails, this call times out and the result is never sent.
                 // TODO: handle that.
-                userModel.repository.findOne({ externalID: externalUserID }, function (err, user) {
+                userModel.User.findOne({ externalID: externalUserID }, function (err, user) {
 
                     // TODO: use promise to wait for creating new user.
                     if (!user) {
                         // User didn't exist yet
-                        userModel.repository.create({
+                        userModel.User.create({
                             name: name,
                             externalID: externalUserID,
                             accessToken: accessToken,
@@ -314,7 +314,7 @@ export class OAuthController {
                         user.accessToken = accessToken;
 
                         // Save it
-                        userModel.repository.update({ name: user.name }, user, function (saveErr, affectedRows, raw) {
+                        userModel.User.update({ name: user.name }, user, function (saveErr, affectedRows, raw) {
                             if (saveErr) {
                                 res.json(
                                     500,

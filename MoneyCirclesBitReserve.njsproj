@@ -47,8 +47,11 @@
     <TypeScriptCompile Include="client\typings\cryptojs\cryptojs.d.ts" />
     <TypeScriptCompile Include="client\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="client\typings\tsd.d.ts" />
+    <TypeScriptCompile Include="controllers\circleMemberController.ts" />
+    <TypeScriptCompile Include="controllers\circleAdminController.ts" />
     <TypeScriptCompile Include="controllers\bitReserveController.ts" />
-    <TypeScriptCompile Include="services\bitReserveService.ts" />
+    <TypeScriptCompile Include="models\circleModel.ts" />
+    <TypeScriptCompile Include="services\BitReserveService.ts" />
     <TypeScriptCompile Include="controllers\oauthController.ts" />
     <TypeScriptCompile Include="models\userModel.ts" />
     <TypeScriptCompile Include="server.ts" />

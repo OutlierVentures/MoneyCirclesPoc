@@ -5,7 +5,7 @@ import userModel = require('../models/userModel');
 // TODO: make configurable (config debug option)
 require('request').debug = true;
 
-export class bitReserveService {
+export class BitReserveService {
     constructor(
         private authorizationToken: string) {
     }

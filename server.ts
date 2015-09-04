@@ -65,7 +65,7 @@ import bitReserveService = require('./services/bitReserveService');
  * Create a new BitReserve service and get user info from it.
  */
 function getBitReserveUserInfo(token: string, callback) {
-    var brs = new bitReserveService.bitReserveService(token);
+    var brs = new bitReserveService.BitReserveService(token);
     brs.getUser(callback);
 }
 
@@ -110,9 +110,22 @@ app.get(bitReserveOauthController.getCallbackPublicRoute(), indexRoute.index);
 
 // BitReserve API wrapper
 import bitReserveController = require('./controllers/bitReserveController');
-var brc = new bitReserveController.bitReserveController();
+var brc = new bitReserveController.BitReserveController();
 app.get("/api/bitreserve/me/cards", brc.getCards);
 
+// Circle data
+import circleAdminController = require('./controllers/circleAdminController');
+var cc = new circleAdminController.CircleAdminController;
+
+app.post("/api/circle/admin/create", cc.create);
+
+import circleMemberController = require('./controllers/circleMemberController');
+var cmc = new circleMemberController.CircleMemberController;
+
+app.get("/api/circle", cmc.getAll);
+app.post("/api/circle/join", cmc.join);
+
+/*********************** HTTP server setup ********************/
 var httpsOptions = {
     key: fs.readFileSync('key.pem'),
     cert: fs.readFileSync('cert.pem')
