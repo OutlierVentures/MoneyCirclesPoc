@@ -51,7 +51,7 @@
     <TypeScriptCompile Include="controllers\circleAdminController.ts" />
     <TypeScriptCompile Include="controllers\bitReserveController.ts" />
     <TypeScriptCompile Include="models\circleModel.ts" />
-    <TypeScriptCompile Include="services\BitReserveService.ts" />
+    <TypeScriptCompile Include="services\bitReserveService.ts" />
     <TypeScriptCompile Include="controllers\oauthController.ts" />
     <TypeScriptCompile Include="models\userModel.ts" />
     <TypeScriptCompile Include="server.ts" />
