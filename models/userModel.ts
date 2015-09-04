@@ -1,13 +1,5 @@
 ﻿import mongoose = require("mongoose");
 
-// For the sub document, we don't use a separate schema.
-
-//export var circleMemberSchema = new mongoose.Schema({
-//    circleId: String,
-//    startDate: Date,
-//    endDate: Date
-//});
-
 /**
  * Membership token of the user for a specific circle.
  */
@@ -37,7 +29,9 @@ export var userSchema = new mongoose.Schema({
     name: String,
     externalID: String,
     accessToken: String,
-    //circleMemberships: [circleMemberSchema]
+    // In the schema we use the shorthand syntax for schema, as we don't need access to the Schema object itself.
+    // The Schema is only a necessity to let Mongoose do its magic.
+    // http://stackoverflow.com/a/16493881/81949
     circleMemberships: [{
         circleId: String,
         startDate: Date,
@@ -63,6 +57,9 @@ export interface IUser extends mongoose.Document {
     circleMemberships: [CircleMembership];
 }
 
+/**
+ * An individual user of the system, authenticated on one or more authentication providers.
+ */
 export var User = mongoose.model<IUser>("Users", userSchema);
 
 /**
