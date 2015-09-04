@@ -11,14 +11,18 @@ import indexRoute = require('./routes/index');
 import oauthController = require('./controllers/oauthController');
 
 /*************** Configuration ********************/
-var CONFIG_FILE = './config.json'
+var CONFIG_FILE = './config.json';
 var config;
+
+if (!fs.exists(CONFIG_FILE))
+    CONFIG_FILE = './config.default.json';
+
 try {
     // Strip the BOM character as readFileSync doesn't do that.
     var configString = fs.readFileSync(CONFIG_FILE, 'utf8').replace(/^\uFEFF/, '');
     config = JSON.parse(configString);
 }
-catch(e){
+catch (e) {
     console.log("Error while parsing config file: " + e);
 }
 
