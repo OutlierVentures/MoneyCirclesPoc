@@ -103,6 +103,9 @@ app.use(express.static(clientDir));
 // TODO: introduce an "other" wildcard handler for this.
 app.get('/', indexRoute.index);
 app.get('/user/profile', indexRoute.index);
+app.get('/circle/new', indexRoute.index);
+app.get('/circle/list', indexRoute.index);
+app.get('/not-found', indexRoute.index);
 
 app.get(githubOauthController.getAuthRoute(), githubOauthController.auth);
 app.post(githubOauthController.getCallbackApiRoute(), githubOauthController.callback);
@@ -121,7 +124,7 @@ app.get("/api/bitreserve/me/cards", brc.getCards);
 import circleAdminController = require('./controllers/circleAdminController');
 var cc = new circleAdminController.CircleAdminController;
 
-app.post("/api/circle/admin/create", cc.create);
+app.post("/api/circle", cc.create);
 
 import circleMemberController = require('./controllers/circleMemberController');
 var cmc = new circleMemberController.CircleMemberController;

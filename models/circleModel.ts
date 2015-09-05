@@ -6,7 +6,6 @@ export var circleSchema = new mongoose.Schema({
 });
 
 export interface ICircle extends mongoose.Document {
-    id: string;
     name: string;
     commonBond: string;
 }

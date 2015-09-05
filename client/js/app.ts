@@ -23,14 +23,17 @@ module MoneyCircles {
         .controller('NavigationController', NavigationController)
         .controller('LoginController', LoginController)
         .controller('UserAccountController', UserAccountController)
+        .controller('CircleController', CircleController);
 
     moneyCirclesApp.config(function ($routeProvider: ng.route.IRouteProvider, $locationProvider: ng.ILocationProvider) {
         $routeProvider
             .when('/', { controller: DashboardController, templateUrl: 'views/dashboard.html' })
-            .when('/auth/bitreserve/callback', { controller: LoginController, templateUrl: 'views/oauth-callback.html' })
+            .when('/auth/bitreserve/callback', { controller: LoginController, templateUrl: 'views/login-finished.html' })
             //.when('/user/profile', { controller: UserAccountController, templateUrl: 'views/user-profile.html' })
-            .when('/user/login', { controller: LoginController, templateUrl: 'views/oauth-callback.html' })
+            .when('/user/login', { controller: LoginController, templateUrl: 'views/login-finished.html' })
             .when('/not-found', { templateUrl: 'views/not-found.html' })
+            .when('/circle/new', { controller: CircleController, templateUrl: 'views/circle-form.html' })
+            .when('/circle/list', { controller: CircleListController, templateUrl: 'views/circle-list.html' })
             .otherwise({ redirectTo: 'not-found' });
         $locationProvider.html5Mode(true);
         $locationProvider.hashPrefix('!');

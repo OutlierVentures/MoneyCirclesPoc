@@ -17,7 +17,7 @@ export class CircleMemberController {
     join(req: express.Request, res: express.Response) {
         var token = req.header("AccessToken");
 
-        var circleData = <ICircle>req.body;
+        var circleData = <circleModel.ICircle>req.body;
 
         userModel.getUserByAccessToken(token, function (userErr, userRes) {
             if (userErr) {

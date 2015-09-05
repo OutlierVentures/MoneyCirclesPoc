@@ -39,6 +39,8 @@
   <ItemGroup>
     <TypeScriptCompile Include="client\js\app.ts" />
     <TypeScriptCompile Include="client\js\controllers.ts" />
+    <TypeScriptCompile Include="client\js\controllers\circleListController.ts" />
+    <TypeScriptCompile Include="client\js\controllers\circleController.ts" />
     <TypeScriptCompile Include="client\js\models.ts" />
     <TypeScriptCompile Include="client\js\services.ts" />
     <TypeScriptCompile Include="client\typings\angularjs\angular-route.d.ts" />
@@ -58,11 +60,13 @@
     <TypeScriptCompile Include="routes\index.ts" />
     <Content Include="client\bower.json" />
     <Content Include="client\index.html" />
+    <Content Include="client\views\circle-list.html" />
     <Content Include="client\views\dashboard.html" />
+    <Content Include="client\views\circle-form.html" />
     <Content Include="client\views\not-found.html" />
     <Content Include="client\views\login-processing.html" />
     <Content Include="client\views\login.html" />
-    <Content Include="client\views\oauth-callback.html" />
+    <Content Include="client\views\login-finished.html" />
     <Content Include="config.default.json" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -79,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="client\js\" />
+    <Folder Include="client\js\controllers\" />
     <Folder Include="client\views\" />
     <Folder Include="client\typings\" />
     <Folder Include="client\typings\angularjs\" />

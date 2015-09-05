@@ -1,0 +1,49 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header" id="page-header">Create a new circle</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <i class="fa fa-mail-forward fa-fw"></i> New circle
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>
+                            Please describe your new circle.
+                        </p>
+                        <form role="form" name="circleForm" novalidate>
+                            <div class="form-group">
+                                <label>Name</label>
+                                <p class="help-block">
+                                    Give your circle a descriptive name.
+                                </p>
+                                <input class="form-control" type="text" ng-model="circle.name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Common bond</label>
+                                <p class="help-block">
+                                    What is the common bond all members of this circle have?
+                                </p>
+                                <input class="form-control" type="text" ng-model="circle.commonBond" required>
+                            </div>
+                            <button name="saveButton" ng-click="vm.create()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                                Create my circle
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <!-- /.col-lg-8 (nested) -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->
