@@ -9,7 +9,11 @@
 // TODO: remove duplication, allow a single file with model interfaces.
 // TODO: ensure that client-side model interfaces have a property "id".
 
-interface ICircle {
+interface IDocument {
+    _id: string;
+}
+
+interface ICircle extends IDocument {
     name: string;
     commonBond: string;
 }
@@ -40,7 +44,7 @@ class CircleMembership {
 }
 
 
-interface IUser {
+interface IUser extends IDocument {
     name: string;
     externalID: string;
     accessToken: string;

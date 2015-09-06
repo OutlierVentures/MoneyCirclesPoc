@@ -14,6 +14,14 @@ export class CircleMemberController {
         });
     }
 
+    getOne(req: express.Request, res: express.Response) {
+        var token = req.header("AccessToken");
+
+        circleModel.Circle.findOne({ _id: req.params.id }, (err, circleRes) => {
+            res.send(circleRes);
+        });
+    }
+
     join(req: express.Request, res: express.Response) {
         var token = req.header("AccessToken");
 
@@ -33,7 +41,8 @@ export class CircleMemberController {
                 // Check for existing membership
                 if (user.circleMemberships.some(
                     (value, index, arr) => {
-                        return value.circleId === circleData.id && !value.endDate;
+                        // TODO: use ObjectID for circleID (and Mongoose populate())
+                        return value.circleId === circleData._id.toString() && !value.endDate;
                     })) {
                     res.status(500).json({
                         "error": "User is already a member of this circle",
@@ -42,7 +51,7 @@ export class CircleMemberController {
                     });
                 } else {
                     var cm = new userModel.CircleMembership();
-                    cm.circleId = circleData.id;
+                    cm.circleId = circleData._id.toString();
                     cm.startDate = new Date();
                     user.circleMemberships.push(cm);
 

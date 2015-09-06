@@ -104,6 +104,8 @@ app.use(express.static(clientDir));
 app.get('/', indexRoute.index);
 app.get('/user/profile', indexRoute.index);
 app.get('/circle/new', indexRoute.index);
+app.get('/circle/:id', indexRoute.index);
+app.get('/circle/join/:id', indexRoute.index);
 app.get('/circle/list', indexRoute.index);
 app.get('/not-found', indexRoute.index);
 
@@ -130,7 +132,9 @@ import circleMemberController = require('./controllers/circleMemberController');
 var cmc = new circleMemberController.CircleMemberController;
 
 app.get("/api/circle", cmc.getAll);
+// COULD DO: use route /api/circle/join/:id, post empty message (now post body has to contain Circle ID)
 app.post("/api/circle/join", cmc.join);
+app.get("/api/circle/:id", cmc.getOne);
 
 /*********************** HTTP server setup ********************/
 var httpsOptions = {
