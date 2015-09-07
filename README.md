@@ -6,6 +6,10 @@ The implementation consists of:
 - AngularJS frontend (using TypeScript) - directory /client/
 - MongoDB database - external
 - BitReserve API - external
+ 
+## Test environment
+
+A version of the development branch is running here: https://poc1-test.moneycircles.projects.blockstars.io:3124/. This version uses a different BitReserve app and database than the development configuration suggested below.
 
 ## Installation
 
