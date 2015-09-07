@@ -41,7 +41,10 @@ sudo apt-get install build-essential
 
 4. Install global dependencies from `npm`:
 
-   `sudo npm install -g typescript nodemon grunt-cli tsd bower node-gyp`
+   ```
+sudo npm install -g typescript nodemon grunt-cli tsd bower node-gyp
+sudo chown -R $USER.$USER ~/.npm
+```
 
 4. Run package installs for the server side:
 
