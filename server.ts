@@ -103,6 +103,7 @@ app.use(express.static(clientDir));
 // TODO: introduce an "other" wildcard handler for this.
 app.get('/', indexRoute.index);
 app.get('/user/profile', indexRoute.index);
+app.get('/user/login', indexRoute.index);
 app.get('/circle/new', indexRoute.index);
 app.get('/circle/:id', indexRoute.index);
 app.get('/circle/join/:id', indexRoute.index);

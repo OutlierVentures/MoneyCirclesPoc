@@ -60,6 +60,7 @@
     <TypeScriptCompile Include="routes\index.ts" />
     <Content Include="client\bower.json" />
     <Content Include="client\index.html" />
+    <Content Include="client\views\circle-details.html" />
     <Content Include="client\views\circle-join.html" />
     <Content Include="client\views\circle-list.html" />
     <Content Include="client\views\dashboard.html" />

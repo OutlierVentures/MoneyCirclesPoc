@@ -35,6 +35,7 @@ module MoneyCircles {
             .when('/circle/new', { controller: CircleController, templateUrl: 'views/circle-form.html' })
             .when('/circle/list', { controller: CircleListController, templateUrl: 'views/circle-list.html' })
             .when('/circle/join/:id', { controller: CircleController, templateUrl: 'views/circle-join.html' })
+            .when('/circle/:id', { controller: CircleController, templateUrl: 'views/circle-details.html' })
             .otherwise({ redirectTo: 'not-found' });
         $locationProvider.html5Mode(true);
         $locationProvider.hashPrefix('!');

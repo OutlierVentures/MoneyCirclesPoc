@@ -2,6 +2,8 @@
     circle: ICircle;
     vm: CircleController;
     errorMessage: string;
+    totalInvestmentAmount: number;
+    totalLoanAmount: number;
 }
 
 interface ICircleRouteParameters extends ng.route.IRouteParamsService {
@@ -32,11 +34,41 @@ class CircleController {
         $scope.vm = this;
 
         // Is this the best way to handle a path? Is there a good way to do something like Express i.e. (app.use("/my/route", class.MyFunction)?
-        if ($location.path().indexOf("/circle/join") === 0) {
+        if ($location.path().indexOf("/circle/join/") === 0) {
             var circleId = $routeParams.id;
 
             this.join(circleId);
+        } else if ($location.path().indexOf("/circle/") === 0) {
+            var circleId = $routeParams.id;
+            this.view(circleId);
         }
+    }
+
+    view(circleId: string) {
+        var t = this;
+
+        // Get Circle data
+        this.$http({
+            method: 'GET',
+            url: apiUrl + '/circle/' + circleId,
+            data: t.$scope.circle,
+            headers: { AccessToken: t.$rootScope.userInfo.accessToken }
+        }).success(function (resultData: ICircle) {
+            t.$scope.circle = resultData;
+            
+            // TODO: get these amounts
+            // TODO: get more details about investments, members, outstanding loans
+            t.$scope.totalInvestmentAmount = 0;
+            t.$scope.totalLoanAmount = 0;
+
+        }).error(function (error) {                
+            // Handle error
+            console.log("Error loading circle data:");
+            console.log(error);
+
+            // Show notification
+            t.$scope.errorMessage = error.error;
+        });
     }
 
     create() {
@@ -67,7 +99,6 @@ class CircleController {
         var t = this;
         
         // Get Circle data
-
         this.$http({
             method: 'GET',
             url: apiUrl + '/circle/' + circleId,
