@@ -201,7 +201,7 @@ services/*.js
 routes/*.js
 /*.js
 !GruntFile.js
-client/js/*.js
+client/js/**/*.js
 
 # TSD typings
 typings/
