@@ -4,6 +4,18 @@
     errorMessage: string;
     totalInvestmentAmount: number;
     totalLoanAmount: number;
+    /**
+     * BitReserve cards to deposit from 
+     */
+    cards: any;
+
+    deposit: IDeposit;
+}
+
+interface IDeposit {
+    fromCard: string;
+    amount: string;
+    currency: string;
 }
 
 interface ICircleRouteParameters extends ng.route.IRouteParamsService {
@@ -33,34 +45,33 @@ class CircleController {
 
         $scope.vm = this;
 
-        // Is this the best way to handle a path? Is there a good way to do something like Express i.e. (app.use("/my/route", class.MyFunction)?
-        if ($location.path().indexOf("/circle/join/") === 0) {
-            var circleId = $routeParams.id;
+        var circleId = this.$routeParams.id;
 
+        // This controller serves multiple actions. We distinguish the action by the template.
+
+        // TODO: Is this the best way to handle a path? Is there a good way to do something like 
+        // Express i.e. (app.use("/my/route", class.MyFunction) ?
+        if (this.$route.current.name === "join") {
             this.join(circleId);
-        } else if ($location.path().indexOf("/circle/") === 0) {
-            var circleId = $routeParams.id;
+        } else if (this.$route.current.name === "details") {
             this.view(circleId);
+        } else if (this.$route.current.name === "deposit") {
+            this.startDeposit(circleId);
         }
     }
 
-    view(circleId: string) {
+    private getCircleData(circleId: string, cb: any) {
         var t = this;
 
         // Get Circle data
         this.$http({
             method: 'GET',
             url: apiUrl + '/circle/' + circleId,
-            data: t.$scope.circle,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
         }).success(function (resultData: ICircle) {
             t.$scope.circle = resultData;
-            
-            // TODO: get these amounts
-            // TODO: get more details about investments, members, outstanding loans
-            t.$scope.totalInvestmentAmount = 0;
-            t.$scope.totalLoanAmount = 0;
 
+            cb(null, resultData);
         }).error(function (error) {                
             // Handle error
             console.log("Error loading circle data:");
@@ -68,6 +79,20 @@ class CircleController {
 
             // Show notification
             t.$scope.errorMessage = error.error;
+
+            cb("Error getting circle data", null);
+        });
+
+    }
+
+    view(circleId: string) {
+        var t = this;
+
+        t.getCircleData(circleId, function (err, res) {
+            // TODO: get these amounts
+            // TODO: get more details about investments, members, outstanding loans
+            t.$scope.totalInvestmentAmount = 0;
+            t.$scope.totalLoanAmount = 0;
         });
     }
 
@@ -97,22 +122,8 @@ class CircleController {
      */
     join(circleId: string) {
         var t = this;
-        
-        // Get Circle data
-        this.$http({
-            method: 'GET',
-            url: apiUrl + '/circle/' + circleId,
-            data: t.$scope.circle,
-            headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-        }).success(function (resultData: ICircle) {
-            t.$scope.circle = resultData;
-        }).error(function (error) {                
-            // Handle error
-            console.log("Error loading circle data:");
-            console.log(error);
 
-            // Show notification
-            t.$scope.errorMessage = error.error;
+        t.getCircleData(circleId, function (err, res) {
         });
     }
 
@@ -140,5 +151,58 @@ class CircleController {
             // Show notification
             t.$scope.errorMessage = error.error;
         });
+    }
+
+    startDeposit(circleId: string) {
+        var t = this;
+
+        t.getCircleData(circleId, function (err, res) {
+            if (err) {
+            } else {
+                // Get BitReserve cards with >0 funds
+                // TODO: call in parallel; use promises for that.                
+                t.$http({
+                    method: 'GET',
+                    url: apiUrl + '/bitreserve/me/cards/withBalance',
+                    headers: { AccessToken: t.$rootScope.userInfo.accessToken }
+                }).success(function (cards: any) {
+                    console.log("Success on BitReserve call through our API. Result:");
+                    console.log(cards);
+
+                    // Store in scope to show in view
+                    t.$scope.cards = cards;
+                }).error(function (error) {                
+                    // Handle error
+                    console.log("Error on BitReserve call through our API:");
+                    console.log(error);
+
+                    // TODO: further handling
+                });
+            }
+        });
+    }
+
+    confirmDeposit() {
+        var t = this;
+
+        // Confirm a deposit to the currently loaded circle.
+
+        this.$http({
+            method: 'POST',
+            url: apiUrl + '/circle/' + t.$scope.circle._id + '/deposit',
+            data: t.$scope.deposit,
+            headers: { AccessToken: t.$rootScope.userInfo.accessToken }
+        }).success(function (resultData: any) {
+            // Redirect to the circle view
+            t.$location.path("/circle/" + t.$scope.circle._id);
+        }).error(function (error) {                
+            // Handle error
+            console.log("Error confirming deposit:");
+            console.log(error);
+
+            // Show notification
+            t.$scope.errorMessage = error.error;
+        });
+
     }
 }

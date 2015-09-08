@@ -5,6 +5,9 @@ import circleModel = require('../models/circleModel');
  * Controller for Circle admin operations.
  */
 export class CircleAdminController {
+    /**
+     * Create a new Circle.
+     */
     create(req: express.Request, res: express.Response) {
         var token = req.header("AccessToken");
 

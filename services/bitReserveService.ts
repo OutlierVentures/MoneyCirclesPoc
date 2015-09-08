@@ -50,11 +50,12 @@ export class BitReserveService {
             }, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     var cards = JSON.parse(body);
-
+                    
                     callback(null, cards);
                 } else {
                     console.log("Error getting cards data: " + error);
-                    callback(error, null);
+                    var errorResponse = JSON.parse(body);
+                    callback(errorResponse.error, null);
                 }
             });
 

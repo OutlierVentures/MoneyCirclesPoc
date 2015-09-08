@@ -70,4 +70,19 @@ export class CircleMemberController {
             }
         });
     }
+
+    deposit(req: express.Request, res: express.Response) {
+        var token = req.header("AccessToken");
+
+        var circleId = req.params.id;
+        var depositData = req.body;
+
+        // TODO
+        // Create transaction
+        // Amount
+        // Denomination
+        // To: admin account
+
+        res.json({ "status": "ok" });
+    }
 }

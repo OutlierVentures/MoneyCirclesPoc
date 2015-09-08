@@ -127,6 +127,7 @@ app.get('/user/login', indexRoute.index);
 app.get('/circle/new', indexRoute.index);
 app.get('/circle/:id', indexRoute.index);
 app.get('/circle/join/:id', indexRoute.index);
+app.get('/circle/:id/deposit', indexRoute.index);
 app.get('/circle/list', indexRoute.index);
 app.get('/not-found', indexRoute.index);
 
@@ -142,6 +143,7 @@ app.get(bitReserveOauthController.getCallbackPublicRoute(), indexRoute.index);
 import bitReserveController = require('./controllers/bitReserveController');
 var brc = new bitReserveController.BitReserveController();
 app.get("/api/bitreserve/me/cards", brc.getCards);
+app.get("/api/bitreserve/me/cards/withBalance", brc.getCardsWithBalance);
 
 // Circle data
 import circleAdminController = require('./controllers/circleAdminController');
@@ -156,6 +158,8 @@ app.get("/api/circle", cmc.getAll);
 // COULD DO: use route /api/circle/join/:id, post empty message (now post body has to contain Circle ID)
 app.post("/api/circle/join", cmc.join);
 app.get("/api/circle/:id", cmc.getOne);
+
+app.post("/api/circle/:id/deposit", cmc.deposit);
 
 /*********************** HTTP server setup ********************/
 var httpsOptions = {

@@ -24,12 +24,12 @@
                             <strong>Total amount of your loans:</strong> {{totalLoanAmount}} GBP
                         </p>
                         <form role="form" name="circleForm" novalidate>
-                            <button name="depositButton" ng-click="vm.startDeposit()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                            <a href="/circle/{{circle._id}}/deposit" class="btn btn-primary">
                                 Invest money
-                            </button>
-                            <button name="depositButton" ng-click="vm.startDeposit()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                            </a>
+                            <a href="/loan/{{circle._id}}/new" class="btn btn-primary">
                                 Lend money
-                            </button>
+                            </a>
                         </form>
 
                         <div class="panel panel-danger" style="margin-top:1em;" ng-show="errorMessage">
