@@ -152,7 +152,7 @@ class CircleController {
             console.log(error);
 
             // Show notification
-            t.$scope.errorMessage = error.error;
+            t.$scope.errorMessage = error;
         });
     }
 

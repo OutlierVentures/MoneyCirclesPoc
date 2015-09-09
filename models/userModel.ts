@@ -27,7 +27,7 @@ export class CircleMembership {
 
 export var userSchema = new mongoose.Schema({
     name: String,
-    externalID: String,
+    externalId: String,
     accessToken: String,
     // In the schema we use the shorthand syntax for schema, as we don't need access to the Schema object itself.
     // The Schema is only a necessity to let Mongoose do its magic.
@@ -44,13 +44,16 @@ export interface IUser extends mongoose.Document {
     /**
      * For users primarily defined by an external authenticator, the User ID. E.g. BitReserve user name.
      */
-    externalID: string;
+    externalId: string;
 
     /**
      * Current OAuth access token for the user at the external authenticator.
      * TODO: refactor to a subtype, incorporate expiration date.
      */
     accessToken: string;
+
+    email: string;
+
     /**
      * Circles this user is a member of.
      */

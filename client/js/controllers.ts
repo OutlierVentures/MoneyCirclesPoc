@@ -3,6 +3,7 @@
     isAuthenticated();
     login();
     userInfo: IUser;
+    isGlobalAdmin: boolean;
 }
 
 /**
@@ -96,7 +97,9 @@ class LoginController {
                 var brip = new BitReserveIdentityProvider();
                 brip.setToken(resultData.user.accessToken, $window);
                 brip.setUserInfo(resultData.user, $window);
-                
+
+                $rootScope.isGlobalAdmin = resultData.isGlobalAdmin;
+                $scope.isGlobalAdmin = resultData.isGlobalAdmin;
                 // Log on with it
                 identityService.logon(brip);
 

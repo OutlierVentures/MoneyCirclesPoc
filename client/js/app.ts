@@ -8,6 +8,7 @@ var apiUrl = "/api";
 
 interface MoneyCirclesRootScope extends ng.IRootScopeService {
     isLoggedIn: boolean;
+    isGlobalAdmin: boolean;
     // The variables below belong in the login controller. Currently placed here as a workaround to be able to show error
     // message while logging in.
     isProcessingLogin: boolean;

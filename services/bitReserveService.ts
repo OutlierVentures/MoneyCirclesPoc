@@ -76,7 +76,8 @@ export class BitReserveService {
                     // TODO: create an interface for this (can't be IUser because that extends Mongoose.Document).
                     var user = {
                         name: userData.name,
-                        externalID: userData.email,
+                        externalId: userData.username,
+                        email: userData.email
                     };
 
                     callback(null, user);

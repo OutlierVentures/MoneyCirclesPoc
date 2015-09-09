@@ -136,6 +136,7 @@ export class CircleMemberController {
                                     dep.dateTime = commitRes.createdAt;
                                     dep.fromCard = depositData.fromCard;
                                     dep.circleId = circleId;
+                                    dep.transactionId = commitRes.id;
                                     dep.userId = userRes._id;
                                     dep.save();
 

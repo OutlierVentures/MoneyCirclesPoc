@@ -46,16 +46,18 @@ class CircleMembership {
 
 interface IUser extends IDocument {
     name: string;
-    externalID: string;
+    externalId: string;
+    email: string;
     accessToken: string;
     circleMemberships: [CircleMembership];
 }
 
 interface IDeposit extends IDocument {
     fromCard: string;
-    amount: string;
+    amount: number;
     circleId: string;
     userId: string;
+    transactionId: string
     currency: string;
     dateTime: Date;
 }

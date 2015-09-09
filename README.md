@@ -119,7 +119,9 @@ Running "concurrent:watchers" (concurrent) task
     ...
 ```
 
-Note: Because we currently use a self-signed certificate, the browser will prevent opening the page. Bypass these warnings to open the app.
+   Note: Because we currently use a self-signed certificate, the browser will prevent opening the page. Bypass these warnings to open the app.
+
+3. Log in as the global administrator account (by default @moneycircles) once. The access token for the global administrator is neccesary to pay out loans.
 
 ### Live building
 

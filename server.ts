@@ -12,7 +12,7 @@ import oauthController = require('./controllers/oauthController');
 
 /*************** Configuration ********************/
 var CONFIG_FILE = './config.json';
-var config;
+var config: IApplicationConfig;
 var configString: string;
 
 // We don't use fs.exists() to try to read the file; the recommended method is just opening and 
@@ -41,7 +41,7 @@ try {
 catch (e) {
     console.log("Error while parsing config file: " + e);
     // TODO: exit with error. No run without a valid config.
- }
+}
 
 console.log("My configuration:");
 console.log(config);
@@ -63,6 +63,7 @@ var githubConfig = {
     oauthSite: "https://github.com/login",
     oauthTokenPath: '/oauth/access_token',
     oauthAuthorizationPath: '/oauth/authorize',
+    adminUserId: config.bitReserve.mainAccount.userName
 };
 
 var githubOauthController = new oauthController.OAuthController(githubConfig);
@@ -80,6 +81,7 @@ var bitReserveConfig = {
     oauthSite: "https://",
     oauthTokenPath: 'api.bitreserve.org/oauth2/token',
     oauthAuthorizationPath: 'bitreserve.org/authorize/' + config.bitReserve.app.clientID,
+    adminUserId: config.bitReserve.mainAccount.userName
 }
 
 var bitReserveOauthController = new oauthController.OAuthController(bitReserveConfig);

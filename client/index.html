@@ -16,7 +16,7 @@
 </head>
 <body>
     <div ng-app="moneyCirclesApp">
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar navbar-inverse navbar-fixed-top" ng-show="!isGlobalAdmin">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">

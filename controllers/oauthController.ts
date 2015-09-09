@@ -45,6 +45,11 @@ interface IOAuthControllerConfig {
      * Scope of the OAuth authorization as defined by the provider. E.g. "cards:all"
      */
     scope: string;
+
+    /**
+     * User ID of the global admin account (i.e. @moneycircles).
+     */
+    adminUserId: string;
 }
 
 export class OAuthController {
@@ -264,9 +269,10 @@ export class OAuthController {
             // TODO: clean up callback hell and duplication. Use Promises (Q library).
 
             // Get the user from the OAuth provider
-            t.getUserInfo(accessToken, function (err, userInfo) {
-                var externalUserID: string;
+            t.getUserInfo(accessToken, function (err, userInfo: IUser) {
+                var externalUserId: string;
                 var name = "New user";
+                var email: string;
 
                 if (err) {
                     res.json(
@@ -278,7 +284,8 @@ export class OAuthController {
                         });;
                 } else if (userInfo) {
                     name = userInfo.name;
-                    externalUserID = userInfo.externalID;
+                    externalUserId = userInfo.externalId;
+                    email = userInfo.email;
                 } else {
                     res.json(
                         500,
@@ -292,29 +299,32 @@ export class OAuthController {
                 // Get the user from our side, or create it.
                 // If the MongoDB connection fails, this call times out and the result is never sent.
                 // TODO: handle that.
-                userModel.User.findOne({ externalID: externalUserID }, function (err, user) {
+                userModel.User.findOne({ externalId: externalUserId }, function (err, user) {
 
                     // TODO: use promise to wait for creating new user.
                     if (!user) {
                         // User didn't exist yet
                         userModel.User.create({
                             name: name,
-                            externalID: externalUserID,
+                            externalId: externalUserId,
+                            email: email,
                             accessToken: accessToken,
                         }, function (userErr, userRes) {
                             // Handle result                    
                             res.json({
                                 "status": "Ok",
                                 "user": userRes,
+                                "isGlobalAdmin": userRes.externalId === t.config.adminUserId
                             });
                         });
                     }
                     else {
                         // Store the token
                         user.accessToken = accessToken;
+                        user.email = email;
 
                         // Save it
-                        userModel.User.update({ name: user.name }, user, function (saveErr, affectedRows, raw) {
+                        userModel.User.update({ _id: user._id}, user, function (saveErr, affectedRows, raw) {
                             if (saveErr) {
                                 res.json(
                                     500,
@@ -328,6 +338,7 @@ export class OAuthController {
                                 res.json({
                                     "status": "Ok",
                                     "user": user,
+                                    "isGlobalAdmin": user.externalId === t.config.adminUserId
                                 });
                             }
                         });
