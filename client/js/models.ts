@@ -50,3 +50,12 @@ interface IUser extends IDocument {
     accessToken: string;
     circleMemberships: [CircleMembership];
 }
+
+interface IDeposit extends IDocument {
+    fromCard: string;
+    amount: string;
+    circleId: string;
+    userId: string;
+    currency: string;
+    dateTime: Date;
+}

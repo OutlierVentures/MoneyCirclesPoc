@@ -1,12 +1,26 @@
 ﻿import express = require("express");
 import circleModel = require('../models/circleModel');
 import userModel = require('../models/userModel');
+import depositModel = require('../models/depositModel');
+import bitReserveService = require('../services/bitReserveService');
 
 /**
  * Controller for Circle membership operations.
  */
 export class CircleMemberController {
-    getAll(req: express.Request, res: express.Response) {
+    private config: IApplicationConfig;
+    /** 
+     * The simple-oauth2 module, which has no typings.
+     */
+    private oauth2;
+
+    private authorization_uri: string;
+
+    constructor(configParam: IApplicationConfig) {
+        this.config = configParam;
+    }
+
+    getAll = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
         circleModel.Circle.find({}, (err, circleRes) => {
@@ -14,7 +28,7 @@ export class CircleMemberController {
         });
     }
 
-    getOne(req: express.Request, res: express.Response) {
+    getOne = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
         circleModel.Circle.findOne({ _id: req.params.id }, (err, circleRes) => {
@@ -22,7 +36,7 @@ export class CircleMemberController {
         });
     }
 
-    join(req: express.Request, res: express.Response) {
+    join = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
         var circleData = <circleModel.ICircle>req.body;
@@ -71,18 +85,66 @@ export class CircleMemberController {
         });
     }
 
-    deposit(req: express.Request, res: express.Response) {
+    deposit = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
         var circleId = req.params.id;
-        var depositData = req.body;
 
-        // TODO
-        // Create transaction
-        // Amount
-        // Denomination
-        // To: admin account
+        var depositData = <depositModel.IDeposit>req.body;
 
-        res.json({ "status": "ok" });
+        var adminAccount = this.config.bitReserve.mainAccount.userName;
+
+        var brs = new bitReserveService.BitReserveService(token);
+
+        // Create the transaction
+        brs.createTransaction(depositData.fromCard, depositData.amount, depositData.currency, adminAccount, (createErr, createRes) => {
+            if (createErr) {
+                res.status(500).json({
+                    "error": createErr,
+                    "error_location": "creating transaction"
+                });
+            }
+            else {
+                // Commit it
+                brs.commitTransaction(createRes, (commitErr, commitRes) => {
+                    if (commitErr) {
+                        res.status(500).json({
+                            "error": commitErr,
+                            "error_location": "committing transaction"
+                        });
+                    } else {
+                        // Store it in our transaction history.
+
+                        // Note: this method is very fragile. Any transaction to the value store should be atomically stored
+                        // on our side. This could be realized when the value store of a circle has an individual BitReserve
+                        // identity. Storage of the transaction then doesn't have to be completed in this request, but could
+                        // be done by an idempotent background process.
+                        var dep = new depositModel.Deposit();
+
+                        // Get our user info
+                        userModel.getUserByAccessToken(token,
+                            (userErr, userRes) => {
+                                if (userErr) {
+                                    res.status(500).json({
+                                        "error": commitErr,
+                                        "error_location": "getting user data to store transaction"
+                                    });
+                                }
+                                else {
+                                    dep.amount = depositData.amount;
+                                    dep.currency = depositData.currency;
+                                    dep.dateTime = commitRes.createdAt;
+                                    dep.fromCard = depositData.fromCard;
+                                    dep.circleId = circleId;
+                                    dep.userId = userRes._id;
+                                    dep.save();
+
+                                    res.json(dep);
+                                }
+                            });
+                    }
+                });
+            }
+        });
     }
 }

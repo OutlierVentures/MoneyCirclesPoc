@@ -152,7 +152,7 @@ var cc = new circleAdminController.CircleAdminController;
 app.post("/api/circle", cc.create);
 
 import circleMemberController = require('./controllers/circleMemberController');
-var cmc = new circleMemberController.CircleMemberController;
+var cmc = new circleMemberController.CircleMemberController(config);
 
 app.get("/api/circle", cmc.getAll);
 // COULD DO: use route /api/circle/join/:id, post empty message (now post body has to contain Circle ID)

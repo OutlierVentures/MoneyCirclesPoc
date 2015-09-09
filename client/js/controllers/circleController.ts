@@ -2,6 +2,7 @@
     circle: ICircle;
     vm: CircleController;
     errorMessage: string;
+    successMessage: string;
     totalInvestmentAmount: number;
     totalLoanAmount: number;
     /**
@@ -10,12 +11,6 @@
     cards: any;
 
     deposit: IDeposit;
-}
-
-interface IDeposit {
-    fromCard: string;
-    amount: string;
-    currency: string;
 }
 
 interface ICircleRouteParameters extends ng.route.IRouteParamsService {
@@ -29,6 +24,7 @@ class CircleController {
         "$http",
         "$location",
         "$window",
+        "$timeout",
         "$route",
         "$routeParams",
         "identityService"];
@@ -39,6 +35,7 @@ class CircleController {
         private $http: ng.IHttpService,
         private $location: ng.ILocationService,
         private $window: ng.IWindowService,
+        private $timeout: ng.ITimeoutService,
         private $route: ng.route.IRouteService,
         private $routeParams: ICircleRouteParameters,
         private identityService: IdentityService) {
@@ -141,8 +138,14 @@ class CircleController {
             data: t.$scope.circle,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
         }).success(function (resultData: any) {
-            // Redirect to the circle view
-            t.$location.path("/circle/" + t.$scope.circle._id);
+            t.$scope.successMessage = "You successfully joined! Taking you back to the Circle...";
+            t.$timeout(() => {
+            }, 5000).then((promiseValue) => {
+                t.$scope.successMessage = undefined;
+
+                // Redirect to the circle view
+                t.$location.path("/circle/" + t.$scope.circle._id)
+            });
         }).error(function (error) {                
             // Handle error
             console.log("Error confirming join:");
@@ -187,14 +190,22 @@ class CircleController {
 
         // Confirm a deposit to the currently loaded circle.
 
+        // Always use GBP at the moment.
+        t.$scope.deposit.currency = "GBP";
+
         this.$http({
             method: 'POST',
             url: apiUrl + '/circle/' + t.$scope.circle._id + '/deposit',
             data: t.$scope.deposit,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-        }).success(function (resultData: any) {
-            // Redirect to the circle view
-            t.$location.path("/circle/" + t.$scope.circle._id);
+        }).success(function (resultData: IDeposit) {
+            t.$scope.successMessage = "You successfully deposited " + resultData.currency + " " + resultData.amount + "! Taking you back to the Circle...";
+            t.$timeout(() => {
+            }, 5000).then((promiseValue) => {
+                // Redirect to the circle view
+                t.$scope.successMessage = undefined;
+                t.$location.path("/circle/" + t.$scope.circle._id)
+            });
         }).error(function (error) {                
             // Handle error
             console.log("Error confirming deposit:");
