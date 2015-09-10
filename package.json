@@ -1,6 +1,6 @@
 {
   "name": "MoneyCirclesBitReserve",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MoneyCircles BitReserve Proof of Concept implementation",
   "main": "server.js",
   "repository": "https://github.com/OutlierVentures/MoneyCirclesBitReserve",
