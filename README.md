@@ -3,7 +3,7 @@ The Proof of Concept implementation of MoneyCircles using the BitReserve API.
 
 The implementation consists of:
 - Node.js backend (using TypeScript) - directory /
-- AngularJS frontend (using TypeScript) - directory /client/
+- AngularJS frontend (using TypeScript, Bootstrap) - directory /client/
 - MongoDB database - external
 - BitReserve API - external
  
@@ -41,9 +41,15 @@ sudo apt-get install build-essential
 ```
 
 3. `git clone` this repository into a folder, say `~/dev/MoneyCirclesBitReserve`. As this is a private repository, make sure an SSH key or token has been configured.
+
+   `git clone git@github.com:OutlierVentures/MoneyCirclesBitReserve.git`
+
 4. Install global dependencies from `npm`:
 
-   `sudo npm install -g typescript nodemon grunt-cli tsd bower node-gyp`
+   ```
+sudo npm install -g typescript nodemon grunt-cli tsd bower node-gyp
+sudo chown -R $USER.$USER ~/.npm
+```
 
 4. Run package installs for the server side:
 
