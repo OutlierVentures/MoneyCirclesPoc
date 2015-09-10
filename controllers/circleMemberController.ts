@@ -4,6 +4,7 @@ import userModel = require('../models/userModel');
 import depositModel = require('../models/depositModel');
 import loanModel = require('../models/loanModel');
 import bitReserveService = require('../services/bitReserveService');
+import _ = require('underscore');
 
 /**
  * Controller for Circle membership operations.
@@ -132,7 +133,7 @@ export class CircleMemberController {
                                     });
                                 }
                                 else {
-                                    dep.amount = depositData.amount;
+                                    dep.amount = commitRes.denomination.amount;
                                     dep.currency = depositData.currency;
                                     dep.dateTime = commitRes.createdAt;
                                     dep.fromCard = depositData.fromCard;
@@ -155,7 +156,7 @@ export class CircleMemberController {
 
         var circleId = req.params.id;
 
-        var loanData = <depositModel.IDeposit>req.body;
+        var loanData = <loanModel.ILoan>req.body;
 
         var adminAccount = this.config.bitReserve.mainAccount.userName;
 
@@ -195,39 +196,39 @@ export class CircleMemberController {
                             });
 
                         } else {
-                            // Create the transaction
-                            brs.createTransaction(firstCardWithBalance.id, loanData.amount, loanData.currency, adminAccount, (createErr, createRes) => {
-                                if (createErr) {
-                                    res.status(500).json({
-                                        "error": createErr,
-                                        "error_location": "creating transaction"
-                                    });
-                                }
-                                else {
-                                    // Commit it
-                                    brs.commitTransaction(createRes, (commitErr, commitRes) => {
-                                        if (commitErr) {
-                                            res.status(500).json({
-                                                "error": commitErr,
-                                                "error_location": "committing transaction"
-                                            });
-                                        } else {
-                                            // Store it in our loan storage.
-
-                                            var loan = new loanModel.Loan();
-
-                                            // Get logged in user info
-                                            userModel.getUserByAccessToken(token,
-                                                (userErr, userRes) => {
-                                                    if (userErr) {
+                            // Get logged in user info
+                            userModel.getUserByAccessToken(token,
+                                (userErr, userRes) => {
+                                    if (userErr) {
+                                        res.status(500).json({
+                                            "error": userErr,
+                                            "error_location": "getting user data to store loan"
+                                        });
+                                    }
+                                    else {
+                                        // Create the transaction.
+                                        brs.createTransaction(firstCardWithBalance.id, loanData.amount, loanData.currency, userRes.externalId, (createErr, createRes) => {
+                                            if (createErr) {
+                                                res.status(500).json({
+                                                    "error": createErr,
+                                                    "error_location": "creating transaction"
+                                                });
+                                            }
+                                            else {
+                                                // Commit it
+                                                brs.commitTransaction(createRes, (commitErr, commitRes) => {
+                                                    if (commitErr) {
                                                         res.status(500).json({
                                                             "error": commitErr,
-                                                            "error_location": "getting user data to store loan"
+                                                            "error_location": "committing transaction"
                                                         });
-                                                    }
-                                                    else {
-                                                        loan.amount = loanData.amount;
+                                                    } else {
+                                                        // Store it in our loan storage.
+                                                        var loan = new loanModel.Loan();
+
+                                                        loan.amount = commitRes.denomination.amount;
                                                         loan.currency = loanData.currency;
+                                                        loan.purpose = loanData.purpose;
                                                         loan.dateTime = commitRes.createdAt;
                                                         loan.circleId = circleId;
                                                         loan.transactionId = commitRes.id;
@@ -237,10 +238,10 @@ export class CircleMemberController {
                                                         res.json(loan);
                                                     }
                                                 });
-                                        }
-                                    });
-                                }
-                            });
+                                            }
+                                        });
+                                    }
+                                });
                         }
                     }
 

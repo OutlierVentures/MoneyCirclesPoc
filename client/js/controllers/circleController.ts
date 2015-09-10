@@ -1,6 +1,7 @@
 ﻿interface ICircleScope extends ng.IScope {
     circle: ICircle;
     vm: CircleController;
+    processMessage: string;
     errorMessage: string;
     successMessage: string;
     totalInvestmentAmount: number;
@@ -134,6 +135,9 @@ class CircleController {
         var t = this;
 
         // Confirm joining the currently loaded Circle.
+        t.$scope.processMessage = "Joining Circle...";
+        t.$scope.errorMessage = undefined;
+        t.$scope.successMessage = undefined;
 
         this.$http({
             method: 'POST',
@@ -141,6 +145,7 @@ class CircleController {
             data: t.$scope.circle,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
         }).success(function (resultData: any) {
+            t.$scope.processMessage = undefined;
             t.$scope.successMessage = "You successfully joined! Taking you back to the Circle...";
             t.$timeout(() => {
             }, 5000).then((promiseValue) => {
@@ -149,7 +154,9 @@ class CircleController {
                 // Redirect to the circle view
                 t.$location.path("/circle/" + t.$scope.circle._id)
             });
-        }).error(function (error) {                
+        }).error(function (error) {
+            t.$scope.processMessage = undefined;
+
             // Handle error
             console.log("Error confirming join:");
             console.log(error);
@@ -196,21 +203,31 @@ class CircleController {
         // Always use GBP at the moment.
         t.$scope.deposit.currency = "GBP";
 
+        t.$scope.processMessage = "Processing your investment...";
+        t.$scope.errorMessage = undefined;
+        t.$scope.successMessage = undefined;
+
         this.$http({
             method: 'POST',
             url: apiUrl + '/circle/' + t.$scope.circle._id + '/deposit',
             data: t.$scope.deposit,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
         }).success(function (resultData: IDeposit) {
+            t.$scope.processMessage = undefined;
+
+            t.$scope.deposit.amount = resultData.amount;
             t.$scope.deposit.transactionId = resultData.transactionId;
-            t.$scope.successMessage = "You successfully deposited " + resultData.currency + " " + resultData.amount + "! Taking you back to the Circle...";
+            t.$scope.successMessage = "You successfully invested " + resultData.currency + " " + resultData.amount + "! Taking you back to the Circle...";
             t.$timeout(() => {
-            }, 5000).then((promiseValue) => {
+            }, 10000).then((promiseValue) => {
                 // Redirect to the circle view
+                t.$scope.deposit = undefined;
                 t.$scope.successMessage = undefined;
                 t.$location.path("/circle/" + t.$scope.circle._id)
             });
-        }).error(function (error) {                
+        }).error(function (error) {
+            t.$scope.processMessage = undefined;
+
             // Handle error
             console.log("Error confirming deposit:");
             console.log(error);
@@ -233,31 +250,40 @@ class CircleController {
     processLoanRequest() {
         var t = this;
 
-        // Confirm a deposit to the currently loaded circle.
+        // Process a loan request to the currently loaded circle.
 
         // Always use GBP at the moment.
         t.$scope.loan.currency = "GBP";
 
+        t.$scope.processMessage = "Requesting loan...";
+        t.$scope.errorMessage = undefined;
+        t.$scope.successMessage = undefined;
+
         this.$http({
             method: 'POST',
             url: apiUrl + '/circle/' + t.$scope.circle._id + '/loan',
-            data: t.$scope.deposit,
+            data: t.$scope.loan,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-        }).success(function (resultData: IDeposit) {
+        }).success(function (resultData: ILoan) {
+            t.$scope.processMessage = undefined;
+
+            t.$scope.loan.amount = resultData.amount;
             t.$scope.loan.transactionId = resultData.transactionId;
             t.$scope.successMessage = "Your loan of " + resultData.currency + " " + resultData.amount + " was approved! The money has been transferred to your BitReserve account. Taking you back to the Circle...";
             t.$timeout(() => {
-            }, 5000).then((promiseValue) => {
+            }, 10000).then((promiseValue) => {
                 // Redirect to the circle view
+                t.$scope.loan = undefined;
                 t.$scope.successMessage = undefined;
                 t.$location.path("/circle/" + t.$scope.circle._id)
             });
-        }).error(function (error) {                
+        }).error(function (error) {
             // Handle error
             console.log("Error processing loan request:");
             console.log(error);
 
             // Show notification
+            t.$scope.processMessage = undefined;
             t.$scope.errorMessage = error.error;
         });
     }

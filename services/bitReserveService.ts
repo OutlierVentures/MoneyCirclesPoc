@@ -193,7 +193,7 @@ export class BitReserveService {
                     console.log("Error confirming transaction: " + error);
                     var errorResponse = JSON.parse(body);
 
-                    callback(errorResponse.error, null);
+                    callback(errorResponse, null);
                 }
             });
 

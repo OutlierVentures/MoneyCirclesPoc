@@ -6,7 +6,8 @@ export var loanSchema = new mongoose.Schema({
     userId: mongoose.Schema.Types.ObjectId,
     transactionId: String,
     currency: String,
-    dateTime: Date
+    dateTime: Date,
+    purpose: String
 });
 
 export interface ILoan extends mongoose.Document {
@@ -16,6 +17,7 @@ export interface ILoan extends mongoose.Document {
     transactionId: string
     currency: string;
     dateTime: Date;
+    purpose: string;
 }
 
 

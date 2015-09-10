@@ -69,5 +69,6 @@ interface ILoan extends IDocument {
     transactionId: string
     currency: string;
     dateTime: Date;
+    purpose: string;
 }
 

@@ -1,6 +1,6 @@
 ﻿<div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header" id="page-header">Deposit funds</h1>
+        <h1 class="page-header" id="page-header">Invest money</h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -15,35 +15,42 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <form role="form" name="circleForm" novalidate>
-                            <div class="form-group">
-                                <label>Card to deposit from</label>
-                                <p class="help-block">
-                                    Which BitReserve card do you want to invest from?
-                                </p>
-                                <select class="form-control" ng-model="deposit.fromCard" required>
-                                    <option ng-repeat="card in cards track by card.id" value="{{card.id}}">{{card.label}} ({{card.currency}} {{card.available}})</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>Amount</label>
-                                <p class="help-block">
-                                    How much GBP do you want to invest in this circle?
-                                </p>
-                                <input class="form-control" type="text" ng-model="deposit.amount" required min="0">
-                            </div>
-                            <button name="saveButton" ng-click="vm.confirmDeposit()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
-                                Deposit funds
-                            </button>
+                            <fieldset ng-disabled="processMessage || successMessage">
+                                <div class="form-group">
+                                    <label>Card to invest from</label>
+                                    <p class="help-block">
+                                        Which BitReserve card do you want to invest from?
+                                    </p>
+                                    <select class="form-control" ng-model="deposit.fromCard" required>
+                                        <option ng-hide="cards.length > 0">Loading your cards...</option>
+                                        <option ng-repeat="card in cards track by card.id" value="{{card.id}}">{{card.label}} ({{card.currency}} {{card.available}})</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Amount</label>
+                                    <p class="help-block">
+                                        How much GBP do you want to invest in this circle?
+                                    </p>
+                                    <input class="form-control" type="text" ng-model="deposit.amount" required min="0">
+                                </div>
+                                <button name="saveButton" ng-click="vm.confirmDeposit()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                                    Invest
+                                </button>
+                            </fieldset>
                         </form>
-
+                        <div class="panel panel-default" style="margin-top:1em;" ng-show="processMessage">
+                            <div class="panel-heading">Processing</div>
+                            <div class="panel-body">{{processMessage}}</div>
+                        </div>
                         <div class="panel panel-danger" style="margin-top:1em;" ng-show="errorMessage">
                             <div class="panel-heading">There was an error processing your request.</div>
                             <div class="panel-body">{{errorMessage}}</div>
                         </div>
                         <div class="panel panel-success" style="margin-top:1em;" ng-show="successMessage">
                             <div class="panel-heading">Success</div>
-                            <div class="panel-body"><p>{{successMessage}}</p>
-                                <p>Transaction ID: <strong>{{deposit.transactionId}}</strong>. See the <a href="https://bitreserve.org/reserve/transactions/{{deposit.transactionId}}">transaction details</a>.</p>                           
+                            <div class="panel-body">
+                                <p>{{successMessage}}</p>
+                                <p>Transaction ID: <strong>{{deposit.transactionId}}</strong>. See the <a href="https://bitreserve.org/reserve/transactions/{{deposit.transactionId}}" target="_blank">transaction details</a>.</p>
                             </div>
                         </div>
                     </div>
