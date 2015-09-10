@@ -175,7 +175,7 @@ export class CircleMemberController {
                 // Create BitReserve connector for global admin user.
                 var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
 
-                // Get card to transfer from. For now: take the first card with a balance >0.
+                // Get card to transfer from. For now: take the first card with enough balance.
                 // TODO: create and configure 1 card per circle?
                 brs.getCards((cardsErr, cardsRes) => {
                     if (cardsErr) {
@@ -185,8 +185,9 @@ export class CircleMemberController {
                         });
                     }
                     else {
+                        // We can't compare the amounts, as 
                         var firstCardWithBalance = _(cardsRes).find((c) => {
-                            return c.available > 0;
+                            return c.normalized[0].available > loanData.amount;
                         });
 
                         if (firstCardWithBalance == null) {

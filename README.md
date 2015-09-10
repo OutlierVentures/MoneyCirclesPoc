@@ -24,7 +24,8 @@ The installation steps assume the default configuration in [config.default.json]
 * A BitReserve application. An existing application has been configured in the default configuration, which requires the app to be using the URL https://poc1-dev.moneycircles.com:3124. To facilitate this, do one of the following:
  * Ensure that `poc1-dev.moneycircles.com` resolves to the IP of your development machine (e.g. by adding `127.0.0.1 poc1-dev.moneycircles.com` to your hosts file)
  * Create a BitReserve application of your own, configure it like you want it and configure its attributes like Client ID in `config.json`.
-* A [BitReserve account](https://bitreserve.org/signup) for authenticating
+* A [BitReserve account](https://bitreserve.org/signup) for authenticating as a user
+* A second [BitReserve account](https://bitreserve.org/signup) to serve as the global administrator account (e.g. @moneycircles). The global administrator needs to use Pound Stering as the Currency in the BitReserve settings.
 
 ### Install instructions
 
