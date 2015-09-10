@@ -50,8 +50,42 @@ interface IBitReserveTransaction {
     }
 }
 
+export interface IBitReserveCard {
+    "address": {
+        "bitcoin": string
+    },
+    "available": number,
+    "balance": number,
+    "currency": string,
+    "id": string,
+    "label": string,
+    "lastTransactionAt": Date,
+    "settings": {
+        "position": number,
+        "starred": boolean
+    },
+    "addresses": [
+        {
+            "id": string,
+            "network": string
+        }
+    ],
+    "normalized": [
+        {
+            "available": number,
+            "balance": number,
+            "currency": string
+        }
+    ]
+
+}
+
 interface IBitReserveTransactionCallback {
     (error: any, transaction: IBitReserveTransaction);
+}
+
+interface IBitReserveCardsCallback {
+    (error: any, cards: Array<IBitReserveCard>);
 }
 
 export class BitReserveService {
@@ -89,7 +123,7 @@ export class BitReserveService {
 
     }
 
-    getCards(callback) {
+    getCards(callback : IBitReserveCardsCallback) {
 
         console.log("Calling API with token: " + this.authorizationToken);
         request.get('https://api.bitreserve.org/v0/me/cards',

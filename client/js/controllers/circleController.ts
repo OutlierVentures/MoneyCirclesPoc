@@ -11,6 +11,7 @@
     cards: any;
 
     deposit: IDeposit;
+    loan: ILoan;
 }
 
 interface ICircleRouteParameters extends ng.route.IRouteParamsService {
@@ -54,6 +55,8 @@ class CircleController {
             this.view(circleId);
         } else if (this.$route.current.name === "deposit") {
             this.startDeposit(circleId);
+        } else if (this.$route.current.name === "loan-request") {
+            this.startLoanRequest(circleId);
         }
     }
 
@@ -199,6 +202,7 @@ class CircleController {
             data: t.$scope.deposit,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
         }).success(function (resultData: IDeposit) {
+            t.$scope.deposit.transactionId = resultData.transactionId;
             t.$scope.successMessage = "You successfully deposited " + resultData.currency + " " + resultData.amount + "! Taking you back to the Circle...";
             t.$timeout(() => {
             }, 5000).then((promiseValue) => {
@@ -214,6 +218,47 @@ class CircleController {
             // Show notification
             t.$scope.errorMessage = error.error;
         });
+    }
 
+    startLoanRequest(circleId: string) {
+        var t = this;
+
+        t.getCircleData(circleId, function (err, res) {
+            if (err) {
+            } else {
+            }
+        });
+    }
+
+    processLoanRequest() {
+        var t = this;
+
+        // Confirm a deposit to the currently loaded circle.
+
+        // Always use GBP at the moment.
+        t.$scope.loan.currency = "GBP";
+
+        this.$http({
+            method: 'POST',
+            url: apiUrl + '/circle/' + t.$scope.circle._id + '/loan',
+            data: t.$scope.deposit,
+            headers: { AccessToken: t.$rootScope.userInfo.accessToken }
+        }).success(function (resultData: IDeposit) {
+            t.$scope.loan.transactionId = resultData.transactionId;
+            t.$scope.successMessage = "Your loan of " + resultData.currency + " " + resultData.amount + " was approved! The money has been transferred to your BitReserve account. Taking you back to the Circle...";
+            t.$timeout(() => {
+            }, 5000).then((promiseValue) => {
+                // Redirect to the circle view
+                t.$scope.successMessage = undefined;
+                t.$location.path("/circle/" + t.$scope.circle._id)
+            });
+        }).error(function (error) {                
+            // Handle error
+            console.log("Error processing loan request:");
+            console.log(error);
+
+            // Show notification
+            t.$scope.errorMessage = error.error;
+        });
     }
 }

@@ -2,6 +2,7 @@
 import circleModel = require('../models/circleModel');
 import userModel = require('../models/userModel');
 import depositModel = require('../models/depositModel');
+import loanModel = require('../models/loanModel');
 import bitReserveService = require('../services/bitReserveService');
 
 /**
@@ -147,5 +148,111 @@ export class CircleMemberController {
                 });
             }
         });
+    }
+
+    loan = (req: express.Request, res: express.Response) => {
+        var token = req.header("AccessToken");
+
+        var circleId = req.params.id;
+
+        var loanData = <depositModel.IDeposit>req.body;
+
+        var adminAccount = this.config.bitReserve.mainAccount.userName;
+
+        // TODO: check whether circle balance allows for this loan
+        // TODO: various other checks to see if loan is approved (credit rating, admin approval, ...)
+
+        // Get admin user
+        userModel.User.findOne({ externalId: adminAccount }, (adminUserErr, adminUserRes) => {
+            if (adminUserErr) {
+                res.status(500).json({
+                    "error": adminUserErr,
+                    "error_location": "getting user info"
+                });
+
+            } else {
+                // Create BitReserve connector for global admin user.
+                var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
+
+                // Get card to transfer from. For now: take the first card with a balance >0.
+                // TODO: create and configure 1 card per circle?
+                brs.getCards((cardsErr, cardsRes) => {
+                    if (cardsErr) {
+                        res.status(500).json({
+                            "error": cardsErr,
+                            "error_location": "getting cards"
+                        });
+                    }
+                    else {
+                        var firstCardWithBalance = _(cardsRes).find((c) => {
+                            return c.available > 0;
+                        });
+
+                        if (firstCardWithBalance == null) {
+                            res.status(500).json({
+                                "error": "no card with enough balance",
+                                "error_location": "getting card for loan payment"
+                            });
+
+                        } else {
+                            // Create the transaction
+                            brs.createTransaction(firstCardWithBalance.id, loanData.amount, loanData.currency, adminAccount, (createErr, createRes) => {
+                                if (createErr) {
+                                    res.status(500).json({
+                                        "error": createErr,
+                                        "error_location": "creating transaction"
+                                    });
+                                }
+                                else {
+                                    // Commit it
+                                    brs.commitTransaction(createRes, (commitErr, commitRes) => {
+                                        if (commitErr) {
+                                            res.status(500).json({
+                                                "error": commitErr,
+                                                "error_location": "committing transaction"
+                                            });
+                                        } else {
+                                            // Store it in our loan storage.
+
+                                            var loan = new loanModel.Loan();
+
+                                            // Get logged in user info
+                                            userModel.getUserByAccessToken(token,
+                                                (userErr, userRes) => {
+                                                    if (userErr) {
+                                                        res.status(500).json({
+                                                            "error": commitErr,
+                                                            "error_location": "getting user data to store loan"
+                                                        });
+                                                    }
+                                                    else {
+                                                        loan.amount = loanData.amount;
+                                                        loan.currency = loanData.currency;
+                                                        loan.dateTime = commitRes.createdAt;
+                                                        loan.circleId = circleId;
+                                                        loan.transactionId = commitRes.id;
+                                                        loan.userId = userRes._id;
+                                                        loan.save();
+
+                                                        res.json(loan);
+                                                    }
+                                                });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+
+                });
+
+            }
+        });
+
+
+
+
+
+
     }
 }

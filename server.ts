@@ -128,8 +128,9 @@ app.get('/user/profile', indexRoute.index);
 app.get('/user/login', indexRoute.index);
 app.get('/circle/new', indexRoute.index);
 app.get('/circle/:id', indexRoute.index);
-app.get('/circle/join/:id', indexRoute.index);
+app.get('/circle/:id/join', indexRoute.index);
 app.get('/circle/:id/deposit', indexRoute.index);
+app.get('/circle/:id/loan', indexRoute.index);
 app.get('/circle/list', indexRoute.index);
 app.get('/not-found', indexRoute.index);
 
@@ -162,6 +163,7 @@ app.post("/api/circle/join", cmc.join);
 app.get("/api/circle/:id", cmc.getOne);
 
 app.post("/api/circle/:id/deposit", cmc.deposit);
+app.post("/api/circle/:id/loan", cmc.loan);
 
 /*********************** HTTP server setup ********************/
 var httpsOptions = {

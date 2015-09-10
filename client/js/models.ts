@@ -61,3 +61,13 @@ interface IDeposit extends IDocument {
     currency: string;
     dateTime: Date;
 }
+
+interface ILoan extends IDocument {
+    amount: number;
+    circleId: string;
+    userId: string;
+    transactionId: string
+    currency: string;
+    dateTime: Date;
+}
+

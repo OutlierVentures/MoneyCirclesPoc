@@ -56,6 +56,7 @@
     <TypeScriptCompile Include="controllers\bitReserveController.ts" />
     <TypeScriptCompile Include="models\circleModel.ts" />
     <TypeScriptCompile Include="models\configModel.ts" />
+    <TypeScriptCompile Include="models\loanModel.ts" />
     <TypeScriptCompile Include="models\depositModel.ts" />
     <TypeScriptCompile Include="services\bitReserveService.ts" />
     <TypeScriptCompile Include="controllers\oauthController.ts" />
@@ -64,6 +65,7 @@
     <TypeScriptCompile Include="routes\index.ts" />
     <Content Include="client\bower.json" />
     <Content Include="client\index.html" />
+    <Content Include="client\views\loan-request.html" />
     <Content Include="client\views\circle-details.html" />
     <Content Include="client\views\circle-deposit.html" />
     <Content Include="client\views\circle-join.html" />

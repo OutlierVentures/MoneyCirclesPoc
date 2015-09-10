@@ -38,9 +38,10 @@ module MoneyCircles {
             // For multiple routes handled by the same controller we use the 'name' attribute to distinguish them. Ideally
             // this would work as nice as Express where we provide a specific function to handle the route, but there doesn't
             // seem to be such an option in Angular.
-            .when('/circle/join/:id', { controller: CircleController, templateUrl: 'views/circle-join.html', name: 'join' })
+            .when('/circle/:id/join', { controller: CircleController, templateUrl: 'views/circle-join.html', name: 'join' })
             .when('/circle/:id', { controller: CircleController, templateUrl: 'views/circle-details.html', name: 'details' })
             .when('/circle/:id/deposit', { controller: CircleController, templateUrl: 'views/circle-deposit.html', name: 'deposit' })
+            .when('/circle/:id/loan', { controller: CircleController, templateUrl: 'views/loan-request.html', name: 'loan-request' })
             .otherwise({ redirectTo: 'not-found' });
         $locationProvider.html5Mode(true);
         $locationProvider.hashPrefix('!');

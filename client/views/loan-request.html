@@ -1,6 +1,6 @@
 ﻿<div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header" id="page-header">Deposit funds</h1>
+        <h1 class="page-header" id="page-header">Request a loan</h1>
     </div>
     <!-- /.col-lg-12 -->
 </div>
@@ -16,23 +16,24 @@
                     <div class="col-lg-12">
                         <form role="form" name="circleForm" novalidate>
                             <div class="form-group">
-                                <label>Card to deposit from</label>
-                                <p class="help-block">
-                                    Which BitReserve card do you want to invest from?
-                                </p>
-                                <select class="form-control" ng-model="deposit.fromCard" required>
-                                    <option ng-repeat="card in cards track by card.id" value="{{card.id}}">{{card.label}} ({{card.currency}} {{card.available}})</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
                                 <label>Amount</label>
                                 <p class="help-block">
-                                    How much GBP do you want to invest in this circle?
+                                    How much do you want to loan (GBP)?
                                 </p>
-                                <input class="form-control" type="text" ng-model="deposit.amount" required min="0">
+                                <input class="form-control" type="text" ng-model="loan.amount" required min="0">
                             </div>
-                            <button name="saveButton" ng-click="vm.confirmDeposit()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
-                                Deposit funds
+                            <div class="form-group">
+                                <label>Purpose</label>
+                                <p class="help-block">
+                                    What is the purpose of your loan?
+                                </p>
+                                <input class="form-control" type="text" ng-model="loan.purpose" name="purpose" required ng-minlength="50">
+                                <div ng-show="circleForm.purpose.$error.minlength">
+                                    Please describe the purpose to some detail.
+                                </div>
+                            </div>
+                            <button name="saveButton" ng-click="vm.processLoanRequest()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                                Request loan
                             </button>
                         </form>
 
@@ -43,7 +44,7 @@
                         <div class="panel panel-success" style="margin-top:1em;" ng-show="successMessage">
                             <div class="panel-heading">Success</div>
                             <div class="panel-body"><p>{{successMessage}}</p>
-                                <p>Transaction ID: <strong>{{deposit.transactionId}}</strong>. See the <a href="https://bitreserve.org/reserve/transactions/{{deposit.transactionId}}">transaction details</a>.</p>                           
+                                <p>Transaction ID: <strong>{{deposit.transactionId}}</strong>. See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}">transaction details</a>.</p>
                             </div>
                         </div>
                     </div>
