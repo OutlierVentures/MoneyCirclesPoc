@@ -15,8 +15,7 @@
         },
         "mainAccount": {
             "__comment": "The main account that stores funds of Circles.",
-            "userNameReal": "moneycircles",
-            "userName": "AronVanAmmers"
+            "userName": "moneycircles"
         }
     }
 }
