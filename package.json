@@ -1,28 +1,29 @@
 {
-    "name": "MoneyCirclesBitReserve",
-    "version": "0.1.0",
-    "description": "MoneyCircles BitReserve Proof of Concept implementation",
-    "main": "server.js",
-    "repository": "https://github.com/OutlierVentures/MoneyCirclesBitReserve",
-    "private": true,
-    "author": {
-        "name": "Aron van Ammers",
-        "email": "aron@blockstars.io"
-    },
-    "dependencies": {
-        "express": "^4.13.3",
-        "mongoose": "^4.1.3",
-        "morgan": "^1.6.1",
-        "request": "^2.61.0",
-        "simple-oauth2": "*",
-        "body-parser": "*"
-    },
-    "devDependencies": {
-        "grunt": "^0.4.5",
-        "grunt-ts": "*",
-        "grunt-contrib-watch": "*",
-        "grunt-nodemon": "*",
-        "grunt-concurrent": "*",
-        "grunt-newer": "*"
-    }
+  "name": "MoneyCirclesBitReserve",
+  "version": "0.2.0",
+  "description": "MoneyCircles BitReserve Proof of Concept implementation",
+  "main": "server.js",
+  "repository": "https://github.com/OutlierVentures/MoneyCirclesBitReserve",
+  "private": true,
+  "author": {
+    "name": "Aron van Ammers",
+    "email": "aron@blockstars.io"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "express": "^4.13.3",
+    "mongoose": "^4.1.3",
+    "morgan": "^1.6.1",
+    "request": "^2.61.0",
+    "simple-oauth2": "*",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-ts": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-nodemon": "*",
+    "grunt-concurrent": "*",
+    "grunt-newer": "*"
+  }
 }

@@ -1,0 +1,49 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header" id="page-header">Circle details</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>{{circle.name}}</h2>
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>
+                            <strong>Common bond:</strong> {{circle.commonBond}}
+                        </p>
+                        <p>
+                            <strong>Total amount of your investment:</strong> {{totalInvestmentAmount}} GBP
+                        </p>
+                        <p>
+                            <strong>Total amount of your loans:</strong> {{totalLoanAmount}} GBP
+                        </p>
+                        <form role="form" name="circleForm" novalidate>
+                            <a href="/circle/{{circle._id}}/deposit" class="btn btn-primary">
+                                Invest money
+                            </a>
+                            <a href="/circle/{{circle._id}}/loan" class="btn btn-primary">
+                                Borrow money
+                            </a>
+                        </form>
+
+                        <div class="panel panel-danger" style="margin-top:1em;" ng-show="errorMessage">
+                            <div class="panel-heading">There was an error processing your request.</div>
+                            <div class="panel-body">{{errorMessage}}</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-8 (nested) -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

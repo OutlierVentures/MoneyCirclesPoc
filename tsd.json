@@ -31,6 +31,9 @@
     },
     "body-parser/body-parser.d.ts": {
       "commit": "c5a2f44bab06cf9f2bcc14530171daac1cebff6c"
+    },
+    "underscore/underscore.d.ts": {
+      "commit": "7f07bd88d1083e995a0dae317a333c9641320cc8"
     }
   }
 }
