@@ -17,5 +17,8 @@
             "__comment": "The main account that stores funds of Circles.",
             "userName": "moneycircles"
         }
+    },
+    "ethereum": {
+        "jsonRpcUrl": "http://poc1-dev.moneycircles.com:8545"
     }
 }

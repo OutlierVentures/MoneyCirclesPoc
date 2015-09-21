@@ -2,6 +2,7 @@
 import express = require('express');
 import mongoose = require('mongoose');
 import bodyParser = require('body-parser');
+var web3 = require("web3");
 
 import path = require('path');
 
@@ -9,6 +10,7 @@ import fs = require('fs');
 
 import indexRoute = require('./routes/index');
 import oauthController = require('./controllers/oauthController');
+
 
 /*************** Configuration ********************/
 var CONFIG_FILE = './config.json';
@@ -96,6 +98,19 @@ function getBitReserveUserInfo(token: string, callback) {
 }
 
 bitReserveOauthController.setGetUserInfoFunction(getBitReserveUserInfo);
+
+/******** Ethereum / web3 setup *************/
+
+
+web3.setProvider(new web3.providers.HttpProvider(config.ethereum.jsonRpcUrl));
+
+web3.eth.defaultAccount = web3.eth.coinbase;
+
+var coinbase = web3.eth.coinbase;
+console.log("web3 coinbase: " + coinbase);
+
+var balance = web3.eth.getBalance(coinbase);
+console.log("web3 coinbase balance: " + balance.toString(10));
 
 
 /******** Express and route setup ***********/

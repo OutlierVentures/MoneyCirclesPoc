@@ -16,7 +16,8 @@
     "morgan": "^1.6.1",
     "request": "^2.61.0",
     "simple-oauth2": "*",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "web3": "^0.12.2"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

@@ -15,5 +15,8 @@
         "mainAccount": {
             "userName": string
         }
+    },
+    "ethereum": {
+        "jsonRpcUrl"
     }
 }
