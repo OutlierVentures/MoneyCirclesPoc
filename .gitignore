@@ -199,6 +199,7 @@ models/*.js
 controllers/*.js
 services/*.js
 routes/*.js
+lib/*.js
 /*.js
 !GruntFile.js
 client/js/**/*.js
