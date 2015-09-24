@@ -54,6 +54,7 @@
     <TypeScriptCompile Include="controllers\circleMemberController.ts" />
     <TypeScriptCompile Include="controllers\circleAdminController.ts" />
     <TypeScriptCompile Include="controllers\bitReserveController.ts" />
+    <TypeScriptCompile Include="lib\web3config.ts" />
     <TypeScriptCompile Include="models\circleModel.ts" />
     <TypeScriptCompile Include="models\configModel.ts" />
     <TypeScriptCompile Include="models\loanModel.ts" />
@@ -77,8 +78,13 @@
     <Content Include="client\views\login.html" />
     <Content Include="client\views\login-finished.html" />
     <Content Include="config.default.json" />
+    <Content Include="contracts\Circle.sol" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <TypeScriptCompile Include="test\contracts\testCircle.ts">
+      <SubType>Code</SubType>
+      <TestFramework>Mocha</TestFramework>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="typings\body-parser\body-parser.d.ts" />
     <TypeScriptCompile Include="typings\express\express.d.ts" />
     <TypeScriptCompile Include="typings\form-data\form-data.d.ts" />
@@ -102,8 +108,12 @@
     <Folder Include="models\" />
     <Folder Include="controllers\" />
     <Folder Include="client\" />
+    <Folder Include="contracts\" />
+    <Folder Include="lib\" />
     <Folder Include="services\" />
     <Folder Include="routes\" />
+    <Folder Include="test\" />
+    <Folder Include="test\contracts\" />
     <Folder Include="typings\" />
     <Folder Include="typings\body-parser\" />
     <Folder Include="typings\express\" />

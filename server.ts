@@ -2,6 +2,10 @@
 import express = require('express');
 import mongoose = require('mongoose');
 import bodyParser = require('body-parser');
+import web3config = require('./lib/web3config');
+import assert = require('assert');
+
+
 var web3 = require("web3");
 
 import path = require('path');
@@ -17,7 +21,7 @@ var CONFIG_FILE = './config.json';
 var config: IApplicationConfig;
 var configString: string;
 
-// We don't use fs.exists() to try to read the file; the recommended method is just opening and 
+// We don't use fs.exists() to try to read the file; the recommended method is just opening and
 // handling an error: https://nodejs.org/api/fs.html#fs_fs_exists_path_callback
 try {
     configString = fs.readFileSync(CONFIG_FILE, 'utf8');
@@ -102,15 +106,14 @@ bitReserveOauthController.setGetUserInfoFunction(getBitReserveUserInfo);
 /******** Ethereum / web3 setup *************/
 
 
-web3.setProvider(new web3.providers.HttpProvider(config.ethereum.jsonRpcUrl));
-
-web3.eth.defaultAccount = web3.eth.coinbase;
-
-var coinbase = web3.eth.coinbase;
-console.log("web3 coinbase: " + coinbase);
-
-var balance = web3.eth.getBalance(coinbase);
-console.log("web3 coinbase balance: " + balance.toString(10));
+var web3plus = web3config.createWeb3(config.ethereum.jsonRpcUrl);
+//web3plus.initialize(web3, __dirname + "/contracts");
+web3plus.deployContractFromFile("Circle.sol", "Circle", true, function (err, circleContract) {
+    console.log("Contract successfully deployed at " + circleContract.address);
+    var n = circleContract.name();
+    console.log("Name of test circle: " + n);
+    assert.equal(n, "A new Circle");
+}, "A new Circle", "For fans of Money");
 
 
 /******** Express and route setup ***********/
