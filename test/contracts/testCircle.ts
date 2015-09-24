@@ -59,7 +59,7 @@ describe("Circle contract", () => {
                 var margin = 10;
 
                 // block.timestamp is specified in seconds, Date.now() in milliseconds.
-                assert.ok((block.timestamp + margin ) * 1000 >= timeBeforeDeployment, "Block timestamp is after timeBeforeDeployment");
+                assert.ok((block.timestamp + margin) * 1000 >= timeBeforeDeployment, "Block timestamp is after timeBeforeDeployment");
                 assert.ok(block.timestamp * 1000 <= timeAfterDeployment, "Block timestamp is before timeBeforeDeployment");
                 done();
             });
@@ -175,8 +175,10 @@ describe("Circle contract", () => {
         var username1 = "The lucky lender";
 
         var newLoanAddress;
+        var loanContract;
 
-        var bitReserveTxId = "tx" + Math.round(Math.random() * 1000000);
+        var payoutTxId = "tx" + Math.round(Math.random() * 1000000);
+        var repaymentTxId = "tx" + Math.round(Math.random() * 1000000);
 
         var loanIndexBefore = circleContract.loanIndex().toNumber();
 
@@ -200,7 +202,74 @@ describe("Circle contract", () => {
                 // Verify loan contract is indeed a valid address
                 assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");
 
-                return circleContract.setRepaid(newLoanAddress, bitReserveTxId, { gas: 2500000 });
+                return circleContract.setPaidOut(newLoanAddress, payoutTxId, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testLoan(tx) {
+                // Get loan repayment info through the sub contract
+                var loanContractDefinition = circleContract.allContractTypes.Loan.contractDefinition;
+                loanContract = loanContractDefinition.at(newLoanAddress);
+
+                // Verify payout
+                assert.equal(loanContract.payoutTransactionId(), payoutTxId, "payout transaction ID");
+
+                // After payout, set it as repaid
+                return circleContract.setRepaid(newLoanAddress, repaymentTxId, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testRepayment(tx) {
+
+
+                // Verify basics
+                assert.equal(loanContract.userId(), userId, "user ID");
+                assert.equal(loanContract.amount().toNumber(), amount, "amount");
+                assert.equal(loanContract.circle(), circleContract.address, "circle address");
+
+                // Verify repayment
+                assert.equal(loanContract.repaymentTransactionId(), repaymentTxId, "repayment transaction ID");
+
+                done();
+            })
+            .catch((reason) => {
+                done(reason);
+            });
+    });
+
+    it("should not allow repayment of a loan before it has been paid out", function (done) {
+        // It can take quite a while til transactions are processed.
+        this.timeout(145000);
+
+        var amount = 2000;
+        var userId = "user" + Math.round(Math.random() * 1000000);
+        var username1 = "The lucky lender";
+
+        var newLoanAddress;
+
+        var repaymentTxId = "tx" + Math.round(Math.random() * 1000000);
+
+        var loanIndexBefore = circleContract.loanIndex().toNumber();
+
+        // First create a new member to ensure we create a loan for a member (and this test
+        // can be run independently)
+        circleContract.addMember(userId, username1, { gas: 2500000 })
+            .then(web3plus.promiseCommital)
+            .then(function testGetMember(tx) {
+                // Create the loan.
+                // Pass a high amount of gas as this function creates another contract.
+
+                return circleContract.createLoan(userId, amount, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testLoan(tx) {
+                var loanIndex = circleContract.loanIndex().toNumber();
+                assert.equal(loanIndex, loanIndexBefore + 1);
+
+                newLoanAddress = circleContract.activeLoans(loanIndex);
+                
+                // Verify loan contract is indeed a valid address
+                assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");
+
+                return circleContract.setRepaid(newLoanAddress, repaymentTxId, { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
             .then(function testRepayment(tx) {
@@ -214,8 +283,8 @@ describe("Circle contract", () => {
                 assert.equal(loanContract.amount().toNumber(), amount, "amount");
                 assert.equal(loanContract.circle(), circleContract.address, "circle address");
 
-                // Verify repayment
-                assert.equal(loanContract.repaymentTransactionId(), bitReserveTxId, "repayment transaction ID");
+                // Verify repayment is not stored
+                assert.equal(loanContract.repaymentTransactionId(), "", "repayment transaction ID");
 
                 done();
             })
