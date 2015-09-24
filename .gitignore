@@ -200,6 +200,9 @@ controllers/*.js
 services/*.js
 routes/*.js
 lib/*.js
+test/**/*.js
+**/.node*
+
 /*.js
 !GruntFile.js
 client/js/**/*.js
