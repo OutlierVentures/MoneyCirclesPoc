@@ -49,7 +49,7 @@ describe("Circle contract", () => {
         // Get the creation time of the Circle from the blockchain through block.timestamp,
         // and verify that it is correct.
 
-        // To facilitate this for calling code, a convenience function getCreationTime() could 
+        // To facilitate this for calling code, a convenience function getCreationTime() could
         // be created in web3plus.enhanceContract().
 
         web3.eth.getTransaction(circleContract.transactionHash, function processTransactionInfo(err, tx) {
@@ -198,7 +198,7 @@ describe("Circle contract", () => {
                 assert.equal(loanIndex, loanIndexBefore + 1);
 
                 newLoanAddress = circleContract.activeLoans(loanIndex);
-                
+
                 // Verify loan contract is indeed a valid address
                 assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");
 
@@ -265,7 +265,7 @@ describe("Circle contract", () => {
                 assert.equal(loanIndex, loanIndexBefore + 1);
 
                 newLoanAddress = circleContract.activeLoans(loanIndex);
-                
+
                 // Verify loan contract is indeed a valid address
                 assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");
 

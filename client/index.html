@@ -12,6 +12,14 @@
         #app {
             padding: 40px 0px;
         }
+
+        .ng-hide {
+          /* this is just another form of hiding an element */
+          display: block!important;
+          position: absolute;
+          top: -9999px;
+          left: -9999px;
+        }
     </style>
 </head>
 <body>
@@ -42,7 +50,9 @@
             <div id="app">
                 <!-- Login screen, only shown when not logged in. -->
                 <div ng-include="'views/login.html'" ng-controller="LoginController" ng-hide="isLoggedIn || isProcessingLogin"></div>
-                <div class="panel panel-warning" ng-show="loginErrorMessage">
+                <!-- This panel shows up erroneously for a short time while Angular
+                    is loading. Tried to use -->
+                <div class="panel panel-warning ng-hide" ng-show="loginErrorMessage">
                     <div class="panel-heading">Oops</div>
                     <div class="panel-body">{{loginErrorMessage}}</div>
                 </div>

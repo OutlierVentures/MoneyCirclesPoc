@@ -14,8 +14,13 @@ interface IDocument {
 }
 
 interface ICircle extends IDocument {
+    contractAddress: string;
     name: string;
     commonBond: string;
+    /**
+     * Circle administrators, by user ID
+     */
+    administrators: string[];
 }
 
 /**
@@ -36,7 +41,7 @@ class CircleMembership {
      * Join date
      */
     startDate: Date;
-    
+
     /**
      * Date the user left the circle.
      */
@@ -71,4 +76,3 @@ interface ILoan extends IDocument {
     dateTime: Date;
     purpose: string;
 }
-

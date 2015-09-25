@@ -18,24 +18,41 @@
                             Please describe your new circle.
                         </p>
                         <form role="form" name="circleForm" novalidate>
-                            <div class="form-group">
-                                <label>Name</label>
-                                <p class="help-block">
-                                    Give your circle a descriptive name.
-                                </p>
-                                <input class="form-control" type="text" ng-model="circle.name" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Common bond</label>
-                                <p class="help-block">
-                                    What is the common bond all members of this circle have?
-                                </p>
-                                <input class="form-control" type="text" ng-model="circle.commonBond" required>
-                            </div>
-                            <button name="saveButton" ng-click="vm.create()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
-                                Create my circle
-                            </button>
+                            <fieldset ng-disabled="processMessage || successMessage">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <p class="help-block">
+                                        Give your circle a descriptive name.
+                                    </p>
+                                    <input class="form-control" type="text" ng-model="circle.name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Common bond</label>
+                                    <p class="help-block">
+                                        What is the common bond all members of this circle have?
+                                    </p>
+                                    <input class="form-control" type="text" ng-model="circle.commonBond" required>
+                                </div>
+                                <button name="saveButton" ng-click="vm.create()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                                    Create my circle
+                                </button>
+                            </fieldset>
                         </form>
+                        <div class="panel panel-default" style="margin-top:1em;" ng-show="processMessage">
+                            <div class="panel-heading">Processing</div>
+                            <div class="panel-body">{{processMessage}}</div>
+                        </div>
+                        <div class="panel panel-danger" style="margin-top:1em;" ng-show="errorMessage">
+                            <div class="panel-heading">There was an error processing your request.</div>
+                            <div class="panel-body">{{errorMessage}}</div>
+                        </div>
+                        <div class="panel panel-success" style="margin-top:1em;" ng-show="successMessage">
+                            <div class="panel-heading">Success</div>
+                            <div class="panel-body">
+                                <p>{{successMessage}}</p>
+                                <p>Smart contract address: <strong>{{circle.contractAddress}}</strong>.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- /.col-lg-8 (nested) -->

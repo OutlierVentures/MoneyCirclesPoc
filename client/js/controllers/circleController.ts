@@ -7,7 +7,7 @@
     totalInvestmentAmount: number;
     totalLoanAmount: number;
     /**
-     * BitReserve cards to deposit from 
+     * BitReserve cards to deposit from
      */
     cards: any;
 
@@ -48,7 +48,7 @@ class CircleController {
 
         // This controller serves multiple actions. We distinguish the action by the template.
 
-        // TODO: Is this the best way to handle a path? Is there a good way to do something like 
+        // TODO: Is this the best way to handle a path? Is there a good way to do something like
         // Express i.e. (app.use("/my/route", class.MyFunction) ?
         if (this.$route.current.name === "join") {
             this.join(circleId);
@@ -69,11 +69,11 @@ class CircleController {
             method: 'GET',
             url: apiUrl + '/circle/' + circleId,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-        }).success(function (resultData: ICircle) {
+        }).success(function(resultData: ICircle) {
             t.$scope.circle = resultData;
 
             cb(null, resultData);
-        }).error(function (error) {                
+        }).error(function(error) {
             // Handle error
             console.log("Error loading circle data:");
             console.log(error);
@@ -89,7 +89,7 @@ class CircleController {
     view(circleId: string) {
         var t = this;
 
-        t.getCircleData(circleId, function (err, res) {
+        t.getCircleData(circleId, function(err, res) {
             // TODO: get these amounts
             // TODO: get more details about investments, members, outstanding loans
             t.$scope.totalInvestmentAmount = 0;
@@ -101,20 +101,38 @@ class CircleController {
         // TODO: check for validity
         var t = this;
 
+        // Process creating a new Circle.
+        t.$scope.processMessage = "Creating Circle... this may take a while because we're creating the smart contract that guarantees the correct and incorruptible functioning of your Circle.";
+        t.$scope.errorMessage = undefined;
+        t.$scope.successMessage = undefined;
+
         this.$http({
             method: 'POST',
             url: apiUrl + '/circle',
             data: t.$scope.circle,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-        }).success(function (resultData: ICircle) {
-            // Redirect to the circle view
-            t.$location.path("/circle/" + resultData._id);
-        }).error(function (error) {                
+        }).success(function(resultData: ICircle) {
+            t.$scope.processMessage = undefined;
+            t.$scope.errorMessage = undefined;
+            t.$scope.circle = resultData;
+            t.$scope.successMessage = "Your Circle '" + resultData.name + "' has been created successfully.";
+
+            t.$timeout(() => {
+            }, 5000).then((promiseValue) => {
+                t.$scope.successMessage = undefined;
+
+                // Redirect to the circle view
+                t.$location.path("/circle/" + resultData._id);
+            });
+        }).error(function(error) {
+            t.$scope.processMessage = undefined;
+
             // Handle error
             console.log("Error saving circle:");
             console.log(error);
 
-            // TODO: show notification
+            // Show notification
+            t.$scope.errorMessage = error.error;
         });
     }
 
@@ -124,7 +142,7 @@ class CircleController {
     join(circleId: string) {
         var t = this;
 
-        t.getCircleData(circleId, function (err, res) {
+        t.getCircleData(circleId, function(err, res) {
         });
     }
 
@@ -144,7 +162,7 @@ class CircleController {
             url: apiUrl + '/circle/join',
             data: t.$scope.circle,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-        }).success(function (resultData: any) {
+        }).success(function(resultData: any) {
             t.$scope.processMessage = undefined;
             t.$scope.successMessage = "You successfully joined! Taking you back to the Circle...";
             t.$timeout(() => {
@@ -154,7 +172,7 @@ class CircleController {
                 // Redirect to the circle view
                 t.$location.path("/circle/" + t.$scope.circle._id)
             });
-        }).error(function (error) {
+        }).error(function(error) {
             t.$scope.processMessage = undefined;
 
             // Handle error
@@ -169,22 +187,22 @@ class CircleController {
     startDeposit(circleId: string) {
         var t = this;
 
-        t.getCircleData(circleId, function (err, res) {
+        t.getCircleData(circleId, function(err, res) {
             if (err) {
             } else {
                 // Get BitReserve cards with >0 funds
-                // TODO: call in parallel; use promises for that.                
+                // TODO: call in parallel; use promises for that.
                 t.$http({
                     method: 'GET',
                     url: apiUrl + '/bitreserve/me/cards/withBalance',
                     headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-                }).success(function (cards: any) {
+                }).success(function(cards: any) {
                     console.log("Success on BitReserve call through our API. Result:");
                     console.log(cards);
 
                     // Store in scope to show in view
                     t.$scope.cards = cards;
-                }).error(function (error) {                
+                }).error(function(error) {
                     // Handle error
                     console.log("Error on BitReserve call through our API:");
                     console.log(error);
@@ -212,7 +230,7 @@ class CircleController {
             url: apiUrl + '/circle/' + t.$scope.circle._id + '/deposit',
             data: t.$scope.deposit,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-        }).success(function (resultData: IDeposit) {
+        }).success(function(resultData: IDeposit) {
             t.$scope.processMessage = undefined;
 
             t.$scope.deposit.amount = resultData.amount;
@@ -225,7 +243,7 @@ class CircleController {
                 t.$scope.successMessage = undefined;
                 t.$location.path("/circle/" + t.$scope.circle._id)
             });
-        }).error(function (error) {
+        }).error(function(error) {
             t.$scope.processMessage = undefined;
 
             // Handle error
@@ -240,7 +258,7 @@ class CircleController {
     startLoanRequest(circleId: string) {
         var t = this;
 
-        t.getCircleData(circleId, function (err, res) {
+        t.getCircleData(circleId, function(err, res) {
             if (err) {
             } else {
             }
@@ -264,7 +282,7 @@ class CircleController {
             url: apiUrl + '/circle/' + t.$scope.circle._id + '/loan',
             data: t.$scope.loan,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
-        }).success(function (resultData: ILoan) {
+        }).success(function(resultData: ILoan) {
             t.$scope.processMessage = undefined;
 
             t.$scope.loan.amount = resultData.amount;
@@ -277,7 +295,7 @@ class CircleController {
                 t.$scope.successMessage = undefined;
                 t.$location.path("/circle/" + t.$scope.circle._id)
             });
-        }).error(function (error) {
+        }).error(function(error) {
             // Handle error
             console.log("Error processing loan request:");
             console.log(error);
