@@ -33,7 +33,7 @@ export var userSchema = new mongoose.Schema({
     // The Schema is only a necessity to let Mongoose do its magic.
     // http://stackoverflow.com/a/16493881/81949
     circleMemberships: [{
-        circleId: String,
+        circleId: mongoose.Schema.Types.ObjectId,
         startDate: Date,
         endDate: Date
     }]

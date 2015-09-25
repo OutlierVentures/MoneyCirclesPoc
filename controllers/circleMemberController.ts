@@ -42,50 +42,90 @@ export class CircleMemberController {
     join = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
+        // Load the full circle data
         var circleData = <circleModel.ICircle>req.body;
+        circleModel.Circle.findOne({ _id: circleData._id }).exec()
+            .then((circle) => {
 
-        userModel.getUserByAccessToken(token, function (userErr, userRes) {
-            if (userErr) {
-                res.status(500).json({
-                    "error": userErr,
-                    "error_location": "getting user data",
-                    "status": "Error",
-                });
-            } else {
-                // Add the user to this circle
-                var user = <userModel.IUser>userRes;
+                userModel.getUserByAccessToken(token, function (userErr, userRes) {
+                    if (userErr) {
+                        res.status(500).json({
+                            "error": userErr,
+                            "error_location": "getting user data",
+                            "status": "Error",
+                        });
+                    } else {
+                        // Add the user to this circle
+                        var user = <userModel.IUser>userRes;
 
-                // Check for existing membership
-                if (user.circleMemberships.some(
-                    (value, index, arr) => {
-                        // TODO: use ObjectID for circleID (and Mongoose populate())
-                        return value.circleId === circleData._id.toString() && !value.endDate;
-                    })) {
-                    res.status(500).json({
-                        "error": "User is already a member of this circle",
-                        "error_location": "joining circle",
-                        "status": "Error",
-                    });
-                } else {
-                    var cm = new userModel.CircleMembership();
-                    cm.circleId = circleData._id.toString();
-                    cm.startDate = new Date();
-                    user.circleMemberships.push(cm);
-
-                    user.save(function (saveErr, saveRes) {
-                        if (saveErr) {
+                        // Check for existing membership
+                        if (user.circleMemberships.some(
+                            (value, index, arr) => {
+                                return value.circleId === circleData._id.toString() && !value.endDate;
+                            })) {
                             res.status(500).json({
-                                "error": saveErr,
-                                "error_location": "saving user data",
+                                "error": "User is already a member of this circle",
+                                "error_location": "joining circle",
                                 "status": "Error",
                             });
                         } else {
-                            res.status(200).json(saveRes);
+                            // 1. Add to the Contract
+                            var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function (loadContractError, circleContract) {
+                                if (loadContractError) {
+                                    res.status(500).json({
+                                        "error": loadContractError,
+                                        "error_location": "loading circle contract",
+                                    });
+                                } else {
+                                    // We need to call user._id.toString() to prevent it being passed as ObjectId,
+                                    // which web3 doesn't know how to handle.
+                                    circleContract.addMember(user._id.toString(), user.externalId, { gas: 2500000 })
+                                        .then(web3plus.promiseCommital)
+                                        .then(function (tx) {
+                                            // 2. Register in MongoDB
+
+                                            var cm = new userModel.CircleMembership();
+                                            cm.circleId = circleData._id.toString();
+                                            cm.startDate = new Date();
+                                            user.circleMemberships.push(cm);
+
+                                            user.save(function (saveErr, saveRes) {
+                                                if (saveErr) {
+                                                    res.status(500).json({
+                                                        "error": saveErr,
+                                                        "error_location": "saving user data",
+                                                        "status": "Error",
+                                                    });
+                                                } else {
+                                                    res.status(200).json(saveRes);
+                                                }
+                                            });
+                                        })
+                                        .catch(function (addMemberToContractError) {
+                                            res.status(500).json({
+                                                "error": addMemberToContractError,
+                                                "error_location": "adding member to circle contract",
+                                                "status": "Error",
+                                            });
+
+                                        });
+                                }
+
+                            });
+
+
                         }
+                    }
+                });
+            },
+                function (loadCircleError) {
+                    res.status(500).json({
+                        "error": loadCircleError,
+                        "error_location": "saving user data",
+                        "status": "Error",
                     });
-                }
-            }
-        });
+
+                });
     }
 
     deposit = (req: express.Request, res: express.Response) => {
@@ -181,7 +221,7 @@ export class CircleMemberController {
         // TODO: various other checks to see if loan is approved (credit rating, admin approval, ...)
 
         // TODO: convert to promises or otherwise flatten this code. Can you say "callback hell"?
-            
+
         // Get logged in user info
         userModel.getUserByAccessToken(token,
             (userErr, userRes) => {
@@ -193,14 +233,8 @@ export class CircleMemberController {
                 }
                 else {
                     // Get global Circle Vault account
-                    userModel.User.findOne({ externalId: adminAccount }), (adminUserErr, adminUserRes) => {
-                        if (adminUserErr) {
-                            res.status(500).json({
-                                "error": adminUserErr,
-                                "error_location": "getting user info"
-                            });
-
-                        } else {
+                    userModel.User.findOne({ externalId: adminAccount }).exec()
+                        .then((adminUserRes) => {
                             // Create BitReserve connector for global admin user.
                             var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
 
@@ -248,7 +282,7 @@ export class CircleMemberController {
                                                         var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function processCircleContract(circleContractErr, circleContract) {
                                                             var lastLoanIndex = circleContract.loanIndex().toNumber();
 
-                                                            circleContract.createLoan(userRes._id, loanData.amount, { gas: 2500000 })
+                                                            circleContract.createLoan(userRes._id.toString(), loanData.amount, { gas: 2500000 })
                                                                 .then(web3plus.promiseCommital)
                                                                 .then(function processLoanContract(tx) {
                                                                     // Loan contract was created.
@@ -261,7 +295,7 @@ export class CircleMemberController {
                                                                     // We do check whether a single loan was created since our call.
                                                                     // Ways in which this could be incorrect:
                                                                     // 1. False success: Our call failed, but another call succeeded in the mean time.
-                                                                    // 2. False failure: our call succeeded, but one or more other calls succeeded in 
+                                                                    // 2. False failure: our call succeeded, but one or more other calls succeeded in
                                                                     // the mean time.
                                                                     if (loanIndex != lastLoanIndex + 1) {
                                                                         res.status(500).json({
@@ -351,10 +385,15 @@ export class CircleMemberController {
                                     }
                                 }
                             });
-                        }
-                    });
-                }
+                        },
+                            function (loadUserErr) {
+                                res.status(500).json({
+                                    "error": loadUserErr,
+                                    "error_location": "loading circle vault"
+                                });
 
+                            });
+                }
             });
     }
 }

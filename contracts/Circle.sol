@@ -129,6 +129,10 @@ contract Circle {
         if(msg.sender != creator)
             return;
 
+        // Don't allow adding the same user twice.
+        if(memberIndexByIdHash[sha3(id)] > 0)
+            return;
+
         memberIndex++;
 
         Member m = members[memberIndex];
@@ -142,9 +146,8 @@ contract Circle {
             return;
 
         // Check if the user was a member.
-        // DISABLED til we call addMember from the app.
-        // if(memberIndexByIdHash[sha3(memberId)] == 0)
-        //    return;
+        if(memberIndexByIdHash[sha3(memberId)] == 0)
+           return;
 
         loanIndex++;
 

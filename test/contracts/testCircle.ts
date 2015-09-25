@@ -97,6 +97,37 @@ describe("Circle contract", () => {
             });
     });
 
+    it("should not allow adding the same member ID more than once", function (done) {
+        // It can take quite a while til transactions are processed.
+        this.timeout(145000);
+        var userId1 = "user" + Math.round(Math.random() * 1000000);
+        var username1 = "happylender1";
+
+        var memberIndex: number;
+
+        circleContract.addMember(userId1, username1, { gas: 2500000 })
+            .then(web3plus.promiseCommital)
+            .then(function testGetMember(tx) {
+                memberIndex = circleContract.memberIndex().toNumber();
+                var newMember = circleContract.members(memberIndex);
+
+                assert.equal(newMember[1], username1);
+
+                // Try to add the same member again
+                return circleContract.addMember(userId1, username1, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testGetMember(tx) {
+                var newMemberIndex = circleContract.memberIndex().toNumber();
+
+                assert.equal(memberIndex, newMemberIndex, "memberIndex after adding the same user twice");
+                done();
+            })
+            .catch((reason) => {
+                done(reason);
+            });
+    });
+
     it("should create a loan and then return it", function (done) {
         // It can take quite a while til transactions are processed.
         this.timeout(145000);
