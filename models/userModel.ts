@@ -18,7 +18,7 @@ export class CircleMembership {
      * Join date
      */
     startDate: Date;
-    
+
     /**
      * Date the user left the circle.
      */

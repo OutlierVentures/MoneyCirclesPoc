@@ -1,6 +1,7 @@
 ﻿import mongoose = require("mongoose");
 
 export var loanSchema = new mongoose.Schema({
+    contractAddress: String,
     amount: String,
     circleId: mongoose.Schema.Types.ObjectId,
     userId: mongoose.Schema.Types.ObjectId,
@@ -11,6 +12,7 @@ export var loanSchema = new mongoose.Schema({
 });
 
 export interface ILoan extends mongoose.Document {
+    contractAddress: string;
     amount: number;
     circleId: string;
     userId: string;

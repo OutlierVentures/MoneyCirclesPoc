@@ -142,8 +142,9 @@ contract Circle {
             return;
 
         // Check if the user was a member.
-        if(memberIndexByIdHash[sha3(memberId)] == 0)
-            return;
+        // DISABLED til we call addMember from the app.
+        // if(memberIndexByIdHash[sha3(memberId)] == 0)
+        //    return;
 
         loanIndex++;
 

@@ -31,12 +31,12 @@ class LoginController {
         $scope.isAuthenticated = function (): boolean {
             return identityService.isAuthenticated();
         }
-        
+
         // See if sessionStorage contains valid login info. If so, we can consider the user to be logged in.
         var tokenFromSession = $window.sessionStorage.getItem("bitReserveToken");
         var userStringFromSession = $window.sessionStorage.getItem("bitReserveUserInfo");
 
-        // We prefer a login from the session, even when processing the callback from the OAuth provider. If the 
+        // We prefer a login from the session, even when processing the callback from the OAuth provider. If the
         // token is stale, it should be cleared before a new login attempt.
         // TODO: detect that token is stale/incorrect and clear it.
 
@@ -105,7 +105,7 @@ class LoginController {
 
                 // Store in scope to show in view
                 $scope.userInfo = resultData.user;
-            }).error(function (error) {                
+            }).error(function (error) {
                 // Handle error
                 console.log("Error on OAuth callback to API:");
                 console.log(error);
@@ -164,7 +164,7 @@ class DashboardController {
     }
 
     private loadBitReserveData() {
-        // Load BitReserve data        
+        // Load BitReserve data
         var t = this;
 
         this.$http({
@@ -177,7 +177,7 @@ class DashboardController {
 
             // Store in scope to show in view
             t.$scope.allCards = cards;
-        }).error(function (error) {                
+        }).error(function (error) {
             // Handle error
             console.log("Error on BitReserve call through our API:");
             console.log(error);

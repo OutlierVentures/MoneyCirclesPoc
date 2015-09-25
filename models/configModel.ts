@@ -12,7 +12,7 @@
             "clientID": string,
             "clientSecret": string
         },
-        "mainAccount": {
+        "circleVaultAccount": {
             "userName": string
         }
     },

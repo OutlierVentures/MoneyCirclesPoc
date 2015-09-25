@@ -4,6 +4,7 @@ import userModel = require('../models/userModel');
 import depositModel = require('../models/depositModel');
 import loanModel = require('../models/loanModel');
 import bitReserveService = require('../services/bitReserveService');
+import web3plus = require('../node_modules/web3plus/lib/web3plus');
 import _ = require('underscore');
 
 /**
@@ -11,7 +12,7 @@ import _ = require('underscore');
  */
 export class CircleMemberController {
     private config: IApplicationConfig;
-    /** 
+    /**
      * The simple-oauth2 module, which has no typings.
      */
     private oauth2;
@@ -94,7 +95,7 @@ export class CircleMemberController {
 
         var depositData = <depositModel.IDeposit>req.body;
 
-        var adminAccount = this.config.bitReserve.mainAccount.userName;
+        var adminAccount = this.config.bitReserve.circleVaultAccount.userName;
 
         var brs = new bitReserveService.BitReserveService(token);
 
@@ -158,55 +159,76 @@ export class CircleMemberController {
 
         var loanData = <loanModel.ILoan>req.body;
 
-        var adminAccount = this.config.bitReserve.mainAccount.userName;
+        var adminAccount = this.config.bitReserve.circleVaultAccount.userName;
+
+        // Steps:
+        // 1. Create BitReserve transaction from the global vault to the borrower
+        // 2. Create Loan smart contract by calling the Circle contract
+        // 3. Store in MongoDB
+        // 4. Store BitReserve transaction ID with loan contract.
+        // 5. Store BitReserve transaction ID in MongoDB.
+        // 6. Confirm BitReserve transaction (or not if the Loan contract denies)
+
+        // Rationale: the Circle Loan contract is the primary judge of whether the loan
+        // is allowed (1). If it is, we want to store the new contract address ASAP (2).
+
+        // The payout could principal/y be done by another service independent
+        // of the app. It would idempotently scan all Loans that aren't payed
+        // out, then carry out steps. However it would also need the ability
+        // to update the loan amount as there can be a rounding difference.
 
         // TODO: check whether circle balance allows for this loan
         // TODO: various other checks to see if loan is approved (credit rating, admin approval, ...)
 
-        // Get admin user
-        userModel.User.findOne({ externalId: adminAccount }, (adminUserErr, adminUserRes) => {
-            if (adminUserErr) {
-                res.status(500).json({
-                    "error": adminUserErr,
-                    "error_location": "getting user info"
-                });
-
-            } else {
-                // Create BitReserve connector for global admin user.
-                var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
-
-                // Get card to transfer from. For now: take the first card with enough balance.
-                // TODO: create and configure 1 card per circle?
-                brs.getCards((cardsErr, cardsRes) => {
-                    if (cardsErr) {
-                        res.status(500).json({
-                            "error": cardsErr,
-                            "error_location": "getting cards"
-                        });
-                    }
-                    else {
-                        // We can't compare the amounts, as 
-                        var firstCardWithBalance = _(cardsRes).find((c) => {
-                            return c.normalized[0].available > loanData.amount;
-                        });
-
-                        if (firstCardWithBalance == null) {
+        // TODO: convert to promises or otherwise flatten this code. Can you say "callback hell"?
+            
+        // Get logged in user info
+        userModel.getUserByAccessToken(token,
+            (userErr, userRes) => {
+                if (userErr) {
+                    res.status(500).json({
+                        "error": userErr,
+                        "error_location": "getting user data to store loan"
+                    });
+                }
+                else {
+                    // Get global Circle Vault account
+                    userModel.User.findOne({ externalId: adminAccount }), (adminUserErr, adminUserRes) => {
+                        if (adminUserErr) {
                             res.status(500).json({
-                                "error": "no card with enough balance",
-                                "error_location": "getting card for loan payment"
+                                "error": adminUserErr,
+                                "error_location": "getting user info"
                             });
 
                         } else {
-                            // Get logged in user info
-                            userModel.getUserByAccessToken(token,
-                                (userErr, userRes) => {
-                                    if (userErr) {
+                            // Create BitReserve connector for global admin user.
+                            var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
+
+                            // Get card to transfer from. For now: take the first card with enough balance.
+                            // TODO: create and configure 1 card per circle? That would help to
+                            // check [Circle balance as reported by contract] <> [Circle balance in BitReserve].
+                            brs.getCards((cardsErr, cardsRes) => {
+                                if (cardsErr) {
+                                    res.status(500).json({
+                                        "error": cardsErr,
+                                        "error_location": "getting cards"
+                                    });
+                                }
+                                else {
+                                    // We can't compare the amounts, as they're possibly in different currencies.
+                                    // This will be smoother if balance for each Circle is stored in a separate card.
+                                    var firstCardWithBalance = _(cardsRes).find((c) => {
+                                        return c.normalized[0].available > loanData.amount;
+                                    });
+
+                                    if (firstCardWithBalance == null) {
                                         res.status(500).json({
-                                            "error": userErr,
-                                            "error_location": "getting user data to store loan"
+                                            "error": "no card with enough balance",
+                                            "error_location": "getting card for loan payment"
                                         });
-                                    }
-                                    else {
+
+                                    } else {
+
                                         // Create the transaction.
                                         brs.createTransaction(firstCardWithBalance.id, loanData.amount, loanData.currency, userRes.externalId, (createErr, createRes) => {
                                             if (createErr) {
@@ -216,45 +238,123 @@ export class CircleMemberController {
                                                 });
                                             }
                                             else {
-                                                // Commit it
-                                                brs.commitTransaction(createRes, (commitErr, commitRes) => {
-                                                    if (commitErr) {
+                                                circleModel.Circle.findOne({ _id: circleId }, function (loadCircleErr, circle) {
+                                                    if (loadCircleErr) {
                                                         res.status(500).json({
-                                                            "error": commitErr,
-                                                            "error_location": "committing transaction"
+                                                            "error": loadCircleErr,
+                                                            "error_location": "loading Circle data"
                                                         });
                                                     } else {
-                                                        // Store it in our loan storage.
-                                                        var loan = new loanModel.Loan();
+                                                        var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function processCircleContract(circleContractErr, circleContract) {
+                                                            var lastLoanIndex = circleContract.loanIndex().toNumber();
 
-                                                        loan.amount = commitRes.denomination.amount;
-                                                        loan.currency = loanData.currency;
-                                                        loan.purpose = loanData.purpose;
-                                                        loan.dateTime = commitRes.createdAt;
-                                                        loan.circleId = circleId;
-                                                        loan.transactionId = commitRes.id;
-                                                        loan.userId = userRes._id;
-                                                        loan.save();
+                                                            circleContract.createLoan(userRes._id, loanData.amount, { gas: 2500000 })
+                                                                .then(web3plus.promiseCommital)
+                                                                .then(function processLoanContract(tx) {
+                                                                    // Loan contract was created.
+                                                                    // At this point we only have the transaction info. We assume that the last loan
+                                                                    // created is our lon.
+                                                                    // TODO: Get the address of the newly created in a more robust way.
+                                                                    // Possibly use Solidity events.
+                                                                    var loanIndex = circleContract.loanIndex().toNumber();
 
-                                                        res.json(loan);
+                                                                    // We do check whether a single loan was created since our call.
+                                                                    // Ways in which this could be incorrect:
+                                                                    // 1. False success: Our call failed, but another call succeeded in the mean time.
+                                                                    // 2. False failure: our call succeeded, but one or more other calls succeeded in 
+                                                                    // the mean time.
+                                                                    if (loanIndex != lastLoanIndex + 1) {
+                                                                        res.status(500).json({
+                                                                            "error": "Loan contract can't be found.",
+                                                                            "error_location": "creating loan contract"
+                                                                        });
+                                                                    }
+                                                                    else {
+                                                                        var newLoanAddress = circleContract.activeLoans(loanIndex);
+
+                                                                        // Get loan sub contract
+                                                                        var loanContractDefinition = circleContract.allContractTypes.Loan.contractDefinition;
+                                                                        var loanContract = loanContractDefinition.at(newLoanAddress);
+
+                                                                        // Store it in our loan storage.
+                                                                        var loan = new loanModel.Loan();
+
+                                                                        // Store the exact amount from the transaction. BitReserve
+                                                                        // rounds amounts like 0.005 to 0.01.
+                                                                        loan.amount = createRes.denomination.amount;
+                                                                        loan.contractAddress = loanContract.address;
+                                                                        loan.currency = loanData.currency;
+                                                                        loan.purpose = loanData.purpose;
+                                                                        loan.dateTime = new Date();
+                                                                        loan.circleId = circleId;
+                                                                        loan.userId = userRes._id;
+                                                                        loan.save(function (loanSaveErr, loanSaveRes) {
+                                                                            if (loanSaveErr) {
+                                                                                res.status(500).json({
+                                                                                    "error": loanSaveErr,
+                                                                                    "error_location": "saving loan"
+                                                                                });
+                                                                            } else {
+                                                                                // Commit the BitReserve transaction
+                                                                                brs.commitTransaction(createRes, (commitErr, commitRes) => {
+                                                                                    if (commitErr) {
+                                                                                        res.status(500).json({
+                                                                                            "error": commitErr,
+                                                                                            "error_location": "committing transaction"
+                                                                                        });
+                                                                                    } else {
+                                                                                        // Set the contract as paid
+                                                                                        circleContract.setPaidOut(newLoanAddress, commitRes.id, { gas: 2500000 })
+                                                                                            .then(web3plus.promiseCommital)
+                                                                                            .then(function afterSetPaid(tx) {
+                                                                                                // Store the tx ID in the loan db storage.
+                                                                                                loan.transactionId = commitRes.id;
+                                                                                                loan.save(function (loanTxSaveErr, loanTxSaveRes) {
+                                                                                                    if (loanTxSaveErr) {
+                                                                                                        res.status(500).json({
+                                                                                                            "error": loanTxSaveErr,
+                                                                                                            "error_location": "saving transaction ID to loan"
+                                                                                                        });
+                                                                                                    }
+                                                                                                    else {
+                                                                                                        // All done. Return database loan.
+                                                                                                        res.json(loan);
+                                                                                                    }
+                                                                                                });
+                                                                                            })
+                                                                                            .catch(function (setPaidError) {
+                                                                                                res.status(500).json({
+                                                                                                    "error": setPaidError,
+                                                                                                    "error_location": "setting loan contract as paid"
+                                                                                                });
+
+                                                                                            });
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                })
+                                                                .catch(function (createLoanError) {
+                                                                    res.status(500).json({
+                                                                        "error": createLoanError,
+                                                                        "error_location": "creating loan contract"
+                                                                    });
+                                                                });
+
+
+                                                        });
                                                     }
                                                 });
                                             }
                                         });
                                     }
-                                });
+                                }
+                            });
                         }
-                    }
+                    });
+                }
 
-                });
-
-            }
-        });
-
-
-
-
-
-
+            });
     }
 }

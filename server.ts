@@ -69,7 +69,7 @@ var githubConfig = {
     oauthSite: "https://github.com/login",
     oauthTokenPath: '/oauth/access_token',
     oauthAuthorizationPath: '/oauth/authorize',
-    adminUserId: config.bitReserve.mainAccount.userName
+    adminUserId: config.bitReserve.circleVaultAccount.userName
 };
 
 var githubOauthController = new oauthController.OAuthController(githubConfig);
@@ -87,7 +87,7 @@ var bitReserveConfig = {
     oauthSite: "https://",
     oauthTokenPath: 'api.bitreserve.org/oauth2/token',
     oauthAuthorizationPath: 'bitreserve.org/authorize/' + config.bitReserve.app.clientID,
-    adminUserId: config.bitReserve.mainAccount.userName
+    adminUserId: config.bitReserve.circleVaultAccount.userName
 }
 
 var bitReserveOauthController = new oauthController.OAuthController(bitReserveConfig);

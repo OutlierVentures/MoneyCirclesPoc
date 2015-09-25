@@ -89,9 +89,11 @@
     <TypeScriptCompile Include="typings\express\express.d.ts" />
     <TypeScriptCompile Include="typings\form-data\form-data.d.ts" />
     <TypeScriptCompile Include="typings\mime\mime.d.ts" />
+    <TypeScriptCompile Include="typings\mocha\mocha.d.ts" />
     <TypeScriptCompile Include="typings\mongoose\mongoose.d.ts" />
     <TypeScriptCompile Include="typings\morgan\morgan.d.ts" />
     <TypeScriptCompile Include="typings\node\node.d.ts" />
+    <TypeScriptCompile Include="typings\q\Q.d.ts" />
     <TypeScriptCompile Include="typings\request\request.d.ts" />
     <TypeScriptCompile Include="typings\serve-static\serve-static.d.ts" />
     <TypeScriptCompile Include="typings\tsd.d.ts" />
@@ -119,9 +121,11 @@
     <Folder Include="typings\express\" />
     <Folder Include="typings\form-data\" />
     <Folder Include="typings\mime\" />
+    <Folder Include="typings\mocha\" />
     <Folder Include="typings\mongoose\" />
     <Folder Include="typings\morgan\" />
     <Folder Include="typings\node\" />
+    <Folder Include="typings\q\" />
     <Folder Include="typings\request\" />
     <Folder Include="typings\serve-static\" />
     <Folder Include="typings\underscore\" />

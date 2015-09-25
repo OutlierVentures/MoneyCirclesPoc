@@ -25,7 +25,7 @@ The installation steps assume the default configuration in [config.default.json]
  * Ensure that `poc1-dev.moneycircles.com` resolves to the IP of your development machine (e.g. by adding `127.0.0.1 poc1-dev.moneycircles.com` to your hosts file)
  * Create a BitReserve application of your own, configure it like you want it and configure its attributes like Client ID in `config.json`.
 * A [BitReserve account](https://bitreserve.org/signup) for authenticating as a user
-* A second [BitReserve account](https://bitreserve.org/signup) to serve as the global administrator account (e.g. @moneycircles). The global administrator needs to use Pound Sterling as the Currency in the BitReserve settings.
+* A second [BitReserve account](https://bitreserve.org/signup) to serve as the global Circle Vault account (e.g. @moneycircles). The Circle Vault needs to use Pound Sterling as the Currency in the BitReserve settings.
 
 ### Install instructions
 
@@ -122,7 +122,7 @@ Running "concurrent:watchers" (concurrent) task
 
    Note: Because we currently use a self-signed certificate, the browser will prevent opening the page. Bypass these warnings to open the app.
 
-3. Log in as the global administrator account (by default @moneycircles) once. The access token for the global administrator is neccesary to pay out loans.
+3. Log in as the global Circle Vault account (by default @MoneyCircles) once. The access token for the global Circle Vault is necessary to pay out loans.
 
 ### Live building
 
