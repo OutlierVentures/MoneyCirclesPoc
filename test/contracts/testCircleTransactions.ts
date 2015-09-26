@@ -17,7 +17,7 @@ describe("Circle financial transactions", () => {
 
     before(function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(45000);
+        this.timeout(180000);
 
         timeBeforeDeployment = Date.now();
 
@@ -35,7 +35,7 @@ describe("Circle financial transactions", () => {
 
     it("should create a loan and then return it", function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(145000);
+        this.timeout(180000);
 
         var amount = 1000;
         var userId = "user" + Math.round(Math.random() * 1000000);
@@ -47,10 +47,12 @@ describe("Circle financial transactions", () => {
         // can be run independently)
         circleContract.addMember(userId, username1, { gas: 2500000 })
             .then(web3plus.promiseCommital)
-            .then(function testGetMember(tx) {
-                var newMember = circleContract.members(0);
-                // Pass a high amount of gas as this function creates another contract.
-
+            .then(function createDeposit(tx) {
+                // First make a large deposit, otherwise no loans allowed.
+                return circleContract.createDeposit(userId, amount * 100, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function createLoan(tx) {
                 return circleContract.createLoan(userId, amount, { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
@@ -80,7 +82,7 @@ describe("Circle financial transactions", () => {
 
     it("should not allow to create a loan for a non-member", function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(145000);
+        this.timeout(180000);
 
         var amount = 1000;
         var userId = "123456789invalid";
@@ -104,7 +106,7 @@ describe("Circle financial transactions", () => {
 
     it("should allow repayment of a loan", function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(145000);
+        this.timeout(180000);
 
         var amount = 2000;
         var userId = "user" + Math.round(Math.random() * 1000000);
@@ -173,7 +175,7 @@ describe("Circle financial transactions", () => {
 
     it("should not allow repayment of a loan before it has been paid out", function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(145000);
+        this.timeout(180000);
 
         var amount = 2000;
         var userId = "user" + Math.round(Math.random() * 1000000);
@@ -231,7 +233,7 @@ describe("Circle financial transactions", () => {
 
     it("should not allow repayment of a loan by calling it directly", function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(145000);
+        this.timeout(180000);
 
         var amount = 3000;
         var userId = "user" + Math.round(Math.random() * 1000000);
@@ -295,7 +297,7 @@ describe("Circle financial transactions", () => {
 
     it("should create a deposit and then return it", function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(145000);
+        this.timeout(180000);
 
         var amount = 1000;
         var userId = "user" + Math.round(Math.random() * 1000000);

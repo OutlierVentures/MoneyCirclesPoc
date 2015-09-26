@@ -97,6 +97,12 @@ contract Circle {
     string public name;
     string public commonBond;
     address public creator;
+    
+    /**
+     * The minimal percentage of deposited funds that must remain in
+     * the Circle. No loans can be taken out below this percentage.
+     */
+    uint public constant minimumBalancePercentage = 20;
 
     function Circle(string newName, string newCommonBond){
         name = newName;
@@ -140,7 +146,9 @@ contract Circle {
     mapping(uint => Deposit) public deposits;
     uint public depositIndex;
 
-
+    /**
+     * Add a new member to the Circle.
+     */
     function addMember(string id, string userName) {
         if(msg.sender != creator)
             return;
@@ -156,7 +164,20 @@ contract Circle {
         m.username = userName;
         memberIndexByIdHash[sha3(id)] = memberIndex;
     }
+    
+    /**
+     * Returns the amount available for new loans, taking into
+     * account the minimum balance percentage.
+     */
+    function getAvailableBalance() constant returns (uint amount){
+        uint minimumAvailableAmount = getTotalDepositsAmount() * minimumBalancePercentage / 100;
+        
+        return getBalance() - minimumAvailableAmount;
+    }
 
+    /**
+     * Create a new loan for a member.
+     */
     function createLoan(string memberId, uint amount) returns (Loan l) {
         if(msg.sender != creator)
             return;
@@ -164,9 +185,10 @@ contract Circle {
         // Only allow loans by members.
         if(memberIndexByIdHash[sha3(memberId)] == 0)
            return;
-           
-        // TODO: add checks to see if the loan is allowed. E.g. loan
-        // balance, credit scoring, ...
+        
+        // Only allow loans if they're within the available balance.
+        if(amount > getAvailableBalance())
+            return;
 
         loanIndex++;
 
@@ -198,9 +220,8 @@ contract Circle {
         if(msg.sender != creator)
             return;
 
-        // Check if this loan is ours. Note that the Loan does this too.
-        // TODO
-
+        // The Loan checks whether it belongs to this circle. Hence
+        // we just call it.
         l.setRepaid(bitReserveTxId);
     }
     
@@ -232,7 +253,7 @@ contract Circle {
     /**
      * Get the total amount of all deposits.
      */
-    function getTotalDepositsAmount() returns (uint totalDepositsAmount) {
+    function getTotalDepositsAmount() constant returns (uint totalDepositsAmount) {
         for (uint i = 1; i <= depositIndex; i++) 
         {
             totalDepositsAmount += deposits[i].amount;
@@ -253,11 +274,28 @@ contract Circle {
         }
         DepositsAmountComputed(totalDepositsAmount);
     }
+
+    /**
+     * Get the total amount of all loans that have not been repaid.
+     */
+    function getTotalActiveLoansAmount() constant returns (uint totalLoansAmount) {
+        for (uint i = 1; i <= loanIndex; i++) 
+        {
+            var l = loans[i];
+            if(!l.isRepaid())
+            {
+                totalLoansAmount += l.amount();
+            }
+        }
+        return totalLoansAmount;
+    }
+    
     
     /**
-     * Get the total outstanding amount of all loans.
+     * Get the total amount of all loans, excluding the ones that haven't
+     * been paid out.
      */
-    function getTotalOutstandingLoansAmount() returns (uint totalLoansAmount) {
+    function getTotalPaidLoansAmount() constant returns (uint totalLoansAmount) {
         for (uint i = 1; i <= loanIndex; i++) 
         {
             var l = loans[i];
@@ -266,6 +304,7 @@ contract Circle {
                 totalLoansAmount += l.amount();
             }
         }
+        
         return totalLoansAmount;
     }
     
@@ -273,9 +312,8 @@ contract Circle {
      * Get the current balance of the circle, i.e.:
      * [total deposit amount] - [total loan amount]
      */
-    function getBalance() returns (uint balance) {
-        balance = getTotalDepositsAmount() - getTotalOutstandingLoansAmount();
+    function getBalance() constant returns (uint balance) {
+        balance = getTotalDepositsAmount() - getTotalActiveLoansAmount();
         return balance;
     }
-}
-       
+}    

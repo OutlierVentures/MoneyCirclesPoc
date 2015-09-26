@@ -17,7 +17,7 @@ describe("Circle", () => {
 
     before(function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(45000);
+        this.timeout(180000);
 
         timeBeforeDeployment = Date.now();
 
@@ -68,7 +68,7 @@ describe("Circle", () => {
 
     it("should add a member and then return it", function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(145000);
+        this.timeout(180000);
         var username1 = "happylender1";
         var username2 = "another";
 
@@ -98,7 +98,7 @@ describe("Circle", () => {
 
     it("should not allow adding the same member ID more than once", function (done) {
         // It can take quite a while til transactions are processed.
-        this.timeout(145000);
+        this.timeout(180000);
         var userId1 = "user" + Math.round(Math.random() * 1000000);
         var username1 = "happylender1";
 
