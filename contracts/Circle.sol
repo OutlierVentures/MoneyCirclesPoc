@@ -223,13 +223,32 @@ contract Circle {
     }
     
     /**
+     * Fired when the total amount of deposits has been computed.
+     * Uses an event because transactional methods can't return
+     * data to the outside world.
+     */
+    event DepositsAmountComputed(uint value);
+    
+    /**
      * Get the total amount of all deposits.
      */
     function getTotalDepositsAmount() returns (uint totalDepositsAmount) {
-        for (uint i = 1; i < depositIndex; i++) 
+        for (uint i = 1; i <= depositIndex; i++) 
         {
             totalDepositsAmount += deposits[i].amount;
         }
+        return totalDepositsAmount;
+    }
+
+    /**
+     * Get the total amount of all deposits.
+     */
+    function calculateTotalDepositsAmount() returns (uint totalDepositsAmount) {
+        for (uint i = 1; i <= depositIndex; i++) 
+        {
+            totalDepositsAmount += deposits[i].amount;
+        }
+        DepositsAmountComputed(totalDepositsAmount);
         return totalDepositsAmount;
     }
     
@@ -237,7 +256,7 @@ contract Circle {
      * Get the total amount of all loans.
      */
     function getTotalLoansAmount() returns (uint totalLoansAmount) {
-        for (uint i = 1; i < loanIndex; i++) 
+        for (uint i = 1; i <= loanIndex; i++) 
         {
             var l = loans[i];
             totalLoansAmount += l.amount();

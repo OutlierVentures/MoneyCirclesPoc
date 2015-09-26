@@ -1,8 +1,7 @@
 ﻿import assert = require('assert');
-import web3config = require('../../lib/web3config');
+import web3config = require('./web3config');
 
-// TODO: support configuration in tests
-var web3plus = web3config.createWeb3("http://downtonabbey:8101");
+var web3plus = web3config.createWeb3();
 var web3 = web3plus.web3;
 
 describe("Circle contract", () => {
