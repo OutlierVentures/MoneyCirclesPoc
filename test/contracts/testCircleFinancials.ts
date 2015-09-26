@@ -58,7 +58,7 @@ describe("Circle contract financials", () => {
             .then(function testLoan(tx) {
                 var loanIndex = circleContract.loanIndex().toNumber();
                 assert.equal(loanIndex, loanIndexBefore + 1);
-                var newLoanAddress = circleContract.activeLoans(loanIndex);
+                var newLoanAddress = circleContract.loans(loanIndex);
 
                 // Verify loan contract is indeed a valid address
                 assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");
@@ -134,7 +134,7 @@ describe("Circle contract financials", () => {
                 var loanIndex = circleContract.loanIndex().toNumber();
                 assert.equal(loanIndex, loanIndexBefore + 1);
 
-                newLoanAddress = circleContract.activeLoans(loanIndex);
+                newLoanAddress = circleContract.loans(loanIndex);
 
                 // Verify loan contract is indeed a valid address
                 assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");
@@ -201,7 +201,7 @@ describe("Circle contract financials", () => {
                 var loanIndex = circleContract.loanIndex().toNumber();
                 assert.equal(loanIndex, loanIndexBefore + 1);
 
-                newLoanAddress = circleContract.activeLoans(loanIndex);
+                newLoanAddress = circleContract.loans(loanIndex);
 
                 // Verify loan contract is indeed a valid address
                 assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");
@@ -259,7 +259,7 @@ describe("Circle contract financials", () => {
                 var loanIndex = circleContract.loanIndex().toNumber();
                 assert.equal(loanIndex, loanIndexBefore + 1);
 
-                newLoanAddress = circleContract.activeLoans(loanIndex);
+                newLoanAddress = circleContract.loans(loanIndex);
 
                 // Verify loan contract is indeed a valid address
                 assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");

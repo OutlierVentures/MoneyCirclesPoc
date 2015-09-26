@@ -306,7 +306,7 @@ export class CircleMemberController {
                                                                         });
                                                                     }
                                                                     else {
-                                                                        var newLoanAddress = circleContract.activeLoans(loanIndex);
+                                                                        var newLoanAddress = circleContract.loans(loanIndex);
 
                                                                         // Get loan sub contract
                                                                         var loanContractDefinition = circleContract.allContractTypes.Loan.contractDefinition;

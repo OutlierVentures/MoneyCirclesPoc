@@ -131,7 +131,7 @@ contract Circle {
      * All loans of this circle. Loans aren't removed from this list
      * when they are repaid yet.
      */
-    mapping(uint => Loan) public activeLoans;
+    mapping(uint => Loan) public loans;
     uint public loanIndex;
     
     /**
@@ -171,7 +171,7 @@ contract Circle {
         loanIndex++;
 
         l = new Loan(memberId, amount);
-        activeLoans[loanIndex] = l;
+        loans[loanIndex] = l;
 
         return l;
     }
@@ -221,5 +221,36 @@ contract Circle {
         d.memberId = memberId;
         d.amount = amount;
     }
-}
     
+    /**
+     * Get the total amount of all deposits.
+     */
+    function getTotalDepositsAmount() returns (uint totalDepositsAmount) {
+        for (uint i = 1; i < depositIndex; i++) 
+        {
+            totalDepositsAmount += deposits[i].amount;
+        }
+        return totalDepositsAmount;
+    }
+    
+    /**
+     * Get the total amount of all loans.
+     */
+    function getTotalLoansAmount() returns (uint totalLoansAmount) {
+        for (uint i = 1; i < loanIndex; i++) 
+        {
+            var l = loans[i];
+            totalLoansAmount += l.amount();
+        }
+        return totalLoansAmount;
+    }
+    
+    /**
+     * Get the current balance of the circle, i.e.:
+     * [total deposit amount] - [total loan amount]
+     */
+    function getBalance() returns (uint balance) {
+        // TODO
+        return 0;
+    }
+}
