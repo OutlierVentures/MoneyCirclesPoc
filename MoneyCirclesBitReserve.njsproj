@@ -85,7 +85,7 @@
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="test\contracts\testCircleFinancials.ts">
+    <TypeScriptCompile Include="test\contracts\testCircleTransactions.ts">
       <SubType>Code</SubType>
       <TestFramework>Mocha</TestFramework>
     </TypeScriptCompile>

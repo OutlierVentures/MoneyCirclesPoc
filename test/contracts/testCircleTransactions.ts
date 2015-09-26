@@ -5,7 +5,7 @@ import web3config = require('../../lib/web3config');
 var web3plus = web3config.createWeb3("http://downtonabbey:8101");
 var web3 = web3plus.web3;
 
-describe("Circle contract financials", () => {
+describe("Circle contract financial transactions", () => {
     /**
      * The Solidity web3 contract.
      */
