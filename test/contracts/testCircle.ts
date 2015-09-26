@@ -4,7 +4,7 @@ import web3config = require('./web3config');
 var web3plus = web3config.createWeb3();
 var web3 = web3plus.web3;
 
-describe("Circle contract", () => {
+describe("Circle", () => {
     /**
      * The Solidity web3 contract.
      */

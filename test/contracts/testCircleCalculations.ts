@@ -5,7 +5,7 @@ var web3plus = web3config.createWeb3();
 var web3 = web3plus.web3;
 
 
-describe("Circle contract calculations", () => {
+describe("Circle calculations", () => {
     /**
      * The Solidity web3 contract.
      */
@@ -34,7 +34,7 @@ describe("Circle contract calculations", () => {
             testCommonBond);
     });
 
-    it("should allow a call to total deposits without a transaction", function (done) {
+    it("should calculate total deposits without a transaction, using call()", function (done) {        
         // It can take quite a while til transactions are processed.
         this.timeout(145000);
 
@@ -44,17 +44,42 @@ describe("Circle contract calculations", () => {
 
         var depositIndexBefore = circleContract.depositIndex().toNumber();
 
-        // Can we get the results by using .call()?
-        var total = circleContract.getTotalDepositsAmount.call();
+        // First create a new member to ensure we create a deposit for a member (and this test
+        // can be run independently)
+        circleContract.addMember(userId, username1, { gas: 2500000 })
+            .then(web3plus.promiseCommital)
+            .then(function testGetMember(tx) {
+                return circleContract.createDeposit(userId, amount, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testGetMember(tx) {
+                // Create a second deposit
+                return circleContract.createDeposit(userId, amount, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testLoan(tx) {
+                var depositIndex = circleContract.depositIndex().toNumber();
+                assert.equal(depositIndex, depositIndexBefore + 2);
 
-        done();
+                var total = circleContract.getTotalDepositsAmount.call();
+
+                // Verify deposit properties.
+                assert.equal(total, 2 * amount);
+
+                done();
+
+                circleContract.calculateTotalDepositsAmount();
+            })
+            .catch((reason) => {
+                done(reason);
+            });
     });
 
     /**
      * The deposits total can also be computed by calling the function transactionally.
      * To get the results, a Solidity event is used.
      */
-    it("should calculate total using a transaction and an event", function (done) {
+    it("should calculate total deposits using a transaction and an event", function (done) {
         // It can take quite a while til transactions are processed.
         this.timeout(145000);
 
@@ -107,4 +132,128 @@ describe("Circle contract calculations", () => {
                 done(reason);
             });
     });
+
+    it("should calculate the total loans amount", function (done) {
+        // It can take quite a while til transactions are processed.
+        this.timeout(145000);
+
+        var amount = 12345;
+        var userId = "user" + Math.round(Math.random() * 1000000);
+        var username1 = "The lucky lender";
+
+        var loanIndexBefore = circleContract.loanIndex().toNumber();
+        var loanIndex;
+        var loanAddress;
+
+        // We create 3 loans in total and set 2 as paid. These steps have to
+        // be taken sequentially, because of the limited ways in which we can
+        // get a reference to the loan just created. That makes this method
+        // very slow.
+
+        // If that were solved, we could do the calls for create/setPaidOut
+        // in parallel.
+
+        // First create a new member to ensure we create a loan for a member (and this test
+        // can be run independently)
+        circleContract.addMember(userId, username1, { gas: 2500000 })
+            .then(web3plus.promiseCommital)
+            .then(function createFirstLoan(tx) {
+                return circleContract.createLoan(userId, amount, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function setFirstLoanPaidOut(tx) {
+
+                loanIndex = circleContract.loanIndex().toNumber();
+                assert.equal(loanIndex, loanIndexBefore + 1);
+
+                loanAddress = circleContract.loans(loanIndex);
+
+                return circleContract.setPaidOut(loanAddress, "tx" + loanIndex, { gas: 2500000 });
+            })
+            .then(function createSecondLoan(tx) {
+                return circleContract.createLoan(userId, amount, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function setSecondLoanPaidOut(tx) {
+
+                loanIndex = circleContract.loanIndex().toNumber();
+                assert.equal(loanIndex, loanIndexBefore + 2);
+
+                loanAddress = circleContract.loans(loanIndex);
+
+                return circleContract.setPaidOut(loanAddress, "tx" + loanIndex, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function createThirdLoan(tx) {
+                return circleContract.createLoan(userId, amount, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testCalculation(tx) {
+                var loanIndex = circleContract.loanIndex().toNumber();
+                // 3 loans in total
+                assert.equal(loanIndex, loanIndexBefore + 3);
+
+                var total = circleContract.getTotalOutstandingLoansAmount.call().toNumber();
+
+                // As 2 loans are paid out and the other isn't, the total amount should be equal to 
+                // that of the first two loans.
+                assert.equal(total, 2 * amount);
+
+                done();
+            })
+            .catch((reason) => {
+                done(reason);
+            });
+    });
+
+    it("should calculate the balance", function (done) {
+        // It can take quite a while til transactions are processed.
+        this.timeout(145000);
+
+        var amount = 12345;
+        var userId = "user" + Math.round(Math.random() * 1000000);
+        var username1 = "The lucky lender";
+
+        var loanIndexBefore = circleContract.loanIndex().toNumber();
+        var loanIndex;
+        var loanAddress;
+
+        // We create 1 deposit and 1 loan, then compute the balance.
+
+        // First create a new member to ensure we create a loan for a member (and this test
+        // can be run independently)
+        circleContract.addMember(userId, username1, { gas: 2500000 })
+            .then(web3plus.promiseCommital)
+            .then(function createDeposit(tx) {
+                // Deposit of 3x amount
+                return circleContract.createDeposit(userId, amount * 3, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function createFirstLoan(tx) {
+                // Loan of 1x amount + 100, paid out
+                return circleContract.createLoan(userId, amount + 100, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function setFirstLoanPaidOut(tx) {
+
+                loanIndex = circleContract.loanIndex().toNumber();
+                assert.equal(loanIndex, loanIndexBefore + 1);
+
+                loanAddress = circleContract.loans(loanIndex);
+
+                return circleContract.setPaidOut(loanAddress, "tx" + loanIndex, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testCalculation(tx) {
+                // Calculate and check balance
+                var balance = circleContract.getBalance.call().toNumber();
+                assert.equal(balance, 2 * amount - 100);
+
+                done();
+            })
+            .catch((reason) => {
+                done(reason);
+            });
+    });
+
 });

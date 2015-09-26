@@ -241,25 +241,30 @@ contract Circle {
     }
 
     /**
-     * Get the total amount of all deposits.
+     * Calculates the total amount of all deposits and emits it
+     * using the event DepositsAmountComputed. More of a testing
+     * function than anything else.
      */
-    function calculateTotalDepositsAmount() returns (uint totalDepositsAmount) {
+    function calculateTotalDepositsAmount() {
+        uint totalDepositsAmount;
         for (uint i = 1; i <= depositIndex; i++) 
         {
             totalDepositsAmount += deposits[i].amount;
         }
         DepositsAmountComputed(totalDepositsAmount);
-        return totalDepositsAmount;
     }
     
     /**
-     * Get the total amount of all loans.
+     * Get the total outstanding amount of all loans.
      */
-    function getTotalLoansAmount() returns (uint totalLoansAmount) {
+    function getTotalOutstandingLoansAmount() returns (uint totalLoansAmount) {
         for (uint i = 1; i <= loanIndex; i++) 
         {
             var l = loans[i];
-            totalLoansAmount += l.amount();
+            if(l.isPaidOut() && !l.isRepaid())
+            {
+                totalLoansAmount += l.amount();
+            }
         }
         return totalLoansAmount;
     }
@@ -269,7 +274,8 @@ contract Circle {
      * [total deposit amount] - [total loan amount]
      */
     function getBalance() returns (uint balance) {
-        // TODO
-        return 0;
+        balance = getTotalDepositsAmount() - getTotalOutstandingLoansAmount();
+        return balance;
     }
 }
+       
