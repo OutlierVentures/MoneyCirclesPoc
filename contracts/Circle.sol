@@ -108,6 +108,11 @@ contract Circle {
         string id;
         string username;
     }
+    
+    struct Deposit {
+        string memberId;
+        uint amount;
+    }
 
     /**
      * The member list. Join date/time can be derived from the blockchain.
@@ -122,8 +127,19 @@ contract Circle {
      */
     mapping(bytes32 => uint) public memberIndexByIdHash;
 
+    /**
+     * All loans of this circle. Loans aren't removed from this list
+     * when they are repaid yet.
+     */
     mapping(uint => Loan) public activeLoans;
     uint public loanIndex;
+    
+    /**
+     * All deposits.
+     */
+    mapping(uint => Deposit) public deposits;
+    uint public depositIndex;
+
 
     function addMember(string id, string userName) {
         if(msg.sender != creator)
@@ -145,9 +161,12 @@ contract Circle {
         if(msg.sender != creator)
             return;
 
-        // Check if the user was a member.
+        // Only allow loans by members.
         if(memberIndexByIdHash[sha3(memberId)] == 0)
            return;
+           
+        // TODO: add checks to see if the loan is allowed. E.g. loan
+        // balance, credit scoring, ...
 
         loanIndex++;
 
@@ -184,4 +203,23 @@ contract Circle {
 
         l.setRepaid(bitReserveTxId);
     }
+    
+    /**
+     * Register a deposit of a member.
+     */
+    function createDeposit(string memberId, uint amount) {
+         if(msg.sender != creator)
+            return;
+
+        // Only allow loans by members.
+        if(memberIndexByIdHash[sha3(memberId)] == 0)
+           return;
+
+        depositIndex++;
+
+        Deposit d = deposits[depositIndex];
+        d.memberId = memberId;
+        d.amount = amount;
+    }
 }
+    

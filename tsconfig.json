@@ -47,6 +47,7 @@
         "./server.ts",
         "./services/bitReserveService.ts",
         "./test/contracts/testCircle.ts",
+        "./test/contracts/testCircleFinancials.ts",
         "./typings/body-parser/body-parser.d.ts",
         "./typings/express/express.d.ts",
         "./typings/form-data/form-data.d.ts",

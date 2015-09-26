@@ -282,7 +282,9 @@ export class CircleMemberController {
                                                         var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function processCircleContract(circleContractErr, circleContract) {
                                                             var lastLoanIndex = circleContract.loanIndex().toNumber();
 
-                                                            circleContract.createLoan(userRes._id.toString(), loanData.amount, { gas: 2500000 })
+                                                            // Amounts in the contract are stored as cents/pence.
+                                                            // Hence multiply * 100.
+                                                            circleContract.createLoan(userRes._id.toString(), loanData.amount * 100, { gas: 2500000 })
                                                                 .then(web3plus.promiseCommital)
                                                                 .then(function processLoanContract(tx) {
                                                                     // Loan contract was created.
