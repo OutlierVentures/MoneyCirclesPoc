@@ -1,0 +1,60 @@
+﻿<div class="row">
+    <div class="col-lg-12">
+        <h1 class="page-header" id="page-header">Repay my loan</h1>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>{{loan.purpose}}</h2>
+            </div>
+            <!-- /.panel-heading -->
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p>You are repaying your loan of {{loan.amount}} GBP from Circle {{loan.circleId.name}}.</p>
+                        <form role="form" name="circleForm" novalidate>
+                            <fieldset ng-disabled="processMessage || successMessage">
+                                <div class="form-group">
+                                    <label>Card to repay from</label>
+                                    <p class="help-block">
+                                        Which BitReserve card do you want to repay your loan from?
+                                    </p>
+                                    <select class="form-control" ng-model="repayment.fromCard" required>
+                                        <option ng-hide="cards.length > 0">Loading your cards...</option>
+                                        <option ng-repeat="card in cards track by card.id" value="{{card.id}}">{{card.label}} ({{card.currency}} {{card.available}})</option>
+                                    </select>
+                                </div>
+                                <button name="saveButton" ng-click="vm.confirmRepayment()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                                    Repay
+                                </button>
+                            </fieldset>
+                        </form>
+                        <div class="panel panel-default" style="margin-top:1em;" ng-show="processMessage">
+                            <div class="panel-heading">Processing</div>
+                            <div class="panel-body">{{processMessage}}</div>
+                        </div>
+                        <div class="panel panel-danger" style="margin-top:1em;" ng-show="errorMessage">
+                            <div class="panel-heading">There was an error processing your request.</div>
+                            <div class="panel-body">{{errorMessage}}</div>
+                        </div>
+                        <div class="panel panel-success" style="margin-top:1em;" ng-show="successMessage">
+                            <div class="panel-heading">Success</div>
+                            <div class="panel-body">
+                                <p>{{successMessage}}</p>
+                                <p>Transaction ID: <strong>{{loan.repaymentTransactionId}}</strong>. See the <a href="https://bitreserve.org/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">transaction details</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-8 (nested) -->
+            </div>
+            <!-- /.panel-body -->
+        </div>
+        <!-- /.panel -->
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<!-- /.row -->

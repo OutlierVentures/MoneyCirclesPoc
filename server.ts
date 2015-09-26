@@ -105,16 +105,7 @@ bitReserveOauthController.setGetUserInfoFunction(getBitReserveUserInfo);
 
 /******** Ethereum / web3 setup *************/
 
-
 var web3plus = web3config.createWeb3(config.ethereum.jsonRpcUrl);
-//web3plus.initialize(web3, __dirname + "/contracts");
-web3plus.deployContractFromFile("Circle.sol", "Circle", true, function (err, circleContract) {
-    console.log("Contract successfully deployed at " + circleContract.address);
-    var n = circleContract.name();
-    console.log("Name of test circle: " + n);
-    assert.equal(n, "A new Circle");
-}, "A new Circle", "For fans of Money");
-
 
 /******** Express and route setup ***********/
 
@@ -150,6 +141,9 @@ app.get('/circle/:id/join', indexRoute.index);
 app.get('/circle/:id/deposit', indexRoute.index);
 app.get('/circle/:id/loan', indexRoute.index);
 app.get('/circle/list', indexRoute.index);
+app.get('/loan/list', indexRoute.index);
+app.get('/loan/:id', indexRoute.index);
+app.get('/loan/:id/repay', indexRoute.index);
 app.get('/not-found', indexRoute.index);
 
 app.get(githubOauthController.getAuthRoute(), githubOauthController.auth);
@@ -182,6 +176,13 @@ app.get("/api/circle/:id", cmc.getOne);
 
 app.post("/api/circle/:id/deposit", cmc.deposit);
 app.post("/api/circle/:id/loan", cmc.loan);
+
+import loanController = require('./controllers/loanController');
+var lc = new loanController.LoanController();
+
+app.get("/api/loan", lc.getAll);
+app.get("/api/loan/:id", lc.getOne);
+app.post("/api/loan/:id/repay", lc.repay);
 
 /*********************** HTTP server setup ********************/
 var httpsOptions = {

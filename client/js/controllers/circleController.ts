@@ -46,10 +46,8 @@ class CircleController {
 
         var circleId = this.$routeParams.id;
 
-        // This controller serves multiple actions. We distinguish the action by the template.
-
-        // TODO: Is this the best way to handle a path? Is there a good way to do something like
-        // Express i.e. (app.use("/my/route", class.MyFunction) ?
+        // This controller serves multiple actions. We distinguish the action by a 'name' which
+        // is set in the route configuration in app.ts.
         if (this.$route.current.name === "join") {
             this.join(circleId);
         } else if (this.$route.current.name === "details") {

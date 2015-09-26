@@ -41,6 +41,8 @@
   <ItemGroup>
     <TypeScriptCompile Include="client\js\app.ts" />
     <TypeScriptCompile Include="client\js\controllers.ts" />
+    <TypeScriptCompile Include="client\js\controllers\loanController.ts" />
+    <TypeScriptCompile Include="client\js\controllers\loanListController.ts" />
     <TypeScriptCompile Include="client\js\controllers\circleListController.ts" />
     <TypeScriptCompile Include="client\js\controllers\circleController.ts" />
     <TypeScriptCompile Include="client\js\models.ts" />
@@ -51,6 +53,7 @@
     <TypeScriptCompile Include="client\typings\cryptojs\cryptojs.d.ts" />
     <TypeScriptCompile Include="client\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="client\typings\tsd.d.ts" />
+    <TypeScriptCompile Include="controllers\loanController.ts" />
     <TypeScriptCompile Include="controllers\circleMemberController.ts" />
     <TypeScriptCompile Include="controllers\circleAdminController.ts" />
     <TypeScriptCompile Include="controllers\bitReserveController.ts" />
@@ -66,6 +69,8 @@
     <TypeScriptCompile Include="routes\index.ts" />
     <Content Include="client\bower.json" />
     <Content Include="client\index.html" />
+    <Content Include="client\views\loan-repay.html" />
+    <Content Include="client\views\loan-list.html" />
     <Content Include="client\views\loan-request.html" />
     <Content Include="client\views\circle-details.html" />
     <Content Include="client\views\circle-deposit.html" />

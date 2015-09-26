@@ -73,6 +73,7 @@ interface ILoan extends IDocument {
     circleId: string;
     userId: string;
     transactionId: string
+    repaymentTransactionId: string;
     currency: string;
     dateTime: Date;
     purpose: string;

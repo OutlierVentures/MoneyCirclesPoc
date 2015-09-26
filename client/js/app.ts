@@ -23,7 +23,7 @@ module MoneyCircles {
     var moneyCirclesApp = angular.module('moneyCirclesApp', ['ngResource', 'ngRoute', 'ngSanitize', 'angularMoment'])
         .controller('NavigationController', NavigationController)
         .controller('LoginController', LoginController)
-        .controller('UserAccountController', UserAccountController)
+        .controller('UserAccountController', UserAccountController)        
         .controller('CircleController', CircleController);
 
     moneyCirclesApp.config(function ($routeProvider: ng.route.IRouteProvider, $locationProvider: ng.ILocationProvider) {
@@ -42,6 +42,8 @@ module MoneyCircles {
             .when('/circle/:id', { controller: CircleController, templateUrl: 'views/circle-details.html', name: 'details' })
             .when('/circle/:id/deposit', { controller: CircleController, templateUrl: 'views/circle-deposit.html', name: 'deposit' })
             .when('/circle/:id/loan', { controller: CircleController, templateUrl: 'views/loan-request.html', name: 'loan-request' })
+            .when('/loan/list', { controller: LoanListController, templateUrl: 'views/loan-list.html' })
+            .when('/loan/:id/repay', { controller: LoanController, templateUrl: 'views/loan-repay.html', name: 'repay' })
             .otherwise({ redirectTo: 'not-found' });
         $locationProvider.html5Mode(true);
         $locationProvider.hashPrefix('!');
