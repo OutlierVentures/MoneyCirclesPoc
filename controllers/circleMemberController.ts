@@ -69,7 +69,7 @@ export class CircleMemberController {
                                     "error_location": "loading circle contract",
                                 });
                             } else {
-                                var memberBalance = circleContract.getMemberBalance(user._id).toNumber() / 100;
+                                var memberBalance = circleContract.getMemberBalance(user.id).toNumber() / 100;
                                 var circleAvailableBalance = circleContract.getAvailableBalance().toNumber() / 100;
                                 var circleBalance = circleContract.getBalance().toNumber() / 100;
                                 var totalActiveLoans = circleContract.getTotalActiveLoansAmount().toNumber() / 100;

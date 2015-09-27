@@ -34,7 +34,7 @@
                 <!-- /.panel-heading -->
                 <div class="panel-body">
                     <div class="row">
-                        <div ng-repeat="loan in loans | filter: {repaymentTransactionId:undefined} track by loan._id" class="col-lg-4 col-md-6">
+                        <div ng-repeat="loan in loans | filter: {repaymentTransactionId: '!'} track by loan._id" class="col-lg-4 col-md-6">
                             <div class="well well-transparent">
                                 <div class="row">
                                     <div class="col-lg-12">
