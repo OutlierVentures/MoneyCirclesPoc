@@ -3,11 +3,18 @@ import circleModel = require('../models/circleModel');
 import userModel = require('../models/userModel');
 import loanModel = require('../models/loanModel');
 import web3plus = require('../node_modules/web3plus/lib/web3plus');
+import bitReserveService = require('../services/bitReserveService');
 
 /**
  * Controller for Circle admin operations.
  */
 export class LoanController {
+    private config: IApplicationConfig;
+
+    constructor(configParam: IApplicationConfig) {
+        this.config = configParam;
+    }
+
     /**
      * Get the loans of a user
      */
@@ -72,6 +79,18 @@ export class LoanController {
     repay = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
         var loanData = req.body;
+        var t = this;
+
+        // Another bit of working around type safety: the request contains a parameter 
+        // not present in the Loan entity. Get it out untyped.
+        var fromCard = req.body.repayFromCard;
+        req.body.fromCard = undefined;
+
+        // Sequence for repayments:
+        // 1. Create BitReserve transaction
+        // 2. Commit BitReserve transaction
+        // 3. Store it in the Loan contract
+        // 4. Store it in the Loan database item
 
         userModel.getUserByAccessToken(token, function (userErr, userRes) {
             if (userErr) {
@@ -83,13 +102,89 @@ export class LoanController {
                 // Get the loans of the user
                 loanModel.Loan.findOne({ _id: loanData._id }).exec()
                     .then(function (loan) {
-                        // TODO: process repayment    
+
+                    if (!loan.contractAddress) {
+                        // Early testing loan, no contract
                         res.status(500).json({
-                            "error": "not implemented",
-                            "error_location": "getting loan data",
+                            "error": "can't find the smart contract for this loan",
+                            "error_location": "loading loan",
                         });
+
                         return;
-                        res.json(loan);
+                    }
+
+                    // The loan object is populated, and hence doesn't satisfy ICircle any more.
+                    // loan.circleId is an ICircle. That's why we cast it to ICircle as a
+                    // separate variable.
+                    var circle: ICircle = <ICircle><any>loan.circleId
+
+                    // Load the contract
+                    var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function (loadContractError, circleContract) {
+                        if (loadContractError) {
+                            res.status(500).json({
+                                "error": loadContractError,
+                                "error_location": "loading circle contract",
+                            });
+                        } else {
+                            var brs = new bitReserveService.BitReserveService(token);
+                                       
+                            // 1. Create the BitReserve transaction                 
+                            brs.createTransaction(fromCard, loan.amount, loan.currency, t.config.bitReserve.circleVaultAccount.userName, (createErr, createRes) => {
+                                if (createErr) {
+                                    res.status(500).json({
+                                        "error": createErr,
+                                        "error_location": "creating transaction"
+                                    });
+                                }
+                                else {
+
+                                    // 2. Commit the BitReserve transaction
+                                    brs.commitTransaction(createRes, (commitErr, commitRes) => {
+                                        if (commitErr) {
+                                            res.status(500).json({
+                                                "error": commitErr,
+                                                "error_location": "committing transaction"
+                                            });
+                                        } else {
+
+                                            // 3. Set the contract as paid
+                                            circleContract.setPaidOut(loan.contractAddress, commitRes.id, { gas: 2500000 })
+                                                .then(web3plus.promiseCommital)
+                                                .then(function afterSetRepayd(tx) {
+                                                    // 4. Store the tx ID in the loan db storage.
+                                                    loan.repaymentTransactionId = commitRes.id;
+                                                    loan.save(function (loanTxSaveErr, loanTxSaveRes) {
+                                                        if (loanTxSaveErr) {
+                                                            res.status(500).json({
+                                                                "error": loanTxSaveErr,
+                                                                "error_location": "saving transaction ID to loan"
+                                                            });
+                                                        }
+                                                        else {
+                                                            // All done. Return database loan.
+                                                            res.json(loan);
+                                                        }
+                                                    });
+                                                })
+                                                .catch(function (setPaidError) {
+                                                    res.status(500).json({
+                                                        "error": setPaidError,
+                                                        "error_location": "setting loan contract as paid"
+                                                    });
+
+                                                });
+                                        }
+                                    });
+
+                                }
+                            });
+
+                        }
+
+                    });
+
+
+
                     }, function (loanErr) {
                         res.status(500).json({
                             "error": loanErr,

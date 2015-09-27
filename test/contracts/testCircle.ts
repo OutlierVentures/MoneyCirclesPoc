@@ -69,25 +69,26 @@ describe("Circle", () => {
     it("should add a member and then return it", function (done) {
         // It can take quite a while til transactions are processed.
         this.timeout(180000);
+        var userId1 = "101";
+        var userId2 = "102";
         var username1 = "happylender1";
         var username2 = "another";
 
-        circleContract.addMember("101", username1, { gas: 2500000 })
+        circleContract.addMember(userId1, username1, { gas: 2500000 })
             .then(web3plus.promiseCommital)
             .then(function testGetMember(tx) {
                 var newMember = circleContract.members(1);
 
+                // Assert the user ID and name
+                assert.equal(newMember[0], userId1);
                 assert.equal(newMember[1], username1);
 
-                // Assert the user ID
-                // This test fails intermittently. The ID is sometimes "", while the user name is set correctly.
-                assert.equal(newMember[0], "101");
-                return circleContract.addMember("102", username2, { gas: 2500000 });
+                return circleContract.addMember(userId2, username2, { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
             .then(function testGetMember(tx) {
                 var newMember = circleContract.members(2);
-                assert.equal(newMember[0], "102");
+                assert.equal(newMember[0], userId2);
                 assert.equal(newMember[1], username2);
                 done();
             })

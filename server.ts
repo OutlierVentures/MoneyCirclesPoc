@@ -178,7 +178,7 @@ app.post("/api/circle/:id/deposit", cmc.deposit);
 app.post("/api/circle/:id/loan", cmc.loan);
 
 import loanController = require('./controllers/loanController');
-var lc = new loanController.LoanController();
+var lc = new loanController.LoanController(config);
 
 app.get("/api/loan", lc.getAll);
 app.get("/api/loan/:id", lc.getOne);

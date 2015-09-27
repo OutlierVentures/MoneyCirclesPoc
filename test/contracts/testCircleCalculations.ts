@@ -51,12 +51,12 @@ describe("Circle calculations", () => {
         circleContract.addMember(userId, username1, { gas: 2500000 })
             .then(web3plus.promiseCommital)
             .then(function testGetMember(tx) {
-                return circleContract.createDeposit(userId, amount, { gas: 2500000 });
+                return circleContract.createDeposit(userId, amount, "tx111", { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
             .then(function testGetMember(tx) {
                 // Create a second deposit
-                return circleContract.createDeposit(userId, amount, { gas: 2500000 });
+                return circleContract.createDeposit(userId, amount, "tx112", { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
             .then(function testLoan(tx) {
@@ -96,12 +96,12 @@ describe("Circle calculations", () => {
     //    circleContract.addMember(userId, username1, { gas: 2500000 })
     //        .then(web3plus.promiseCommital)
     //        .then(function testGetMember(tx) {
-    //            return circleContract.createDeposit(userId, amount, { gas: 2500000 });
+    //            return circleContract.createDeposit(userId, amount, "tx114", { gas: 2500000 });
     //        })
     //        .then(web3plus.promiseCommital)
     //        .then(function testGetMember(tx) {
     //            // Create a second deposit
-    //            return circleContract.createDeposit(userId, amount, { gas: 2500000 });
+    //            return circleContract.createDeposit(userId, amount, "tx115", { gas: 2500000 });
     //        })
     //        .then(web3plus.promiseCommital)
     //        .then(function testLoan(tx) {
@@ -161,7 +161,7 @@ describe("Circle calculations", () => {
             .then(web3plus.promiseCommital)
             .then(function createDeposit(tx) {
                 // Create a big deposit so that we can take out loans.
-                return circleContract.createDeposit(userId, amount * 10, { gas: 2500000 });
+                return circleContract.createDeposit(userId, amount * 10, "tx111", { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
             .then(function createFirstLoan(tx) {
@@ -242,7 +242,7 @@ describe("Circle calculations", () => {
             .then(web3plus.promiseCommital)
             .then(function createDeposit(tx) {
                 // Deposit of 3x amount
-                return circleContract.createDeposit(userId, amount * 3, { gas: 2500000 });
+                return circleContract.createDeposit(userId, amount * 3, "tx111", { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
             .then(function createFirstLoan(tx) {
@@ -265,6 +265,73 @@ describe("Circle calculations", () => {
                 var balance = circleContract.getBalance().toNumber();
                 assert.equal(balance, balanceBefore + 2 * amount - 100);
 
+                done();
+            })
+            .catch((reason) => {
+                done(reason);
+            });
+    });
+
+    it("should calculate the member balance", function (done) {
+        // It can take quite a while til transactions are processed.
+        this.timeout(180000);
+
+        var amount = 12345;
+        var userId = "user" + Math.round(Math.random() * 1000000);
+        var username1 = "The lucky lender";
+        var userId2 = "user" + Math.round(Math.random() * 1000000);
+        var username2 = "The other lucky lender";
+
+        var loanIndexBefore = circleContract.loanIndex().toNumber();
+        var loanIndex;
+        var loanAddress;
+
+        var balanceBefore = circleContract.getBalance().toNumber();
+
+        // We create 1 deposit and 1 loan, then compute the balance.
+
+        // First create a new member to ensure we create a loan for a member (and this test
+        // can be run independently)
+        circleContract.addMember(userId, username1, { gas: 2500000 })
+            .then(web3plus.promiseCommital)
+            .then(function createDeposit(tx) {
+                // Deposit of 3x amount by member 1
+                return circleContract.createDeposit(userId, amount * 3, "tx111", { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function createMember2(tx) {
+                return circleContract.addMember(userId2, username2, { gas: 2500000 })
+            })
+            .then(web3plus.promiseCommital)
+            .then(function createDeposit(tx) {
+                // Deposit of 4x amount by member 2
+                return circleContract.createDeposit(userId2, amount * 4, "tx112", { gas: 2500000 });
+            }).then(web3plus.promiseCommital)
+            .then(function createFirstLoan(tx) {
+                // Loan of 1x amount + 100, paid out by member 1
+                return circleContract.createLoan(userId, amount + 100, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function setFirstLoanPaidOut(tx) {
+
+                loanIndex = circleContract.loanIndex().toNumber();
+                assert.equal(loanIndex, loanIndexBefore + 1);
+
+                loanAddress = circleContract.loans(loanIndex);
+
+                return circleContract.setPaidOut(loanAddress, "tx" + loanIndex, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testCalculation(tx) {
+                // Calculate and check balances
+                var member1balance = circleContract.getMemberBalance(userId).toNumber();
+                assert.equal(member1balance, 2 * amount - 100);
+
+                var member2balance = circleContract.getMemberBalance(userId2).toNumber();
+                assert.equal(member2balance, 4 * amount);
+
+                var circleBalance = circleContract.getBalance().toNumber();
+                assert.equal(circleBalance, 6 * amount - 100);
                 done();
             })
             .catch((reason) => {

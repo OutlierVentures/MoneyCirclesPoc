@@ -54,7 +54,7 @@ describe("Circle available balance calculation", () => {
         circleContract.addMember(userId, username1, { gas: 2500000 })
             .then(web3plus.promiseCommital)
             .then(function createDeposit(tx) {
-                return circleContract.createDeposit(userId, 50000, { gas: 2500000 });
+                return circleContract.createDeposit(userId, 50000, "tx111", { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
             .then(function createFirstLoan(tx) {
@@ -90,7 +90,7 @@ describe("Circle available balance calculation", () => {
             .then(web3plus.promiseCommital)
             .then(function createAllowedLoan(tx) {
                 // A loan should not have been created.    
-                loanIndex = circleContract.loanIndex().toNumber();                
+                loanIndex = circleContract.loanIndex().toNumber();
                 assert.equal(loanIndex, loanIndexBefore);
 
                 return circleContract.createLoan(userId, 20000, { gas: 2500000 });

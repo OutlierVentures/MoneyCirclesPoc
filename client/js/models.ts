@@ -62,7 +62,8 @@ interface IDeposit extends IDocument {
     amount: number;
     circleId: string;
     userId: string;
-    transactionId: string
+    transactionId: string;
+    depositIndex: number;
     currency: string;
     dateTime: Date;
 }

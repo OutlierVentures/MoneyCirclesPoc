@@ -14,6 +14,13 @@ contract Loan {
     string public userId;
 
     /**
+     * SHA3 hash of the user ID for comparisons.
+     * Type conversions between string and bytesN in Solidity
+     * and between Solidity and Javascript are still pretty rough.
+     */
+    bytes32 public userIdHash;
+    
+    /**
      * The Circle that this loan was taken out from.
      */
     address public circle;
@@ -79,8 +86,9 @@ contract Loan {
         isRepaid = true;
     }
 
-    function Loan(string newUserid, uint newAmount) {
-        userId = newUserid;
+    function Loan(string newUserId, uint newAmount) {
+        userId = newUserId;
+        userIdHash = sha3(newUserId);
         amount = newAmount;
         // We store the sender of the message as the circle address.
         // This adds some form of security: if anyone else would create a
@@ -115,9 +123,24 @@ contract Circle {
         string username;
     }
     
+    /**
+     * A deposit to the Circle funds.
+     */
     struct Deposit {
+        /**
+         * The member that the deposit is from.
+         */
         string memberId;
+        
+        bytes32 memberIdHash;
+        /**
+         * Amount in pence.
+         */
         uint amount;
+        /**
+         * The BitReserve transaction of the member to the Circle.
+         */
+        string transactionId;
     }
 
     /**
@@ -228,7 +251,7 @@ contract Circle {
     /**
      * Register a deposit of a member.
      */
-    function createDeposit(string memberId, uint amount) {
+    function createDeposit(string memberId, uint amount, string transactionId) {
          if(msg.sender != creator)
             return;
 
@@ -240,7 +263,9 @@ contract Circle {
 
         Deposit d = deposits[depositIndex];
         d.memberId = memberId;
+        d.memberIdHash = sha3(memberId);
         d.amount = amount;
+        d.transactionId = transactionId;
     }
     
     /**
@@ -316,4 +341,33 @@ contract Circle {
         balance = getTotalDepositsAmount() - getTotalActiveLoansAmount();
         return balance;
     }
-}    
+    
+    /**
+     * Returns the balance for a specific member. I.e. [total deposits] - 
+     * [total active loans]
+     */
+    function getMemberBalance(string memberId) constant returns (uint amount){
+        uint totalDepositsAmount;
+        uint totalLoansAmount;
+        uint i;
+
+        var memberIdHash = sha3(memberId);
+        for (i = 1; i <= depositIndex; i++) 
+        {
+            if(deposits[i].memberIdHash == memberIdHash)
+                totalDepositsAmount += deposits[i].amount;
+        }
+        
+        for (i = 1; i <= loanIndex; i++) 
+        {
+            Loan l = loans[i];
+            
+            if(l.userIdHash() == memberIdHash && !l.isRepaid())
+                totalLoansAmount += l.amount();
+        }
+
+        amount = totalDepositsAmount - totalLoansAmount;
+        return amount;
+    }
+
+}

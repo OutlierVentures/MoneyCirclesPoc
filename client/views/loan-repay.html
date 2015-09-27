@@ -22,7 +22,7 @@
                                     <p class="help-block">
                                         Which BitReserve card do you want to repay your loan from?
                                     </p>
-                                    <select class="form-control" ng-model="repayment.fromCard" required>
+                                    <select class="form-control" ng-model="loan.repayFromCard" required>
                                         <option ng-hide="cards.length > 0">Loading your cards...</option>
                                         <option ng-repeat="card in cards track by card.id" value="{{card.id}}">{{card.label}} ({{card.currency}} {{card.available}})</option>
                                     </select>

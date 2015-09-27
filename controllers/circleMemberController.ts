@@ -139,7 +139,14 @@ export class CircleMemberController {
 
         var brs = new bitReserveService.BitReserveService(token);
 
-        // Create the transaction
+        // Sequence:
+        // 1. Create the BitReserve transaction
+        // 2. Commit the BitReserve transaction
+        // 3. Register the deposit in the contract
+        // 4. Registre the deposit in MongoDB
+
+
+        // 1. Create the transaction
         brs.createTransaction(depositData.fromCard, depositData.amount, depositData.currency, adminAccount, (createErr, createRes) => {
             if (createErr) {
                 res.status(500).json({
@@ -148,7 +155,7 @@ export class CircleMemberController {
                 });
             }
             else {
-                // Commit it
+                // 2. Commit it
                 brs.commitTransaction(createRes, (commitErr, commitRes) => {
                     if (commitErr) {
                         res.status(500).json({
@@ -156,14 +163,6 @@ export class CircleMemberController {
                             "error_location": "committing transaction"
                         });
                     } else {
-                        // Store it in our transaction history.
-
-                        // Note: this method is very fragile. Any transaction to the value store should be atomically stored
-                        // on our side. This could be realized when the value store of a circle has an individual BitReserve
-                        // identity. Storage of the transaction then doesn't have to be completed in this request, but could
-                        // be done by an idempotent background process.
-                        var dep = new depositModel.Deposit();
-
                         // Get our user info
                         userModel.getUserByAccessToken(token,
                             (userErr, userRes) => {
@@ -174,16 +173,75 @@ export class CircleMemberController {
                                     });
                                 }
                                 else {
-                                    dep.amount = commitRes.denomination.amount;
-                                    dep.currency = depositData.currency;
-                                    dep.dateTime = commitRes.createdAt;
-                                    dep.fromCard = depositData.fromCard;
-                                    dep.circleId = circleId;
-                                    dep.transactionId = commitRes.id;
-                                    dep.userId = userRes._id;
-                                    dep.save();
+                                    // Get the Circle data
+                                    circleModel.Circle.findOne({ _id: circleId }, function (loadCircleErr, circle) {
+                                        if (loadCircleErr) {
+                                            res.status(500).json({
+                                                "error": loadCircleErr,
+                                                "error_location": "loading Circle data"
+                                            });
+                                        } else {
 
-                                    res.json(dep);
+                                            var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function processCircleContract(circleContractErr, circleContract) {
+                                                var lastDepositIndex = circleContract.depositIndex().toNumber();
+
+                                                // Amounts in the contract are stored as cents/pence.
+                                                // Hence multiply * 100.
+                                                // 3. Register the deposit in the contract.
+                                                circleContract.createDeposit(userRes._id.toString(), depositData.amount * 100, commitRes.id, { gas: 2500000 })
+                                                    .then(web3plus.promiseCommital)
+                                                    .then(function processLoanContract(tx) {
+                                                        // Loan contract was created.
+                                                        // At this point we only have the transaction info. We assume that the last loan
+                                                        // created is our loan.
+                                                        // TODO: Get the address of the newly created in a more robust way.
+                                                        // Possibly use Solidity events.
+                                                        var depositIndex = circleContract.depositIndex().toNumber();
+
+                                                        // We do check whether a single loan was created since our call.
+                                                        // Ways in which this could be incorrect:
+                                                        // 1. False success: Our call failed, but another call succeeded in the mean time.
+                                                        // 2. False failure: our call succeeded, but one or more other calls succeeded in
+                                                        // the mean time.
+                                                        if (depositIndex != lastDepositIndex + 1) {
+                                                            res.status(500).json({
+                                                                "error": "Your deposit was not registered. The BitReserve transaction ID is: " + commitRes.id,
+                                                                "error_location": "creating loan contract"
+                                                            });
+                                                        }
+                                                        else {
+                                                            // 4. Register the deposit in MongoDB.
+
+                                                            // Note: this method is very fragile. Any transaction to the value store should be atomically stored
+                                                            // on our side. This could be realized when the value store of a circle has an individual BitReserve
+                                                            // identity. Storage of the transaction then doesn't have to be completed in this request, but could
+                                                            // be done by an idempotent background process.
+                                                            var dep = new depositModel.Deposit();
+
+                                                            dep.amount = commitRes.denomination.amount;
+                                                            dep.currency = depositData.currency;
+                                                            dep.dateTime = commitRes.createdAt;
+                                                            dep.fromCard = depositData.fromCard;
+                                                            dep.circleId = circleId;
+                                                            // We need to store a 1:1 reference to the deposit in the contract. As Deposits
+                                                            // are not separate contracts in themselves, we store the depositIndex.
+                                                            dep.depositIndex = depositIndex;
+                                                            dep.transactionId = commitRes.id;
+                                                            dep.userId = userRes._id;
+                                                            dep.save();
+
+                                                            res.json(dep);
+                                                        }
+                                                    })
+                                                    .catch(function (createDepositError) {
+                                                        res.status(500).json({
+                                                            "error": createDepositError,
+                                                            "error_location": "registering deposit in contract"
+                                                        });
+                                                    });
+                                            });
+                                        }
+                                    });
                                 }
                             });
                     }
@@ -289,7 +347,7 @@ export class CircleMemberController {
                                                                 .then(function processLoanContract(tx) {
                                                                     // Loan contract was created.
                                                                     // At this point we only have the transaction info. We assume that the last loan
-                                                                    // created is our lon.
+                                                                    // created is our loan.
                                                                     // TODO: Get the address of the newly created in a more robust way.
                                                                     // Possibly use Solidity events.
                                                                     var loanIndex = circleContract.loanIndex().toNumber();
@@ -301,7 +359,7 @@ export class CircleMemberController {
                                                                     // the mean time.
                                                                     if (loanIndex != lastLoanIndex + 1) {
                                                                         res.status(500).json({
-                                                                            "error": "Loan contract can't be found.",
+                                                                            "error": "Your loan was not approved. Possibly the reserves of the Circle are too low to allow your loan.",
                                                                             "error_location": "creating loan contract"
                                                                         });
                                                                     }
