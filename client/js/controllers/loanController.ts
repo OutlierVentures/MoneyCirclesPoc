@@ -51,13 +51,13 @@ class LoanController {
         }
     }
 
-    private getLoanData(circleId: string, cb: any) {
+    private getLoanData(loanId: string, cb: any) {
         var t = this;
 
         // Get Loan data
         this.$http({
             method: 'GET',
-            url: apiUrl + '/loan/' + circleId,
+            url: apiUrl + '/loan/' + loanId,
             headers: { AccessToken: t.$rootScope.userInfo.accessToken }
         }).success(function (resultData: ILoan) {
             t.$scope.loan = resultData;

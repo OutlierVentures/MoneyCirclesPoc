@@ -49,6 +49,7 @@ export class LoanController {
      */
     getOne = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
+        var loanId = req.param("id");
 
         userModel.getUserByAccessToken(token, function (userErr, userRes) {
             if (userErr) {
@@ -58,7 +59,7 @@ export class LoanController {
                 });
             } else {
                 // Get the loan
-                loanModel.Loan.findOne({ userId: userRes._id })
+                loanModel.Loan.findOne({ _id: loanId })
                     .populate('circleId')
                     .exec()
                     .then(function (loan) {
