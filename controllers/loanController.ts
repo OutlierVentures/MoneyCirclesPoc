@@ -99,10 +99,14 @@ export class LoanController {
                     "error": userErr,
                     "error_location": "getting user data",
                 });
-            } else {
-                // Get the loans of the user
-                loanModel.Loan.findOne({ _id: loanData._id }).exec()
-                    .then(function (loan) {
+                return;
+            } 
+
+            // Get the loans of the user
+            loanModel.Loan.findOne({ _id: loanData._id })
+                .populate("circleId")
+                .exec()
+                .then(function (loan) {
 
                     if (!loan.contractAddress) {
                         // Early testing loan, no contract
@@ -110,7 +114,6 @@ export class LoanController {
                             "error": "can't find the smart contract for this loan",
                             "error_location": "loading loan",
                         });
-
                         return;
                     }
 
@@ -126,73 +129,87 @@ export class LoanController {
                                 "error": loadContractError,
                                 "error_location": "loading circle contract",
                             });
-                        } else {
-                            var brs = new bitReserveService.BitReserveService(token);
-                                       
-                            // 1. Create the BitReserve transaction                 
-                            brs.createTransaction(fromCard, loan.amount, loan.currency, t.config.bitReserve.circleVaultAccount.userName, (createErr, createRes) => {
-                                if (createErr) {
-                                    res.status(500).json({
-                                        "error": createErr,
-                                        "error_location": "creating transaction"
-                                    });
-                                }
-                                else {
+                            return;
+                        } 
+                                                     
+                        // Get loan repayment info through the sub contract
+                        var loanContractDefinition = circleContract.allContractTypes.Loan.contractDefinition;
+                        var loanContract = loanContractDefinition.at(loan.contractAddress);
 
-                                    // 2. Commit the BitReserve transaction
-                                    brs.commitTransaction(createRes, (commitErr, commitRes) => {
-                                        if (commitErr) {
-                                            res.status(500).json({
-                                                "error": commitErr,
-                                                "error_location": "committing transaction"
-                                            });
-                                        } else {
-
-                                            // 3. Set the contract as paid
-                                            circleContract.setPaidOut(loan.contractAddress, commitRes.id, { gas: 2500000 })
-                                                .then(web3plus.promiseCommital)
-                                                .then(function afterSetRepayd(tx) {
-                                                    // 4. Store the tx ID in the loan db storage.
-                                                    loan.repaymentTransactionId = commitRes.id;
-                                                    loan.save(function (loanTxSaveErr, loanTxSaveRes) {
-                                                        if (loanTxSaveErr) {
-                                                            res.status(500).json({
-                                                                "error": loanTxSaveErr,
-                                                                "error_location": "saving transaction ID to loan"
-                                                            });
-                                                        }
-                                                        else {
-                                                            // All done. Return database loan.
-                                                            res.json(loan);
-                                                        }
-                                                    });
-                                                })
-                                                .catch(function (setPaidError) {
-                                                    res.status(500).json({
-                                                        "error": setPaidError,
-                                                        "error_location": "setting loan contract as paid"
-                                                    });
-
-                                                });
-                                        }
-                                    });
-
-                                }
+                        if (loanContract.isRepaid()) {
+                            res.status(500).json({
+                                "error": "This loan has already been repaid.",
+                                "error_location": "creating transaction"
                             });
-
+                            return;
                         }
 
-                    });
 
+                        var brs = new bitReserveService.BitReserveService(token);
+                                       
+                        // 1. Create the BitReserve transaction                 
+                        brs.createTransaction(fromCard, loan.amount, loan.currency, t.config.bitReserve.circleVaultAccount.userName, (createErr, createRes) => {
+                            if (createErr) {
+                                res.status(500).json({
+                                    "error": createErr,
+                                    "error_location": "creating transaction"
+                                });
+                                return;
+                            }
 
+                            // 2. Commit the BitReserve transaction
+                            brs.commitTransaction(createRes, (commitErr, commitRes) => {
+                                if (commitErr) {
+                                    res.status(500).json({
+                                        "error": commitErr,
+                                        "error_location": "committing transaction"
+                                    });
+                                    return;
+                                }
 
-                    }, function (loanErr) {
-                        res.status(500).json({
-                            "error": loanErr,
-                            "error_location": "getting loan data",
+                                // 3. Set the contract as paid
+                                circleContract.setRepaid(loan.contractAddress, commitRes.id, { gas: 2500000 })
+                                    .then(web3plus.promiseCommital)
+                                    .then(function afterSetRepaid(tx) {
+                                        // At this point the loan contract should report that it has been repaid.
+                                        if (!loanContract.isRepaid()) {
+                                            res.status(500).json({
+                                                "error": "There was a problem registering your repayment. The Bitreserve transaction has completed succesfully and the transaction ID is " + commitRes.id,
+                                                "error_location": "committing transaction"
+                                            });
+                                            return;
+                                        }
+
+                                        // 4. Store the tx ID in the loan db storage.
+                                        loan.repaymentTransactionId = commitRes.id;
+
+                                        loan.save(function (loanTxSaveErr, loanTxSaveRes) {
+                                            if (loanTxSaveErr) {
+                                                res.status(500).json({
+                                                    "error": loanTxSaveErr,
+                                                    "error_location": "saving transaction ID to loan"
+                                                });
+                                                return;
+                                            }
+                                            // All done. Return database loan.
+                                            res.json(loan);
+                                        });
+                                    })
+                                    .catch(function (setPaidError) {
+                                        res.status(500).json({
+                                            "error": setPaidError,
+                                            "error_location": "setting loan contract as paid"
+                                        });
+                                    });
+                            });
                         });
                     });
-            }
+                }, function (loanErr) {
+                    res.status(500).json({
+                        "error": loanErr,
+                        "error_location": "getting loan data",
+                    });
+                });
         });
     }
 }

@@ -333,6 +333,22 @@ contract Circle {
         return totalLoansAmount;
     }
     
+        /**
+     * Get the total amount of all loans, excluding the ones that haven't
+     * been paid out.
+     */
+    function getTotalRepaidLoansAmount() constant returns (uint totalLoansAmount) {
+        for (uint i = 1; i <= loanIndex; i++) 
+        {
+            var l = loans[i];
+            if(l.isRepaid())
+            {
+                totalLoansAmount += l.amount();
+            }
+        }
+        
+        return totalLoansAmount;
+    }
     /**
      * Get the current balance of the circle, i.e.:
      * [total deposit amount] - [total loan amount]
@@ -349,21 +365,20 @@ contract Circle {
     function getMemberBalance(string memberId) constant returns (uint amount){
         uint totalDepositsAmount;
         uint totalLoansAmount;
-        uint i;
-
+        
         var memberIdHash = sha3(memberId);
-        for (i = 1; i <= depositIndex; i++) 
+        for (uint i = 1; i <= depositIndex; i++) 
         {
             if(deposits[i].memberIdHash == memberIdHash)
                 totalDepositsAmount += deposits[i].amount;
         }
         
-        for (i = 1; i <= loanIndex; i++) 
+        for (uint j = 1; j <= loanIndex; j++) 
         {
-            Loan l = loans[i];
+            Loan l = loans[j];
             
             if(l.userIdHash() == memberIdHash && !l.isRepaid())
-                totalLoansAmount += l.amount();
+                totalLoansAmount += loans[j].amount();
         }
 
         amount = totalDepositsAmount - totalLoansAmount;

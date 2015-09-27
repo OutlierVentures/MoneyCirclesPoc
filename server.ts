@@ -173,6 +173,7 @@ app.get("/api/circle", cmc.getAll);
 // COULD DO: use route /api/circle/join/:id, post empty message (now post body has to contain Circle ID)
 app.post("/api/circle/join", cmc.join);
 app.get("/api/circle/:id", cmc.getOne);
+app.get("/api/circle/:id/statistics", cmc.getStatistics);
 
 app.post("/api/circle/:id/deposit", cmc.deposit);
 app.post("/api/circle/:id/loan", cmc.loan);

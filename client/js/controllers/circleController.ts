@@ -1,5 +1,16 @@
-﻿interface ICircleScope extends ng.IScope {
+﻿interface ICircleStatistics {
+    memberBalance: number,
+    availableBalance: number,
+    balance: number,
+    totalActiveLoansAmount: number,
+    totalPaidLoansAmount: number,
+    totalRepaidLoansAmount: number,
+    totalDepositsAmount: number
+}
+
+interface ICircleScope extends ng.IScope {
     circle: ICircle;
+    statistics: ICircleStatistics;
     vm: CircleController;
     processMessage: string;
     errorMessage: string;
@@ -81,6 +92,29 @@ class CircleController {
 
             cb("Error getting circle data", null);
         });
+    }
+
+    private getCircleStatistics(circleId: string, cb: any) {
+        var t = this;
+
+        // Get statistics
+        this.$http({
+            method: 'GET',
+            url: apiUrl + '/circle/' + circleId + '/statistics',
+            headers: { AccessToken: t.$rootScope.userInfo.accessToken }
+        }).success(function (resultData: ICircleStatistics) {
+            t.$scope.statistics = resultData;
+            cb(null, resultData);
+        }).error(function (error) {
+            // Handle error
+            console.log("Error loading circle statistics:");
+            console.log(error);
+
+            // Show notification
+            t.$scope.errorMessage = error.error;
+
+            cb("Error getting circle data", null);
+        });
 
     }
 
@@ -88,11 +122,14 @@ class CircleController {
         var t = this;
 
         t.getCircleData(circleId, function(err, res) {
-            // TODO: get these amounts
-            // TODO: get more details about investments, members, outstanding loans
-            t.$scope.totalInvestmentAmount = 0;
-            t.$scope.totalLoanAmount = 0;
+            // The getter already sets scope variables. Nothing to do here.
         });
+
+        t.getCircleStatistics(circleId, function (err, res) {
+            // The getter already sets scope variables. Nothing to do here.
+
+        });
+
     }
 
     create() {
@@ -271,7 +308,7 @@ class CircleController {
         // Always use GBP at the moment.
         t.$scope.loan.currency = "GBP";
 
-        t.$scope.processMessage = "Requesting loan...";
+        t.$scope.processMessage = "Requesting loan... this can take a while as your loan is verified against the Circle rules.";
         t.$scope.errorMessage = undefined;
         t.$scope.successMessage = undefined;
 

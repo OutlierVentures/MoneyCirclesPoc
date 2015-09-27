@@ -136,7 +136,8 @@ class LoanController {
                 // Redirect to the circle view
                 t.$scope.repayment = undefined;
                 t.$scope.successMessage = undefined;
-                t.$location.path("/circle/" + t.$scope.loan.circleId)
+                var circle = <ICircle><any>t.$scope.loan.circleId;
+                t.$location.path("/circle/" + circle._id)
             });
         }).error(function (error) {
             t.$scope.processMessage = undefined;

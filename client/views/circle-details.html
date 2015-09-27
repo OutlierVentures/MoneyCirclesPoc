@@ -20,12 +20,6 @@
                         <p>
                             <strong>Common bond:</strong> {{circle.commonBond}}
                         </p>
-                        <p>
-                            <strong>Total amount of your investment:</strong> {{totalInvestmentAmount}} GBP
-                        </p>
-                        <p>
-                            <strong>Total amount of your loans:</strong> {{totalLoanAmount}} GBP
-                        </p>
                         <form role="form" name="circleForm" novalidate>
                             <a href="/circle/{{circle._id}}/deposit" class="btn btn-primary">
                                 Invest money
@@ -39,9 +33,39 @@
                             <div class="panel-heading">There was an error processing your request.</div>
                             <div class="panel-body">{{errorMessage}}</div>
                         </div>
+
+                        <div class="panel panel-default" style="margin-top:1em;">
+                            <div class="panel-heading">
+                                <h3>Statistics</h3>
+                            </div>
+                            <div class="panel-body" ng-hide="statistics">
+                                <p>Crunching the numbers to get you the latest Circle statistics, please bear with us...</p>
+                            </div>
+                            <!-- /.panel-heading -->
+                            <div class="panel-body" ng-show="statistics">
+                                <p>
+                                    <strong>Circle balance:</strong> {{statistics.balance | number: 2}} GBP
+                                </p>
+                                <p>
+                                    <strong>Circle available balance:</strong> {{statistics.availableBalance | number: 2 }} GBP
+                                </p>
+                                <p>
+                                    <strong>Your balance:</strong> {{statistics.memberBalance | number: 2 }} GBP
+                                </p>
+                                <p>
+                                    <strong>Total amount of active loans:</strong> {{statistics.totalActiveLoansAmount | number: 2 }} GBP
+                                </p>
+                                <p>
+                                    <strong>Total amount of repaid loans:</strong> {{statistics.totalRepaidLoansAmount | number: 2 }} GBP
+                                </p>
+                                <p>
+                                    <strong>Total amount of deposits:</strong> {{statistics.totalDepositsAmount | number: 2 }} GBP
+                                </p>
+                            </div>
+                        </div>
+                        <!-- /.col-lg-8 (nested) -->
                     </div>
                 </div>
-                <!-- /.col-lg-8 (nested) -->
             </div>
             <!-- /.panel-body -->
         </div>

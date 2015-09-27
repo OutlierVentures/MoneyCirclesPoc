@@ -115,6 +115,7 @@ describe("Circle financial transactions", () => {
         var newLoanAddress;
         var loanContract;
 
+        var depositTxId = "tx" + Math.round(Math.random() * 1000000);
         var payoutTxId = "tx" + Math.round(Math.random() * 1000000);
         var repaymentTxId = "tx" + Math.round(Math.random() * 1000000);
 
@@ -124,10 +125,13 @@ describe("Circle financial transactions", () => {
         // can be run independently)
         circleContract.addMember(userId, username1, { gas: 2500000 })
             .then(web3plus.promiseCommital)
-            .then(function testGetMember(tx) {
+            .then(function deposit(tx) {
+                // Create a large deposit.
+                return circleContract.createDeposit(userId, amount * 10, depositTxId,{ gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function createLoan(tx) {
                 // Create the loan.
-                // Pass a high amount of gas as this function creates another contract.
-
                 return circleContract.createLoan(userId, amount, { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
@@ -143,7 +147,7 @@ describe("Circle financial transactions", () => {
                 return circleContract.setPaidOut(newLoanAddress, payoutTxId, { gas: 2500000 });
             })
             .then(web3plus.promiseCommital)
-            .then(function testLoan(tx) {
+            .then(function doRepayment(tx) {
                 // Get loan repayment info through the sub contract
                 var loanContractDefinition = circleContract.allContractTypes.Loan.contractDefinition;
                 loanContract = loanContractDefinition.at(newLoanAddress);
@@ -165,6 +169,7 @@ describe("Circle financial transactions", () => {
 
                 // Verify repayment
                 assert.equal(loanContract.repaymentTransactionId(), repaymentTxId, "repayment transaction ID");
+                assert.ok(loanContract.isRepaid(), "isRepaid()");
 
                 done();
             })
@@ -322,8 +327,8 @@ describe("Circle financial transactions", () => {
 
                 // Verify deposit properties.
                 assert.equal(newDeposit[0], userId);
-                assert.equal(newDeposit[1].toNumber(), amount);
-                assert.equal(newDeposit[2], "tx118");
+                assert.equal(newDeposit[2].toNumber(), amount);
+                assert.equal(newDeposit[3], "tx118");
 
                 done();
             })
