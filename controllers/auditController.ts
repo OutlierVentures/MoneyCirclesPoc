@@ -35,6 +35,14 @@ interface ICircleVaultStatistics {
     }
 }
 
+interface IApplicationInfo {
+    blockchain: {
+        nodeUrl: string,
+        smartContractSourceCode: string,
+        genesisBlock: any
+    }
+}
+
 /**
  * Controller for Circle membership operations.
  */
@@ -198,7 +206,7 @@ export class AuditController {
                         stats.totals = {
                             debitAmount: totalDebit,
                             creditAmount: totalCredit
-                        };                        
+                        };
 
                         res.json(stats);
 
@@ -210,5 +218,44 @@ export class AuditController {
                     "error_location": "getting circle vault card"
                 });
             });
+    }
+
+    getInfo = (req: express.Request, res: express.Response) => {
+        var sourceCode: string;
+
+        var t = this;
+
+        web3plus.loadContractSourceCodeFromFile('Circle.sol', function (sourceCodeErr, sourceCode) {
+            if (sourceCodeErr) {
+                res.status(500).json({
+                    "error": sourceCodeErr,
+                    "error_location": "loading smart contract source code"
+                });
+                return;
+            }
+
+            // TODO: get real genesis block
+            var genesisBlock = {
+                "nonce": "0x0000000000000042",
+                "difficulty": "0x40000",
+                "alloc": {
+                },
+                "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "coinbase": "0x0000000000000000000000000000000000000000",
+                "timestamp": "0x00",
+                "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                "extraData": "0x",
+                "gasLimit": "0x4c4b40"
+            }
+
+            var info: IApplicationInfo = {
+                blockchain: {
+                    nodeUrl: t.config.ethereum.nodeUrl,
+                    smartContractSourceCode: sourceCode,
+                    genesisBlock: genesisBlock
+                }
+            }
+            res.json(info);
+        });
     }
 }

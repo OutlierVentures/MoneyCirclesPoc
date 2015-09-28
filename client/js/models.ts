@@ -152,3 +152,11 @@ interface ICircleVaultStatistics {
         credit: number
     }
 }
+
+interface IApplicationInfo {
+    blockchain: {
+        nodeUrl: string,
+        smartContractSourceCode: string,
+        genesisBlock: any
+    }
+}

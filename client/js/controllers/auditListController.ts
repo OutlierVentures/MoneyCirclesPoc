@@ -1,6 +1,7 @@
 ﻿interface IAuditListScope {
     items: IAuditListItem[];
     totals: ICircleStatistics;
+    applicationInfo: IApplicationInfo;
     vaultStatistics: ICircleVaultStatistics;
     vm: AuditListController;
 }
@@ -57,10 +58,26 @@ class AuditListController {
             t.$scope.vaultStatistics = resultData;
         }).error(function (error) {                
             // Handle error
-            console.log("Error circle vault data:");
+            console.log("Error getting circle vault data:");
             console.log(error);
 
             // TODO: show notification
         });
+
+        this.$http({
+            method: 'GET',
+            url: apiUrl + '/audit/info',
+            // Public method
+            //headers: { AccessToken: t.$rootScope.userInfo.accessToken }
+        }).success(function (resultData: IApplicationInfo) {
+            t.$scope.applicationInfo = resultData;
+        }).error(function (error) {                
+            // Handle error
+            console.log("Error getting application info data:");
+            console.log(error);
+
+            // TODO: show notification
+        });
+
     }
 }

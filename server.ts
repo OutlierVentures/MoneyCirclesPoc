@@ -191,6 +191,7 @@ import auditController = require('./controllers/auditController');
 var ac = new auditController.AuditController(config);
 app.get("/api/audit/circle", ac.getList);
 app.get("/api/audit/circle/vault", ac.getCircleVaultData);
+app.get("/api/audit/info", ac.getInfo);
 //app.get("/api/audit/circle/:id", ac.getCircleDetails);
 
 /*********************** HTTP server setup ********************/

@@ -17,6 +17,7 @@
         }
     },
     "ethereum": {
-        "jsonRpcUrl"
+        "jsonRpcUrl": string,
+        "nodeUrl": string
     }
 }
