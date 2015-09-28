@@ -79,7 +79,6 @@ export interface IBitReserveCard {
             "currency": string
         }
     ]
-
 }
 
 interface IBitReserveTransactionCallback {
@@ -92,6 +91,20 @@ interface IBitReserveTransactionsCallback {
 
 interface IBitReserveCardsCallback {
     (error: any, cards: Array<IBitReserveCard>);
+}
+
+/**
+ * Handle an error for a call to the Bitreserve API.
+ */
+function handleBitreserveApiError(body, callback) {
+    var errorResponse;
+    try {
+        errorResponse = JSON.parse(body).error;
+    }
+    catch (e) {
+        errorResponse = body;
+    }
+    callback(errorResponse, null);
 }
 
 export class BitReserveService {
@@ -144,8 +157,7 @@ export class BitReserveService {
                     callback(null, cards);
                 } else {
                     console.log("Error getting cards data: " + error);
-                    var errorResponse = JSON.parse(body);
-                    callback(errorResponse.error, null);
+                    handleBitreserveApiError(body, callback);
                 }
             });
     }
@@ -163,8 +175,7 @@ export class BitReserveService {
                     callback(null, transactions);
                 } else {
                     console.log("Error getting cards data: " + error);
-                    var errorResponse = JSON.parse(body);
-                    callback(errorResponse.error, null);
+                    handleBitreserveApiError(body, callback);
                 }
             });
     }
@@ -192,10 +203,7 @@ export class BitReserveService {
                     // Transaction created
                     callback(null, <IBitReserveTransaction>JSON.parse(body));
                 } else {
-                    console.log("Error creating transaction: " + error);
-                    var errorResponse = JSON.parse(body);
-
-                    callback(errorResponse, null);
+                    handleBitreserveApiError(body, callback);
                 }
             });
 
@@ -216,9 +224,7 @@ export class BitReserveService {
                     callback(null, <IBitReserveTransaction>JSON.parse(body));
                 } else {
                     console.log("Error confirming transaction: " + error);
-                    var errorResponse = JSON.parse(body);
-
-                    callback(errorResponse, null);
+                    handleBitreserveApiError(body, callback);
                 }
             });
 

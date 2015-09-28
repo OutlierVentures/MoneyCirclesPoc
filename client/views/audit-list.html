@@ -25,7 +25,31 @@
                             <h3>Help</h3>
                         </div>
                         <div class="panel-body">
-
+                            <p>This page shows the audit trail of MoneyCircles. The most important numbers are these:</p>
+                            <ul>
+                                <li><label>Total circle balance</label>: the combined balance of all Circles. Effectively this is the money that is owed by MoneyCircles to the Circle members.</li>
+                                <li><label>Total financial reserves</label>: the financial reserves of MoneyCircles stored with Bitreserve. These reserves back up the Circle balances.</li>
+                            </ul>
+                            <p>In a normal situation, these numbers should be equal.</p>
+                            <h3>Circle details</h3>
+                            <p>You can explore the following statistics about all circles.</p>
+                            <ul>
+                                <li><label>Circle ID</label>: the unique ID of the Circle. Circle members can see this ID.</li>
+                                <li><label>Smart contract address</label>: the address of the smart contract that governs this Circle. You can learn more about smart contracts under <em>Technical info</em>.</li>
+                                <li><label>Total deposits</label>: the total amount deposited in the Circle.</li>
+                                <li><label>Total active loans</label>: the total amount of loans that haven't been repaid.</li>
+                                <li><label>Total repaid loans</label>: the total amount of historical loans, that have been repaid.</li>
+                                <li><label>Balance</label>: the total balance of the Circle, which is calculated as <strong>Total deposits</strong> - <strong>Total active loans</strong>.</li>
+                                <li><label>Available balance</label>: the balance that is available for new loans.</li>
+                            </ul>
+                            <h3>Financial transactions</h3>
+                            <p>You can explore all financial transactions going in and out of MoneyCircles. This concerns deposits, withdrawals, loans and repayments.</p>
+                            <ul>
+                                <li><label>Transaction ID</label>: the Bitreserve transaction ID. Click on the link to see transaction details on the Bitreserve ReserveChain.</li>
+                                <li><label>Date</label>: date/time of the transaction.</li>
+                                <li><label>Debit</label>: the amount debited, i.e. sent from a Circle to a member.</li>
+                                <li><label>Credit</label>: the amount credited, i.e. sent from a member to a Circle.</li>
+                            </ul>
                         </div>
                     </div>
                     <div id="tech-info" class="collapse panel panel-default" style="margin-top: 1em">
@@ -88,7 +112,7 @@
                         <p><i>Loading financial reserves data...</i></p>
                     </div>
                     <div ng-show="vaultStatistics">
-                        <p><strong>Total reserves:</strong> {{vaultStatistics.balance}} GBP</p>
+                        <p><strong>Total financial reserves:</strong> {{vaultStatistics.balance}} GBP</p>
 
                         <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#vault-transactions">Show all transactions</button>
 

@@ -180,12 +180,12 @@ export class AuditController {
                             if (t.origin.username == adminAccount) {
                                 t["debitcredit"] = "D";
                                 t["debitAmount"] = t.origin.amount;
-                                totalDebit += t.origin.amount;
+                                totalDebit += parseFloat(t.origin.amount.toString());
                             }
                             else {
                                 t["debitcredit"] = "C";
                                 t["creditAmount"] = t.destination.amount;
-                                totalCredit += t.destination.amount;
+                                totalCredit += parseFloat(t.destination.amount.toString());
                             }
 
                             t.origin.description = undefined;
