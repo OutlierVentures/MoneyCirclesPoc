@@ -5,7 +5,7 @@ import userModel = require('../models/userModel');
 // TODO: make configurable (config debug option)
 require('request').debug = true;
 
-interface IBitReserveTransaction {
+export interface IBitReserveTransaction {
     "id": string,
     "type": string,
     "message": string,
@@ -31,6 +31,7 @@ interface IBitReserveTransaction {
         "username": string
     },
     "destination": {
+        "CardId": string,
         "amount": number,
         "base": number,
         "commission": number,
@@ -38,7 +39,8 @@ interface IBitReserveTransaction {
         "description": string,
         "fee": number,
         "rate": number,
-        "type": string
+        "type": string,
+        "username": string
     },
     "params": {
         "currency": string,
@@ -84,6 +86,10 @@ interface IBitReserveTransactionCallback {
     (error: any, transaction: IBitReserveTransaction);
 }
 
+interface IBitReserveTransactionsCallback {
+    (error: any, transactions: IBitReserveTransaction[]);
+}
+
 interface IBitReserveCardsCallback {
     (error: any, cards: Array<IBitReserveCard>);
 }
@@ -123,7 +129,7 @@ export class BitReserveService {
 
     }
 
-    getCards(callback : IBitReserveCardsCallback) {
+    getCards(callback: IBitReserveCardsCallback) {
 
         console.log("Calling API with token: " + this.authorizationToken);
         request.get('https://api.bitreserve.org/v0/me/cards',
@@ -144,6 +150,25 @@ export class BitReserveService {
             });
     }
 
+    getCardTransactions(cardId: string, callback: IBitReserveTransactionsCallback) {
+        request.get('https://api.bitreserve.org/v0/me/cards/' + cardId + '/transactions',
+            {
+                headers: {
+                    "Authorization": "Bearer " + this.authorizationToken
+                }
+            }, function (error, response, body) {
+                if (!error && response.statusCode == 200) {
+                    var transactions = JSON.parse(body);
+
+                    callback(null, transactions);
+                } else {
+                    console.log("Error getting cards data: " + error);
+                    var errorResponse = JSON.parse(body);
+                    callback(errorResponse.error, null);
+                }
+            });
+    }
+
     createTransaction(
         fromCard: string,
         amount: number,
@@ -156,7 +181,7 @@ export class BitReserveService {
             {
                 headers: {
                     "Authorization": "Bearer " + this.authorizationToken
-                },                
+                },
                 form: {
                     'denomination[currency]': currency,
                     'denomination[amount]': amount,

@@ -4,6 +4,7 @@ import userModel = require('../models/userModel');
 import depositModel = require('../models/depositModel');
 import loanModel = require('../models/loanModel');
 import circleService = require('../services/circleService');
+import bitReserveService = require('../services/bitReserveService');
 import web3plus = require('../node_modules/web3plus/lib/web3plus');
 import _ = require('underscore');
 import Q = require('q');
@@ -23,6 +24,15 @@ interface IAuditDetails {
     statistics: ICircleStatistics,
     loans: [loanModel.ILoan],
     deposits: [depositModel.IDeposit]
+}
+
+interface ICircleVaultStatistics {
+    balance: number,
+    transactions: bitReserveService.IBitReserveTransaction[]
+    totals: {
+        debitAmount: number,
+        creditAmount: number
+    }
 }
 
 /**
@@ -114,7 +124,91 @@ export class AuditController {
                 });
     }
 
-    getCircleDetails = (req: express.Request, res: express.Response) => {
-        // TODO: implement
+    getCircleVaultData = (req: express.Request, res: express.Response) => {
+        var adminAccount = this.config.bitReserve.circleVaultAccount.userName;
+
+        // Get global Circle Vault account
+        userModel.User.findOne({ externalId: adminAccount }).exec()
+            .then((adminUserRes) => {
+                // Create BitReserve connector for global admin user.
+                var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
+
+                // Get the circle vault card.
+                // TODO: explicitly configure which card is used. Now we just get the first
+                // one that has any balance.
+                brs.getCards((cardsErr, cardsRes) => {
+                    if (cardsErr) {
+                        res.status(500).json({
+                            "error": cardsErr,
+                            "error_location": "getting cards"
+                        });
+                        return;
+                    }
+
+                    var firstGbpCardWithBalance = _(cardsRes).find((c) => {
+                        return c.currency == "GBP" && c.normalized[0].available > 0;
+                    });
+
+                    if (firstGbpCardWithBalance == null) {
+                        res.status(500).json({
+                            "error": "can't find circle vault card",
+                            "error_location": "getting circle vault card"
+                        });
+                        return;
+                    }
+
+                    var stats = <ICircleVaultStatistics>{};
+                    stats.balance = firstGbpCardWithBalance.balance;
+
+                    brs.getCardTransactions(firstGbpCardWithBalance.id, (transErr, transactions) => {
+                        if (cardsErr) {
+                            res.status(500).json({
+                                "error": transErr,
+                                "error_location": "getting transactions"
+                            });
+                            return;
+                        }
+
+                        // Anonymize the data. The data contains user names because it's executed as an authenticated
+                        // user.
+                        // Also enhance the data and compute totals.
+                        var totalDebit = 0;
+                        var totalCredit = 0;
+
+                        _(transactions).each(function (t) {
+                            // Mark it as a debit or credit transaction
+                            if (t.origin.username == adminAccount) {
+                                t["debitcredit"] = "D";
+                                t["debitAmount"] = t.origin.amount;
+                                totalDebit += t.origin.amount;
+                            }
+                            else {
+                                t["debitcredit"] = "C";
+                                t["creditAmount"] = t.destination.amount;
+                                totalCredit += t.destination.amount;
+                            }
+
+                            t.origin.description = undefined;
+                            t.origin.username = undefined;
+                            t.destination.description = undefined;
+                            t.destination["username"] = undefined;
+                        });
+
+                        stats.transactions = transactions;
+                        stats.totals = {
+                            debitAmount: totalDebit,
+                            creditAmount: totalCredit
+                        };                        
+
+                        res.json(stats);
+
+                    });
+                });
+            }, function (adminUserErr) {
+                res.status(500).json({
+                    "error": adminUserErr,
+                    "error_location": "getting circle vault card"
+                });
+            });
     }
 }

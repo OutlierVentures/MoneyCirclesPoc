@@ -36,17 +36,22 @@
 
                         </div>
                     </div>
+                    <div><h3>Circle financials</h3></div>
                     <div ng-show="!items" style="margin-top:1em;">
                         <p><i>We're calculating the latest numbers, please bear with us...</i></p>
                     </div>
                     <div ng-show="items && items.length==0">
                         <p>There are no circles yet, therefore the audit shows no results.</p>
                     </div>
-                    <div ng-show="items && items.length>0">
-                        <table class="table table-striped">
+                    <div ng-show="items && items.length>0" style="margin-top:1em;">
+                        <p><strong>Total circle balance:</strong> {{totals.balance | number : 2}} GBP</p>
+
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#circle-list">Show circle details</button>
+
+                        <table class="table table-striped collapse" id="circle-list">
                             <thead>
                                 <tr>
-                                    <th>Circle</th>
+                                    <th>Circle ID</th>
                                     <th>Smart contract address</th>
                                     <th>Total deposits</th>
                                     <th>Total active loans</th>
@@ -57,7 +62,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="stat in items track by stat.circle._id">
-                                    <td><a href="/audit/circle/{{stat.circle._id}}">{{stat.circle.name}}</a></td>
+                                    <td>{{stat.circle._id}}</td>
                                     <td><pre>{{stat.circle.contractAddress}}</pre></td>
                                     <td>{{stat.statistics.totalDepositsAmount | number : 2}}</td>
                                     <td>{{stat.statistics.totalActiveLoansAmount | number : 2}}</td>
@@ -78,6 +83,47 @@
                         </table>
                         <!-- /.col-lg-4 (nested) -->
                     </div>
+                    <div><h3>Financial reserves</h3></div>
+                    <div ng-show="!vaultStatistics">
+                        <p><i>Loading financial reserves data...</i></p>
+                    </div>
+                    <div ng-show="vaultStatistics">
+                        <p><strong>Total reserves:</strong> {{vaultStatistics.balance}} GBP</p>
+
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#vault-transactions">Show all transactions</button>
+
+                        <div class="collapse" id="vault-transactions">
+
+                            <h4>All transactions</h4>
+
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Transaction ID</th>
+                                        <th>Date</th>
+                                        <th>Debit</th>
+                                        <th>Credit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="transaction in vaultStatistics.transactions track by transaction.id">
+                                        <td><a target="_blank" href="https://bitreserve.org/reserve/transactions/{{transaction.id}}">{{transaction.id}}</a></td>
+                                        <td>{{transaction.createdAt}}</td>
+                                        <td>{{transaction.debitAmount | number : 2}}</td>
+                                        <td>{{transaction.creditAmount | number : 2}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Total</strong></td>
+                                        <td></td>
+                                        <td>{{vaultStatistics.totals.debitAmount | number : 2}}</td>
+                                        <td>{{vaultStatistics.totals.creditAmount | number : 2}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+
                     <!-- /.panel-body -->
                 </div>
             </div>
