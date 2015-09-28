@@ -9,11 +9,13 @@ import _ = require('underscore');
 import Q = require('q');
 
 interface IAuditList {
-    [circleId: string]:
-    {
-        circle: circleModel.ICircle,
-        statistics: ICircleStatistics,
-    }
+    items: IAuditListItem[],
+    totals: ICircleStatistics
+}
+
+interface IAuditListItem {
+    circle: circleModel.ICircle,
+    statistics: ICircleStatistics
 }
 
 interface IAuditDetails {
@@ -61,18 +63,41 @@ export class AuditController {
 
                 Q.all(getStatsPromises)
                     .then((statsRes) => {
-                        var auditList: IAuditList = {};
+                        var auditItems = Array<IAuditListItem>();
 
                         // The stats results arrive in an array in the same sequence as the circles 
                         // themselves. Map each stats results to the circle ID.
                         circles.map(function (c, i) {
-                            auditList[c.id] = {
+                            auditItems.push({
                                 circle: c,
                                 statistics: statsRes[i]
-                            };
+                            });
                         });
 
-                        res.send(auditList);
+                        // Compute totals for all the items.
+                        var totals: ICircleStatistics = {
+                            availableBalance: 0,
+                            memberBalance: undefined,
+                            balance: 0,
+                            totalActiveLoansAmount: 0,
+                            totalDepositsAmount: 0,
+                            totalPaidLoansAmount: 0,
+                            totalRepaidLoansAmount: 0
+                        };
+
+                        for (var k in totals) {
+                            totals[k] = _(auditItems).reduce(function (memo, item) {
+                                // As some of the items might be undefined, we use "value || 0".
+                                return memo + (item.statistics[k] || 0);
+                            }, 0);
+                        }
+
+                        var list: IAuditList = {
+                            items: auditItems,
+                            totals: totals
+                        };
+
+                        res.send(list);
                     })
                     .catch((statsErr) => {
                         res.status(500).json({
@@ -87,5 +112,9 @@ export class AuditController {
                         "error_location": "loading circles"
                     });
                 });
+    }
+
+    getCircleDetails = (req: express.Request, res: express.Response) => {
+        // TODO: implement
     }
 }

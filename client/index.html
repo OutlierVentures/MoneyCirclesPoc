@@ -13,6 +13,7 @@
             padding: 40px 0px;
         }
 
+        /* Override ng-hide here to hide panels before angular loads */
         .ng-hide {
             /* this is just another form of hiding an element */
             display: block !important;
@@ -35,12 +36,13 @@
                     <a class="navbar-brand" href="/">Home</a>
                 </div>
                 <div class="navbar-collapse collapse">
-                    <ul class="nav navbar-nav" ng-show="isLoggedIn">
+                    <ul class="nav navbar-nav" ng-show="isLoggedIn || isPublicPage()">
                         <li><a href="/circle/list">Circles</a></li>
                         <!--<li><a href="/user/profile">Profile</a></li>-->
                         <li><a href="/loan/list">Loans</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right" ng-controller="UserAccountController">
+                        <li><a href="/audit">Audit</a></li>
                         <li><a href="/user/login">{{userInfo.name}}</a></li>
                     </ul>
                 </div>
@@ -49,7 +51,7 @@
         <div class="container body-content">
             <div id="app">
                 <!-- Login screen, only shown when not logged in. -->
-                <div ng-include="'views/login.html'" ng-controller="LoginController" ng-hide="isLoggedIn || isProcessingLogin"></div>
+                <div ng-include="'views/login.html'" ng-controller="LoginController" ng-hide="isLoggedIn || isProcessingLogin || isPublicPage()"></div>
                 <!-- This panel shows up erroneously for a short time while Angular
                     is loading. Tried to use -->
                 <div class="panel panel-warning ng-hide" ng-show="loginErrorMessage">
@@ -60,7 +62,7 @@
 
                 <!-- When not logged in, the whole wrapper is hidden. We use the property $rootScope.isLoggedIn
                 which is set to true after a succesful login.-->
-                <div id="wrapper" ng-show="isLoggedIn">
+                <div id="wrapper" ng-show="isLoggedIn || isPublicPage()">
                     <!-- Navigation. The navbar view includes the NavigationController. -->
                     <!--                <nav ng-include="'views/navbar.html'"></nav>-->
 
@@ -117,6 +119,7 @@
     <script src="js/controllers/circleListController.js"></script>
     <script src="js/controllers/loanController.js"></script>
     <script src="js/controllers/loanListController.js"></script>
+    <script src="js/controllers/auditListController.js"></script>
     <script src="js/services.js"></script>
     <script src="js/app.js"></script>
 

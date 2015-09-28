@@ -41,6 +41,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="client\js\app.ts" />
     <TypeScriptCompile Include="client\js\controllers.ts" />
+    <TypeScriptCompile Include="client\js\controllers\auditListController.ts" />
     <TypeScriptCompile Include="client\js\controllers\loanController.ts" />
     <TypeScriptCompile Include="client\js\controllers\loanListController.ts" />
     <TypeScriptCompile Include="client\js\controllers\circleListController.ts" />
@@ -71,6 +72,7 @@
     <TypeScriptCompile Include="routes\index.ts" />
     <Content Include="client\bower.json" />
     <Content Include="client\index.html" />
+    <Content Include="client\views\audit-list.html" />
     <Content Include="client\views\loan-repay.html" />
     <Content Include="client\views\loan-list.html" />
     <Content Include="client\views\loan-request.html" />

@@ -144,6 +144,8 @@ app.get('/circle/list', indexRoute.index);
 app.get('/loan/list', indexRoute.index);
 app.get('/loan/:id', indexRoute.index);
 app.get('/loan/:id/repay', indexRoute.index);
+app.get('/audit', indexRoute.index);
+app.get('/audit/circle/:id', indexRoute.index);
 app.get('/not-found', indexRoute.index);
 
 app.get(githubOauthController.getAuthRoute(), githubOauthController.auth);
@@ -187,7 +189,8 @@ app.post("/api/loan/:id/repay", lc.repay);
 
 import auditController = require('./controllers/auditController');
 var ac = new auditController.AuditController(config);
-app.get("/api/audit/circles", ac.getList);
+app.get("/api/audit/circle", ac.getList);
+app.get("/api/audit/circle/:id", ac.getCircleDetails);
 
 /*********************** HTTP server setup ********************/
 var httpsOptions = {

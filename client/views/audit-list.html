@@ -1,0 +1,88 @@
+﻿<div>
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header" id="page-header">Audit</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-home fa-fw"></i> <h2>Circles audit</h2>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <p>The financials of MoneyCircles are governed by incorruptible smart contracts on a blockchain. You can regard MoneyCircles as a glass bank: everybody can see what's going on inside, but no one can act in ways that are not allowed by the contracts. Not even us.</p>
+                    <p>This public audit allows everyone to inspect the financial streams within MoneyCircles. All amounts are in GBP.</p>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#help">Help</button>
+                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#tech-info">Technical info</button>
+                    </div>
+                    <div id="help" class="collapse panel panel-default" style="margin-top:1em">
+                        <div class="panel-heading">
+                            <h3>Help</h3>
+                        </div>
+                        <div class="panel-body">
+
+                        </div>
+                    </div>
+                    <div id="tech-info" class="collapse panel panel-default" style="margin-top: 1em">
+                        <div class="panel-heading">
+                            <h3>Technical information</h3>
+                        </div>
+                        <div class="panel-body">
+
+                        </div>
+                    </div>
+                    <div ng-show="!items" style="margin-top:1em;">
+                        <p><i>We're calculating the latest numbers, please bear with us...</i></p>
+                    </div>
+                    <div ng-show="items && items.length==0">
+                        <p>There are no circles yet, therefore the audit shows no results.</p>
+                    </div>
+                    <div ng-show="items && items.length>0">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Circle</th>
+                                    <th>Smart contract address</th>
+                                    <th>Total deposits</th>
+                                    <th>Total active loans</th>
+                                    <th>Total repaid loans</th>
+                                    <th>Balance</th>
+                                    <th>Available balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="stat in items track by stat.circle._id">
+                                    <td><a href="/audit/circle/{{stat.circle._id}}">{{stat.circle.name}}</a></td>
+                                    <td><pre>{{stat.circle.contractAddress}}</pre></td>
+                                    <td>{{stat.statistics.totalDepositsAmount | number : 2}}</td>
+                                    <td>{{stat.statistics.totalActiveLoansAmount | number : 2}}</td>
+                                    <td>{{stat.statistics.totalRepaidLoansAmount | number : 2}}</td>
+                                    <td>{{stat.statistics.balance | number : 2}}</td>
+                                    <td>{{stat.statistics.availableBalance | number : 2}}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total</strong></td>
+                                    <td></td>
+                                    <td>{{totals.totalDepositsAmount | number : 2}}</td>
+                                    <td>{{totals.totalActiveLoansAmount | number : 2}}</td>
+                                    <td>{{totals.totalRepaidLoansAmount | number : 2}}</td>
+                                    <td>{{totals.balance | number : 2}}</td>
+                                    <td>{{totals.availableBalance | number : 2}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <!-- /.col-lg-4 (nested) -->
+                    </div>
+                    <!-- /.panel-body -->
+                </div>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+    </div>
+</div>

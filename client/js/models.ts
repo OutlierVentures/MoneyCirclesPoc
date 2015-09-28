@@ -79,3 +79,20 @@ interface ILoan extends IDocument {
     dateTime: Date;
     purpose: string;
 }
+
+interface IAuditList {
+    items: IAuditListItem[],
+    totals: ICircleStatistics
+}
+
+interface IAuditListItem {
+    circle: ICircle,
+    statistics: ICircleStatistics
+}
+
+interface IAuditDetails {
+    circle: ICircle,
+    statistics: ICircleStatistics,
+    loans: [ILoan],
+    deposits: [IDeposit]
+}
