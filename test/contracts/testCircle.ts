@@ -1,7 +1,8 @@
 ﻿import assert = require('assert');
 import web3config = require('./web3config');
+import fs = require('fs');
 
-var web3plus = web3config.createWeb3();
+var web3plus = web3config.web3plus;
 var web3 = web3plus.web3;
 
 describe("Circle", () => {
@@ -20,6 +21,8 @@ describe("Circle", () => {
         this.timeout(180000);
 
         timeBeforeDeployment = Date.now();
+
+        web3config.createWeb3();
 
         web3plus.deployContractFromFile("Circle.sol",
             "Circle",

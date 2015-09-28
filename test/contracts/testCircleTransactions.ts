@@ -1,7 +1,7 @@
 ﻿import assert = require('assert');
 import web3config = require('./web3config');
 
-var web3plus = web3config.createWeb3();
+var web3plus = web3config.web3plus;
 var web3 = web3plus.web3;
 
 describe("Circle financial transactions", () => {
@@ -18,6 +18,8 @@ describe("Circle financial transactions", () => {
     before(function (done) {
         // It can take quite a while til transactions are processed.
         this.timeout(180000);
+
+        web3plus = web3config.createWeb3();
 
         timeBeforeDeployment = Date.now();
 
