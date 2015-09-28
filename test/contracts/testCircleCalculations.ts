@@ -331,7 +331,7 @@ describe("Circle calculations", () => {
                 assert.equal(member2balance, 4 * amount);
 
                 var circleBalance = circleContract.getBalance().toNumber();
-                assert.equal(circleBalance, 6 * amount - 100);
+                assert.equal(circleBalance, balanceBefore + 6 * amount - 100);
                 done();
             })
             .catch((reason) => {
