@@ -185,6 +185,10 @@ app.get("/api/loan", lc.getAll);
 app.get("/api/loan/:id", lc.getOne);
 app.post("/api/loan/:id/repay", lc.repay);
 
+import auditController = require('./controllers/auditController');
+var ac = new auditController.AuditController(config);
+app.get("/api/audit/circles", ac.getList);
+
 /*********************** HTTP server setup ********************/
 var httpsOptions = {
     key: fs.readFileSync('key.pem'),

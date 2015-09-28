@@ -53,6 +53,7 @@
     <TypeScriptCompile Include="client\typings\cryptojs\cryptojs.d.ts" />
     <TypeScriptCompile Include="client\typings\jquery\jquery.d.ts" />
     <TypeScriptCompile Include="client\typings\tsd.d.ts" />
+    <TypeScriptCompile Include="controllers\auditController.ts" />
     <TypeScriptCompile Include="controllers\loanController.ts" />
     <TypeScriptCompile Include="controllers\circleMemberController.ts" />
     <TypeScriptCompile Include="controllers\circleAdminController.ts" />
@@ -62,6 +63,7 @@
     <TypeScriptCompile Include="models\configModel.ts" />
     <TypeScriptCompile Include="models\loanModel.ts" />
     <TypeScriptCompile Include="models\depositModel.ts" />
+    <TypeScriptCompile Include="services\circleService.ts" />
     <TypeScriptCompile Include="services\bitReserveService.ts" />
     <TypeScriptCompile Include="controllers\oauthController.ts" />
     <TypeScriptCompile Include="models\userModel.ts" />

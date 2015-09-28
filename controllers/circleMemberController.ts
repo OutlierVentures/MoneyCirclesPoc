@@ -4,6 +4,7 @@ import userModel = require('../models/userModel');
 import depositModel = require('../models/depositModel');
 import loanModel = require('../models/loanModel');
 import bitReserveService = require('../services/bitReserveService');
+import circleService = require('../services/circleService');
 import web3plus = require('../node_modules/web3plus/lib/web3plus');
 import _ = require('underscore');
 
@@ -49,58 +50,19 @@ export class CircleMemberController {
     getStatistics = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
-        circleModel.Circle.findOne({ _id: req.params.id }).exec()
-            .then((circle) => {
-                userModel.getUserByAccessToken(token, function (userErr, userRes) {
-                    if (userErr) {
-                        res.status(500).json({
-                            "error": userErr,
-                            "error_location": "getting user data",
-                            "status": "Error",
-                        });
-                    } else {
-                        var user = <userModel.IUser>userRes;
+        var cs = new circleService.CircleService(token);
 
-                        // Load the circle contract to get balances
-                        var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function (loadContractError, circleContract) {
-                            if (loadContractError) {
-                                res.status(500).json({
-                                    "error": loadContractError,
-                                    "error_location": "loading circle contract",
-                                });
-                            } else {
-                                var memberBalance = circleContract.getMemberBalance(user.id).toNumber() / 100;
-                                var circleAvailableBalance = circleContract.getAvailableBalance().toNumber() / 100;
-                                var circleBalance = circleContract.getBalance().toNumber() / 100;
-                                var totalActiveLoans = circleContract.getTotalActiveLoansAmount().toNumber() / 100;
-                                var totalPaidLoans = circleContract.getTotalPaidLoansAmount().toNumber() / 100;
-                                var totalRepaidLoans = circleContract.getTotalRepaidLoansAmount().toNumber() / 100;
-                                var totalDeposits = circleContract.getTotalDepositsAmount().toNumber() / 100;
-
-                                var statistics = {
-                                    memberBalance: memberBalance,
-                                    availableBalance: circleAvailableBalance,
-                                    balance: circleBalance,
-                                    totalActiveLoansAmount: totalActiveLoans,
-                                    totalPaidLoansAmount: totalPaidLoans,
-                                    totalRepaidLoansAmount: totalRepaidLoans,
-                                    totalDepositsAmount: totalDeposits
-                                };
-
-                                res.send(statistics);
-                            }
-                        });
-                    }
-                });
-            }, (circleErr) => {
+        cs.getCircleStatistics(req.params.id)
+            .then((stats) => {
+                res.json(stats);
+            })
+            .catch((err) => {
                 res.status(500).json({
-                    "error": circleErr,
-                    "error_location": "getting user data",
-                    "status": "Error",
+                    "error": err,
+                    "error_location": "getting circle statistics"
                 });
             });
     }
-
 
     join = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
