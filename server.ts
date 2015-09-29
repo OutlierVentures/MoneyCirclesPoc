@@ -164,9 +164,9 @@ app.get("/api/bitreserve/me/cards/withBalance", brc.getCardsWithBalance);
 
 // Circle data
 import circleAdminController = require('./controllers/circleAdminController');
-var cc = new circleAdminController.CircleAdminController;
+var cac = new circleAdminController.CircleAdminController(config);
 
-app.post("/api/circle", cc.create);
+app.post("/api/circle", cac.create);
 
 import circleMemberController = require('./controllers/circleMemberController');
 var cmc = new circleMemberController.CircleMemberController(config);
