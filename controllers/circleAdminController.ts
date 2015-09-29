@@ -67,16 +67,9 @@ export class CircleAdminController {
                     .then(() => {
                         // Ideally we would create a separate card in the circle vault account
                         // for the new Circle here. This can be done using the code below. 
-                        // However that will make deposits more complex: when sending a transaction
-                        // from a user to the vault account, the user can't specify to which card.
-                        // Hence the transaction will arrive on an unspecified card, probably the
-                        // default "GBP card". To transfer the incoming transaction to the right
-                        // card would require another transaction by the circle vault: from "GBP card"
-                        // to the Circle card.
-                        // Furthermore the support for ICircle.vaultCardId would have to be incorporated
-                        // into loans, repayments (with a similar situation as deposits) and audits.
-
-                        // So for now, don't implement.
+                        // Each Circle then gets its own bitcoin address which can be used for 
+                        // transfers to the vault. For transfers out we use the cardId.                        
+                        // COULD DO: implement, here and in all transfers, audit page.
 
                         //brs = new bitReserveService.BitReserveService(vaultUser.accessToken);
                         //brs.createCard("POC - " + circleData.name, function (createCardErr, card) {
@@ -87,7 +80,8 @@ export class CircleAdminController {
                         //        });
                         //        return;
                         //    }
-                        //    circleData.vaultCardId = card.id;
+                        //    circleData.cardId = card.id;
+                        //    circleData.cardBitcoinAddress = card.address.bitcoin;
                             
                         // Store in MongoDB and return.
                         circleModel.Circle.create(circleData, (err, circleRes) => {

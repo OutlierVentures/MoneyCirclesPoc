@@ -11,7 +11,7 @@ export interface IBitReserveTransaction {
     "message": string,
     "status": string,
     "RefundedById": string,
-    "createdAt": Date,
+    "createdAt": string,
     "denomination": {
         "amount": number,
         "currency": string,
@@ -61,7 +61,7 @@ export interface IBitReserveCard {
     "currency": string,
     "id": string,
     "label": string,
-    "lastTransactionAt": Date,
+    "lastTransactionAt": string,
     "settings": {
         "position": number,
         "starred": boolean

@@ -82,6 +82,8 @@ export class LoanController {
         var loanData = req.body;
         var t = this;
 
+        var vaultAddress = t.config.bitReserve.circleVaultAccount.cardBitcoinAddress;
+
         // Another bit of working around type safety: the request contains a parameter 
         // not present in the Loan entity. Get it out untyped.
         var fromCard = req.body.repayFromCard;
@@ -148,7 +150,7 @@ export class LoanController {
                         var brs = new bitReserveService.BitReserveService(token);
                                        
                         // 1. Create the BitReserve transaction                 
-                        brs.createTransaction(fromCard, loan.amount, loan.currency, t.config.bitReserve.circleVaultAccount.userName, (createErr, createRes) => {
+                        brs.createTransaction(fromCard, loan.amount, loan.currency, vaultAddress, (createErr, createRes) => {
                             if (createErr) {
                                 res.status(500).json({
                                     "error": createErr,

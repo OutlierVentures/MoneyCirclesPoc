@@ -103,7 +103,7 @@ interface IBitReserveTransaction {
     "message": string,
     "status": string,
     "RefundedById": string,
-    "createdAt": Date,
+    "createdAt": string,
     "denomination": {
         "amount": number,
         "currency": string,

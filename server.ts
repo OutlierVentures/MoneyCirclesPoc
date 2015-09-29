@@ -69,7 +69,7 @@ var githubConfig = {
     oauthSite: "https://github.com/login",
     oauthTokenPath: '/oauth/access_token',
     oauthAuthorizationPath: '/oauth/authorize',
-    adminUserId: config.bitReserve.circleVaultAccount.userName
+    adminUserId: "nonexistent"
 };
 
 var githubOauthController = new oauthController.OAuthController(githubConfig);

@@ -15,7 +15,9 @@
         },
         "circleVaultAccount": {
             "__comment": "The main BitReserve account that stores funds of Circles.",
-            "userName": "MoneyCircles"
+            "userName": "MoneyCircles",
+            "cardId": "",
+            "cardBitcoinAddress":  ""
         }
     },
     "ethereum": {

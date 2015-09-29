@@ -13,7 +13,9 @@
             "clientSecret": string
         },
         "circleVaultAccount": {
-            "userName": string
+            "userName": string,
+            "cardBitcoinAddress": string,
+            "cardId": string
         }
     },
     "ethereum": {

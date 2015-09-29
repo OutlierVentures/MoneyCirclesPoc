@@ -134,6 +134,7 @@ export class AuditController {
 
     getCircleVaultData = (req: express.Request, res: express.Response) => {
         var adminAccount = this.config.bitReserve.circleVaultAccount.userName;
+        var t = this;
 
         // Get global Circle Vault account
         userModel.User.findOne({ externalId: adminAccount }).exec()
@@ -142,8 +143,6 @@ export class AuditController {
                 var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
 
                 // Get the circle vault card.
-                // TODO: explicitly configure which card is used. Now we just get the first
-                // one that has any balance.
                 brs.getCards((cardsErr, cardsRes) => {
                     if (cardsErr) {
                         res.status(500).json({
@@ -153,11 +152,11 @@ export class AuditController {
                         return;
                     }
 
-                    var firstGbpCardWithBalance = _(cardsRes).find((c) => {
-                        return c.currency == "GBP" && c.normalized[0].available > 0;
+                    var vaultCard = _(cardsRes).find((c) => {
+                        return c.address.bitcoin == t.config.bitReserve.circleVaultAccount.cardBitcoinAddress;
                     });
-
-                    if (firstGbpCardWithBalance == null) {
+                    
+                    if (vaultCard == null) {
                         res.status(500).json({
                             "error": "can't find circle vault card",
                             "error_location": "getting circle vault card"
@@ -166,9 +165,9 @@ export class AuditController {
                     }
 
                     var stats = <ICircleVaultStatistics>{};
-                    stats.balance = firstGbpCardWithBalance.balance;
+                    stats.balance = vaultCard.balance;
 
-                    brs.getCardTransactions(firstGbpCardWithBalance.id, (transErr, transactions) => {
+                    brs.getCardTransactions(vaultCard.id, (transErr, transactions) => {
                         if (cardsErr) {
                             res.status(500).json({
                                 "error": transErr,
@@ -181,7 +180,7 @@ export class AuditController {
                         // user.
                         // Also enhance the data and compute totals.
                         var totalDebit = 0;
-                        var totalCredit = 0;
+                        var totalCredit = 0;                        
 
                         _(transactions).each(function (t) {
                             // Mark it as a debit or credit transaction
