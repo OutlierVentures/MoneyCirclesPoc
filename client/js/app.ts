@@ -21,7 +21,7 @@ module MoneyCircles {
     'use strict';
 
     // All controllers are registered here.
-    var moneyCirclesApp = angular.module('moneyCirclesApp', ['ngResource', 'ngRoute', 'ngSanitize', 'angularMoment'])
+    var moneyCirclesApp = angular.module('moneyCirclesApp', ['ngResource', 'ngRoute', 'ngSanitize'])
         .controller('NavigationController', NavigationController)
         .controller('LoginController', LoginController)
         .controller('UserAccountController', UserAccountController)

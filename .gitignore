@@ -190,7 +190,7 @@ ModelManifest.xml
 /.ntvs_analysis.dat
 
 
-client/vendors/
+client/vendors/**
 
 # Generated Javascript artifacts
 *.js.map
