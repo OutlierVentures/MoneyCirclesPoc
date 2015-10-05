@@ -1,4 +1,4 @@
-﻿FROM ubuntu:14.04
+FROM ubuntu:14.04
 MAINTAINER Aron van Ammers
 
 RUN apt-get update
@@ -17,3 +17,5 @@ RUN curl https://install-geth.ethereum.org -L | sed 's/\twait_for_user/\techo "S
 
 # Install solidity compiler
 RUN apt-get install -y solc
+
+RUN echo Happy gething!
