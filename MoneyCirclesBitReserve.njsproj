@@ -457,11 +457,13 @@
     <Folder Include="client\typings\angularjs\" />
     <Folder Include="client\typings\cryptojs\" />
     <Folder Include="client\typings\jquery\" />
+    <Folder Include="deploy\geth-nodejs\" />
     <Folder Include="models\" />
     <Folder Include="controllers\" />
     <Folder Include="client\" />
     <Folder Include="contracts\" />
     <Folder Include="lib\" />
+    <Folder Include="deploy\" />
     <Folder Include="services\" />
     <Folder Include="routes\" />
     <Folder Include="test\" />
@@ -598,6 +600,7 @@
     <Compile Include="client\vendors\jquery\test\unit\wrap.js" />
     <Compile Include="client\vendors\underscore\underscore-min.js" />
     <Compile Include="client\vendors\underscore\underscore.js" />
+    <Compile Include="deploy\geth-nodejs\Dockerfile" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
