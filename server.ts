@@ -198,13 +198,17 @@ app.get("/api/audit/info", ac.getInfo);
 var httpsOptions;
 
 try {
-    // Use a custom certificate.
+    console.log("Trying custom certificate.");
+
     httpsOptions = {
         key: fs.readFileSync('key.pem'),
         cert: fs.readFileSync('cert.pem')
     };
 
+    console.log("Using custom certificate.");
+
     try {
+        console.log("Trying to read intermediate certificate.");
         var chainLines = fs.readFileSync('intermediate.pem', 'utf-8').split("\n");
         var cert = [];
         var ca = [];
@@ -216,12 +220,14 @@ try {
             }
         });
         httpsOptions.ca = ca;
+        console.log("Using intermediate certificate.");
     }
     catch (e) {
+        console.log("Intermediate certificate could not be read.");
     }
 }
 catch (e) {
-    // Fall back to default self-signed certificate.
+    console.log("Falling back to default self-signed certificate.");
     httpsOptions = {
         key: fs.readFileSync('key.default.pem'),
         cert: fs.readFileSync('cert.default.pem')
