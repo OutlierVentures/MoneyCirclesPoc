@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t "blockstars/mcpoc-server" server/ 
+docker build -t "blockstars/mcpoc_server" server/ 

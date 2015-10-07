@@ -1,3 +1,3 @@
 #!/bin/sh
 
-docker build -t "blockstars/mcpoc-blockchain" blockchain/ 
+docker build -t "blockstars/mcpoc_blockchain" blockchain/ 
