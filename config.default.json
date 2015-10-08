@@ -21,7 +21,7 @@
         }
     },
     "ethereum": {
-        "jsonRpcUrl": "http://poc1-dev.moneycircles.com:8545",
+        "jsonRpcUrl": "http://americano.servers.blockstars.io:8101",
         "nodeUrl": "poc1-dev.moneycircles.com:30301"
     }
 }
