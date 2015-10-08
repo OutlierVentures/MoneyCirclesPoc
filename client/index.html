@@ -6,14 +6,10 @@
     <meta name="viewport" content="width=device-width" />
     <title>MoneyCircles</title>
     <!-- Bootstrap Core CSS -->
-    <link href="vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendors/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
     <link href="vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-
     <style type="text/css">
-        #app {
-            padding: 40px 0px;
-        }
-
         /* Override ng-hide here to hide panels before angular loads */
         .ng-hide {
             /* this is just another form of hiding an element */
@@ -26,7 +22,7 @@
 </head>
 <body>
     <div ng-app="moneyCirclesApp">
-        <div class="navbar navbar-inverse navbar-fixed-top" ng-show="!isGlobalAdmin">
+        <div class="navbar navbar-default navbar-fixed-top" ng-show="!isGlobalAdmin" bs-navbar>
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -34,32 +30,39 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">Home</a>
+                    <a class="navbar-brand" href="/" ng-show="isLoggedIn">
+                        <img src="images/logo-dot.png">
+                        <!-- <span class="glyphicon glyphicon-home" aria-hidden="true"></span> -->
+                    </a>
+                    <a class="navbar-brand" href="/" ng-hide="isLoggedIn">
+                        <img src="images/logo.png">
+                    </a>
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav" ng-show="isLoggedIn">
-                        <li><a href="/circle/list">Circles</a></li>
-                        <!--<li><a href="/user/profile">Profile</a></li>-->
-                        <li><a href="/loan/list">Loans</a></li>
+                        <li data-match-route="/circle/list"><a href="/circle/list">Circles</a></li>
+                        <li><a href="/loan/list">Loans</a></li>                        <li data-match-route="/audit"><a href="/audit">Audit</a></li>
                     </ul>
-                    <ul class="nav navbar-nav navbar-right" ng-controller="UserAccountController">
-                        <li><a href="/audit">Audit</a></li>
-                        <li><a href="/user/login">{{userInfo.name}}</a></li>
+                    <!-- <form class="navbar-form navbar-left">
+                        <input type="text" class="form-control" placeholder="Search">
+                    </form> -->
+                    <ul class="nav navbar-nav navbar-right" ng-controller="UserAccountController" ng-show="isLoggedIn">
+                        <li data-match-route="/user/login"><a href="/user/login"><img class="mc-avatar pull-left" src="images/avatar.png">{{userInfo.name}}</a></li>
                     </ul>
                 </div>
             </div>
         </div>
-        <div class="container body-content">
+        <div class="body-content">
             <div id="app">
                 <!-- Login screen, only shown when not logged in. -->
-                <div ng-include="'views/login.html'" ng-controller="LoginController" ng-hide="isLoggedIn || isProcessingLogin || isPublicPage()"></div>
-                <!-- This panel shows up erroneously for a short time while Angular
-                    is loading. Tried to use -->
-                <div class="panel panel-warning ng-hide" ng-show="loginErrorMessage">
-                    <div class="panel-heading">Oops</div>
-                    <div class="panel-body">{{loginErrorMessage}}</div>
+                <div class="container">
+                    <div class="mc-login" ng-include="'views/login.html'" ng-controller="LoginController" ng-hide="isLoggedIn || isProcessingLogin || isPublicPage()"></div>
+                    <div class="panel panel-warning ng-hide" ng-show="loginErrorMessage">
+                        <div class="panel-heading">Oops</div>
+                        <div class="panel-body">{{loginErrorMessage}}</div>
+                    </div>
+                    <div ng-include="'views/login-processing.html'" ng-show="isProcessingLogin"></div>
                 </div>
-                <div ng-include="'views/login-processing.html'" ng-show="isProcessingLogin"></div>
 
                 <!-- When not logged in, the whole wrapper is hidden. We use the property $rootScope.isLoggedIn
                 which is set to true after a succesful login.-->
@@ -71,7 +74,6 @@
                     <div id="page-wrapper">
                         <!-- Main view. The view for the current ngRoute will be shown here. -->
                         <div ng-view></div>
-
                     </div>
 
                     <!-- /#page-wrapper -->
@@ -80,11 +82,13 @@
             </div>
 
         </div>
-
-        <hr />
         <footer>
-            <p>&copy; 2015 - Money Circles Ltd</p>
-            <p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.</p>
+            <div class="container">
+            <img src="images/logo-footer.png">
+            <br /><br />
+            <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License." style="border-width:0"
+                 src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
+             </div>
         </footer>
     </div>
 
@@ -100,6 +104,8 @@
     <script src="vendors/angular-resource/angular-resource.min.js"></script>
     <script src="vendors/angular-route/angular-route.min.js"></script>
     <script src="vendors/angular-sanitize/angular-sanitize.min.js"></script>
+    <script src="vendors/angular-strap/dist/angular-strap.min.js"></script>
+    <script src="vendors/angular-strap/dist/angular-strap.tpl.min.js"></script>
 
     <script src="vendors/async/lib/async.js"></script>
     <script src="vendors/underscore/underscore-min.js"></script>
