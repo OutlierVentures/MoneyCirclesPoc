@@ -5,13 +5,13 @@ import userModel = require('../models/userModel');
 // TODO: make configurable (config debug option)
 require('request').debug = true;
 
-interface IBitReserveTransaction {
+export interface IBitReserveTransaction {
     "id": string,
     "type": string,
     "message": string,
     "status": string,
     "RefundedById": string,
-    "createdAt": Date,
+    "createdAt": string,
     "denomination": {
         "amount": number,
         "currency": string,
@@ -31,6 +31,7 @@ interface IBitReserveTransaction {
         "username": string
     },
     "destination": {
+        "CardId": string,
         "amount": number,
         "base": number,
         "commission": number,
@@ -38,7 +39,8 @@ interface IBitReserveTransaction {
         "description": string,
         "fee": number,
         "rate": number,
-        "type": string
+        "type": string,
+        "username": string
     },
     "params": {
         "currency": string,
@@ -59,7 +61,7 @@ export interface IBitReserveCard {
     "currency": string,
     "id": string,
     "label": string,
-    "lastTransactionAt": Date,
+    "lastTransactionAt": string,
     "settings": {
         "position": number,
         "starred": boolean
@@ -77,25 +79,63 @@ export interface IBitReserveCard {
             "currency": string
         }
     ]
-
 }
 
 interface IBitReserveTransactionCallback {
     (error: any, transaction: IBitReserveTransaction);
 }
 
+interface IBitReserveTransactionsCallback {
+    (error: any, transactions: IBitReserveTransaction[]);
+}
+
 interface IBitReserveCardsCallback {
     (error: any, cards: Array<IBitReserveCard>);
+}
+
+interface IBitReserveCardCallback {
+    (error: any, card: IBitReserveCard);
+}
+
+/**
+ * Handle an error for a call to the Bitreserve API.
+ */
+function handleBitreserveApiError(error, body, callback) {
+    var errorResponse;
+    try {
+        if (body) {
+            errorResponse = JSON.parse(body);
+            if (errorResponse.error)
+                errorResponse = errorResponse.error;
+        }
+        else
+            errorResponse = error;
+    }
+    catch (e) {
+        errorResponse = error;
+    }
+    // Ensure that errorResponse is not falsey so callback is always handled as error.
+    if (!errorResponse)
+        errorResponse = "Unknown error";
+
+    callback(errorResponse, null);
+}
+
+function isSuccessStatusCode(statusCode: number): boolean {
+    if (('' + statusCode).match(/^2\d\d$/))
+        return true;
+    return false;
 }
 
 export class BitReserveService {
     constructor(
         private authorizationToken: string) {
     }
+
     /**
      * Gets info about the current user.
      */
-    getUser(callback) {
+    getUser = (callback) => {
         console.log("Calling API with token: " + this.authorizationToken);
         request.get('https://api.bitreserve.org/v0/me',
             {
@@ -103,7 +143,7 @@ export class BitReserveService {
                     "Authorization": "Bearer " + this.authorizationToken
                 }
             }, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
+                if (!error && isSuccessStatusCode(response.statusCode)) {
                     var userData = JSON.parse(body);
 
                     // Create a new user array.
@@ -123,7 +163,7 @@ export class BitReserveService {
 
     }
 
-    getCards(callback : IBitReserveCardsCallback) {
+    getCards = (callback: IBitReserveCardsCallback) => {
 
         console.log("Calling API with token: " + this.authorizationToken);
         request.get('https://api.bitreserve.org/v0/me/cards',
@@ -132,51 +172,93 @@ export class BitReserveService {
                     "Authorization": "Bearer " + this.authorizationToken
                 }
             }, function (error, response, body) {
-                if (!error && response.statusCode == 200) {
+                if (!error && isSuccessStatusCode(response.statusCode)) {
                     var cards = JSON.parse(body);
 
                     callback(null, cards);
                 } else {
                     console.log("Error getting cards data: " + error);
-                    var errorResponse = JSON.parse(body);
-                    callback(errorResponse.error, null);
+                    handleBitreserveApiError(error, body, callback);
                 }
             });
     }
 
-    createTransaction(
+    getCardTransactions = (cardId: string, callback: IBitReserveTransactionsCallback) => {
+        request.get('https://api.bitreserve.org/v0/me/cards/' + cardId + '/transactions',
+            {
+                headers: {
+                    "Authorization": "Bearer " + this.authorizationToken
+                }
+            }, function (error, response, body) {
+                if (!error && isSuccessStatusCode(response.statusCode)) {
+                    var transactions = JSON.parse(body);
+
+                    callback(null, transactions);
+                } else {
+                    console.log("Error getting cards data: " + error);
+                    handleBitreserveApiError(error, body, callback);
+                }
+            });
+    }
+
+    /**
+     * Create a new card.
+     */
+    createCard = (label: string, callback: IBitReserveCardCallback) => {
+        console.log("Calling API with token: " + this.authorizationToken);
+        request.post('https://api.bitreserve.org/v0/me/cards',
+            {
+                headers: {
+                    "Authorization": "Bearer " + this.authorizationToken
+                },
+                json: {
+                    "label": label,
+                    "currency": "GBP"
+                }
+            }, function (error, response, body) {
+                if (!error && isSuccessStatusCode(response.statusCode)) {
+                    // In this case the request module returns the data as already parsed. 
+                    // Possibly because the request is done with the 'json' parameter.
+                    var card = body;
+
+                    callback(null, card);
+                } else {
+                    console.log("Error creating card: " + error);
+                    handleBitreserveApiError(error, body, callback);
+                }
+            });
+    }
+
+    createTransaction = (
         fromCard: string,
         amount: number,
         currency: string,
         recipient: string,
-        callback: IBitReserveTransactionCallback) {
+        callback: IBitReserveTransactionCallback) => {
 
         // denomination[currency]=BTC&denomination[amount]=0.1&destination=foo@bar.com
         request.post('https://api.bitreserve.org/v0/me/cards/' + fromCard + '/transactions',
             {
                 headers: {
                     "Authorization": "Bearer " + this.authorizationToken
-                },                
+                },
                 form: {
                     'denomination[currency]': currency,
                     'denomination[amount]': amount,
                     'destination': recipient
                 }
             }, function (error, response, body) {
-                if (!error && ('' + response.statusCode).match(/^2\d\d$/)) {
+                if (!error && isSuccessStatusCode(response.statusCode)) {
                     // Transaction created
                     callback(null, <IBitReserveTransaction>JSON.parse(body));
                 } else {
-                    console.log("Error creating transaction: " + error);
-                    var errorResponse = JSON.parse(body);
-
-                    callback(errorResponse, null);
+                    handleBitreserveApiError(error, body, callback);
                 }
             });
 
     }
 
-    commitTransaction(transaction: IBitReserveTransaction, callback: IBitReserveTransactionCallback) {
+    commitTransaction = (transaction: IBitReserveTransaction, callback: IBitReserveTransactionCallback) => {
         // POST https://api.bitreserve.org/v0/me/cards/:card/transactions/:id/commit
 
         request.post('https://api.bitreserve.org/v0/me/cards/' + transaction.origin.CardId
@@ -186,14 +268,12 @@ export class BitReserveService {
                     "Authorization": "Bearer " + this.authorizationToken
                 },
             }, function (error, response, body) {
-                if (!error && ('' + response.statusCode).match(/^2\d\d$/)) {
+                if (!error && isSuccessStatusCode(response.statusCode)) {
                     // Transaction committed
                     callback(null, <IBitReserveTransaction>JSON.parse(body));
                 } else {
                     console.log("Error confirming transaction: " + error);
-                    var errorResponse = JSON.parse(body);
-
-                    callback(errorResponse, null);
+                    handleBitreserveApiError(error, body, callback);
                 }
             });
 

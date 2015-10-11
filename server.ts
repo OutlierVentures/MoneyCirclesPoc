@@ -2,6 +2,11 @@
 import express = require('express');
 import mongoose = require('mongoose');
 import bodyParser = require('body-parser');
+import web3config = require('./lib/web3config');
+import assert = require('assert');
+
+
+var web3 = require("web3");
 
 import path = require('path');
 
@@ -10,12 +15,13 @@ import fs = require('fs');
 import indexRoute = require('./routes/index');
 import oauthController = require('./controllers/oauthController');
 
+
 /*************** Configuration ********************/
 var CONFIG_FILE = './config.json';
 var config: IApplicationConfig;
 var configString: string;
 
-// We don't use fs.exists() to try to read the file; the recommended method is just opening and 
+// We don't use fs.exists() to try to read the file; the recommended method is just opening and
 // handling an error: https://nodejs.org/api/fs.html#fs_fs_exists_path_callback
 try {
     configString = fs.readFileSync(CONFIG_FILE, 'utf8');
@@ -63,7 +69,7 @@ var githubConfig = {
     oauthSite: "https://github.com/login",
     oauthTokenPath: '/oauth/access_token',
     oauthAuthorizationPath: '/oauth/authorize',
-    adminUserId: config.bitReserve.mainAccount.userName
+    adminUserId: "nonexistent"
 };
 
 var githubOauthController = new oauthController.OAuthController(githubConfig);
@@ -81,7 +87,7 @@ var bitReserveConfig = {
     oauthSite: "https://",
     oauthTokenPath: 'api.bitreserve.org/oauth2/token',
     oauthAuthorizationPath: 'bitreserve.org/authorize/' + config.bitReserve.app.clientID,
-    adminUserId: config.bitReserve.mainAccount.userName
+    adminUserId: config.bitReserve.circleVaultAccount.userName
 }
 
 var bitReserveOauthController = new oauthController.OAuthController(bitReserveConfig);
@@ -97,6 +103,9 @@ function getBitReserveUserInfo(token: string, callback) {
 
 bitReserveOauthController.setGetUserInfoFunction(getBitReserveUserInfo);
 
+/******** Ethereum / web3 setup *************/
+
+var web3plus = web3config.createWeb3(config.ethereum.jsonRpcUrl);
 
 /******** Express and route setup ***********/
 
@@ -132,6 +141,11 @@ app.get('/circle/:id/join', indexRoute.index);
 app.get('/circle/:id/deposit', indexRoute.index);
 app.get('/circle/:id/loan', indexRoute.index);
 app.get('/circle/list', indexRoute.index);
+app.get('/loan/list', indexRoute.index);
+app.get('/loan/:id', indexRoute.index);
+app.get('/loan/:id/repay', indexRoute.index);
+app.get('/audit', indexRoute.index);
+app.get('/audit/circle/:id', indexRoute.index);
 app.get('/not-found', indexRoute.index);
 
 app.get(githubOauthController.getAuthRoute(), githubOauthController.auth);
@@ -150,9 +164,9 @@ app.get("/api/bitreserve/me/cards/withBalance", brc.getCardsWithBalance);
 
 // Circle data
 import circleAdminController = require('./controllers/circleAdminController');
-var cc = new circleAdminController.CircleAdminController;
+var cac = new circleAdminController.CircleAdminController(config);
 
-app.post("/api/circle", cc.create);
+app.post("/api/circle", cac.create);
 
 import circleMemberController = require('./controllers/circleMemberController');
 var cmc = new circleMemberController.CircleMemberController(config);
@@ -161,15 +175,64 @@ app.get("/api/circle", cmc.getAll);
 // COULD DO: use route /api/circle/join/:id, post empty message (now post body has to contain Circle ID)
 app.post("/api/circle/join", cmc.join);
 app.get("/api/circle/:id", cmc.getOne);
+app.get("/api/circle/:id/statistics", cmc.getStatistics);
 
 app.post("/api/circle/:id/deposit", cmc.deposit);
 app.post("/api/circle/:id/loan", cmc.loan);
 
+import loanController = require('./controllers/loanController');
+var lc = new loanController.LoanController(config);
+
+app.get("/api/loan", lc.getAll);
+app.get("/api/loan/:id", lc.getOne);
+app.post("/api/loan/:id/repay", lc.repay);
+
+import auditController = require('./controllers/auditController');
+var ac = new auditController.AuditController(config);
+app.get("/api/audit/circle", ac.getList);
+app.get("/api/audit/circle/vault", ac.getCircleVaultData);
+app.get("/api/audit/info", ac.getInfo);
+//app.get("/api/audit/circle/:id", ac.getCircleDetails);
+
 /*********************** HTTP server setup ********************/
-var httpsOptions = {
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
-};
+var httpsOptions;
+
+try {
+    console.log("Trying custom certificate.");
+
+    httpsOptions = {
+        key: fs.readFileSync('key.pem'),
+        cert: fs.readFileSync('cert.pem')
+    };
+
+    console.log("Using custom certificate.");
+
+    try {
+        console.log("Trying to read intermediate certificate.");
+        var chainLines = fs.readFileSync('intermediate.pem', 'utf-8').split("\n");
+        var cert = [];
+        var ca = [];
+        chainLines.forEach(function (line) {
+            cert.push(line);
+            if (line.match(/-END CERTIFICATE-/)) {
+                ca.push(cert.join("\n"));
+                cert = [];
+            }
+        });
+        httpsOptions.ca = ca;
+        console.log("Using intermediate certificate.");
+    }
+    catch (e) {
+        console.log("Intermediate certificate could not be read.");
+    }
+}
+catch (e) {
+    console.log("Falling back to default self-signed certificate.");
+    httpsOptions = {
+        key: fs.readFileSync('key.default.pem'),
+        cert: fs.readFileSync('cert.default.pem')
+    };
+}
 
 var http = require('http');
 var https = require('https');

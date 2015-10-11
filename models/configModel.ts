@@ -12,8 +12,14 @@
             "clientID": string,
             "clientSecret": string
         },
-        "mainAccount": {
-            "userName": string
+        "circleVaultAccount": {
+            "userName": string,
+            "cardBitcoinAddress": string,
+            "cardId": string
         }
+    },
+    "ethereum": {
+        "jsonRpcUrl": string,
+        "nodeUrl": string
     }
 }

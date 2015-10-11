@@ -18,7 +18,7 @@ export class CircleMembership {
      * Join date
      */
     startDate: Date;
-    
+
     /**
      * Date the user left the circle.
      */
@@ -33,7 +33,7 @@ export var userSchema = new mongoose.Schema({
     // The Schema is only a necessity to let Mongoose do its magic.
     // http://stackoverflow.com/a/16493881/81949
     circleMemberships: [{
-        circleId: String,
+        circleId: mongoose.Schema.Types.ObjectId,
         startDate: Date,
         endDate: Date
     }]
@@ -65,10 +65,14 @@ export interface IUser extends mongoose.Document {
  */
 export var User = mongoose.model<IUser>("Users", userSchema);
 
+interface IUserCallback {
+    (error: any, user: IUser)
+}
+
 /**
  * Get a user by their access token.
  */
-export var getUserByAccessToken = (token: string, cb: any) => {
+export var getUserByAccessToken = (token: string, cb: IUserCallback) => {
     User.findOne({ accessToken: token }, function (err, user) {
         // TODO: use promise to wait for creating new user.
         if (!user) {
@@ -78,7 +82,7 @@ export var getUserByAccessToken = (token: string, cb: any) => {
 
         // TODO: check for validity of the token.
 
-        cb(null, <IUser>user);
+        cb(null, user);
     });
 }
 
