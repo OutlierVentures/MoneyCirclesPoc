@@ -213,3 +213,9 @@ client/typings
 
 # Local config files
 /config.json
+embark/node_modules/
+
+# SSL certificate files
+cert.pem
+key.pem
+intermediate.pem

@@ -47,8 +47,8 @@
             <div id="app">
                 <!-- Login screen, only shown when not logged in. -->
                 <div class="container">
-                    <div class="mc-login" ng-include="'views/login.html'" ng-controller="LoginController" ng-hide="isLoggedIn || isProcessingLogin"></div>
-                    <div class="panel panel-warning" ng-show="loginErrorMessage">
+                    <div class="mc-login" ng-include="'views/login.html'" ng-controller="LoginController" ng-hide="isLoggedIn || isProcessingLogin || isPublicPage()"></div>
+                    <div class="panel panel-warning ng-hide" ng-show="loginErrorMessage">
                         <div class="panel-heading">Oops</div>
                         <div class="panel-body">{{loginErrorMessage}}</div>
                     </div>
@@ -75,7 +75,10 @@
         </div>
         <footer>
             <div class="container">
-            <img src="images/logo-footer.png">
+                <img src="images/logo-footer.png">
+                <br /><br />
+                <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License." style="border-width:0"
+                     src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
             </div>
         </footer>
     </div>

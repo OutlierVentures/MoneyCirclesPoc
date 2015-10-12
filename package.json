@@ -23,7 +23,7 @@
     "simple-oauth2": "*",
     "underscore": "^1.8.3",
     "web3": "0.13.x",
-    "web3plus": "git+https://ac2b7451188a94ca58cd13cdb53dcabfff5e6c68:x-oauth-basic@github.com/OutlierVentures/web3plus.git"
+    "web3plus": "git+ssh://git@github.com/OutlierVentures/web3plus.git"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

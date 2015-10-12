@@ -195,10 +195,44 @@ app.get("/api/audit/info", ac.getInfo);
 //app.get("/api/audit/circle/:id", ac.getCircleDetails);
 
 /*********************** HTTP server setup ********************/
-var httpsOptions = {
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
-};
+var httpsOptions;
+
+try {
+    console.log("Trying custom certificate.");
+
+    httpsOptions = {
+        key: fs.readFileSync('key.pem'),
+        cert: fs.readFileSync('cert.pem')
+    };
+
+    console.log("Using custom certificate.");
+
+    try {
+        console.log("Trying to read intermediate certificate.");
+        var chainLines = fs.readFileSync('intermediate.pem', 'utf-8').split("\n");
+        var cert = [];
+        var ca = [];
+        chainLines.forEach(function (line) {
+            cert.push(line);
+            if (line.match(/-END CERTIFICATE-/)) {
+                ca.push(cert.join("\n"));
+                cert = [];
+            }
+        });
+        httpsOptions.ca = ca;
+        console.log("Using intermediate certificate.");
+    }
+    catch (e) {
+        console.log("Intermediate certificate could not be read.");
+    }
+}
+catch (e) {
+    console.log("Falling back to default self-signed certificate.");
+    httpsOptions = {
+        key: fs.readFileSync('key.default.pem'),
+        cert: fs.readFileSync('cert.default.pem')
+    };
+}
 
 var http = require('http');
 var https = require('https');

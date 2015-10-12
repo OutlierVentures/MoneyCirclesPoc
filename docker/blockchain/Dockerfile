@@ -18,4 +18,11 @@ RUN curl https://install-geth.ethereum.org -L | sed 's/\twait_for_user/\techo "S
 # Install solidity compiler
 RUN apt-get install -y solc
 
-RUN echo Happy gething!
+# The start command for the container includes the install steps for embark.
+# The embark files are not part of the container filesystem, hence tasks
+# like 'npm install' could require action since the last container build.
+# Furthermore we run embark in a 'screen' session so that we can easily
+# connect to the container and run other tasks in parallel if necessary.
+
+WORKDIR /app/embark
+ENTRYPOINT screen bash -c 'sh ./install.sh; embark blockchain staging'
