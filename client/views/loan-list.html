@@ -1,100 +1,44 @@
-﻿<div>
-    <div class="row" ng-show="loans.length==0">
-        <div class="col-lg-12">
-            <h1 class="page-header" id="page-header">You haven't taken out any loans yet</h1>
+﻿<div ng-show="loans.length==0">
+    <div class="jumbotron">
+        <div class="container">
+            <h5>My Loans</h5>
+            <p>You haven't taken out any loans yet. Why not <a href="/circle/list">find a Circle</a> to get a loan?</p>
         </div>
-        <!-- /.col-lg-12 -->
     </div>
-    <div class="row" ng-show="loans.length==0">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    Create one
-                </div>
-                <!-- /.panel-heading -->
+</div>
+<div ng-show="loans.length>0">
+    <div class="jumbotron">
+        <div class="container">
+            <h5>My Loans</h5>
+            <p>You can check your active loans below.</p>
+        </div>
+    </div>
+</div>
+<div class="container" ng-show="loans.length>0">
+    <div class="row">
+        <div class="col-md-6">
+            <h5 class="mc-page-heading">Active Loans</h5>
+            <div class="panel panel-default" ng-repeat="loan in loans | filter: {repaymentTransactionId: '!'} track by loan._id">
                 <div class="panel-body">
-                    <p>You haven't taken out any loans yet. Why not <a href="/circle/list">find a Circle to get a loan</a>?</p>
+                    <h4>{{loan.purpose}}</h4>
+                    <p>Amount: {{loan.amount}} GBP</p>
+                    <p>Borrowed from: <a href="/circle/{{loan.circleId._id}}">{{loan.circleId.name}}</a></p>
+                    <p ng-show="loan.transactionId">See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
+                    <a class="btn btn-primary btn-block" ng-hide="loan.repaymentTransactionId" href="/loan/{{loan._id}}/repay">Repay this loan</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h5 class="mc-page-heading">Repaid Loans</h5>
+            <div class="panel panel-default" ng-repeat="loan in loans | filter: {repaymentTransactionId: ''} track by loan._id">
+                <div class="panel-body">
+                    <h4>{{loan.purpose}}</h4>
+                    <p>Amount: {{loan.amount}} GBP</p>
+                    <p>Borrowed from: <a href="/circle/{{loan.circleId._id}}">{{loan.circleId.name}}</a></p>
+                    <p ng-show="loan.transactionId">See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
+                    <p>See the <a href="https://bitreserve.org/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">repayment transaction</a></p>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row" ng-show="loans.length>0">
-        <div class="col-lg-12">
-            <h1 class="page-header" id="page-header">My loans</h1>
-        </div>
-        <!-- /.col-lg-12 -->
-    </div>
-    <!-- /.row -->
-    <div class="row" ng-show="loans.length>0">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2>Active loans</h2>
-                </div>
-                <!-- /.panel-heading -->
-                <div class="panel-body">
-                    <div class="row">
-                        <div ng-repeat="loan in loans | filter: {repaymentTransactionId: '!'} track by loan._id" class="col-lg-4 col-md-6">
-                            <div class="well well-transparent">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h3>{{loan.purpose}}</h3>
-                                        <p>Amount: {{loan.amount}} GBP</p>
-                                        <p>Borrowed from: {{loan.circleId.name}}</p>
-                                        <p ng-show="loan.transactionId">See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
-                                        <div class="col-lg-12">
-                                            <div class="btn-group">
-                                                <a class="btn" href="/circle/{{loan.circleId._id}}">Go to the circle</a>
-                                                <a class="btn btn-primary" ng-hide="loan.repaymentTransactionId" href="/loan/{{loan._id}}/repay">Repay this loan</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /.col-lg-4 (nested) -->
-                </div>
-                <!-- /.panel-body -->
-            </div>
-        </div>
-        <!-- /.col-lg-12 -->
-    </div>
-    <!-- /.row -->
-    <div class="row" ng-show="loans.length>0">
-        <div class="col-lg-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2>Repaid loans</h2>
-                </div>
-                <!-- /.panel-heading -->
-                <div class="panel-body">
-                    <div class="row">
-                        <div ng-repeat="loan in loans | filter: {repaymentTransactionId: ''} track by loan._id" class="col-lg-4 col-md-6">
-                            <div class="well well-transparent">
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h3>{{loan.purpose}}</h3>
-                                        <p>Borrowed from: {{loan.circleId.name}}</p>
-                                        <p>Amount: {{loan.amount}} GBP</p>
-                                        <p ng-show="loan.transactionId">See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
-                                        <p>See the <a href="https://bitreserve.org/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">repayment transaction</a></p>
-                                        <div class="col-lg-12">
-                                            <div class="btn-group">
-                                                <a class="btn" href="/circle/{{loan.circleId._id}}">Go to the circle</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- /.col-lg-4 (nested) -->
-                </div>
-                <!-- /.panel-body -->
-            </div>
-        </div>
-        <!-- /.col-lg-12 -->
-    </div>
-    <!-- /.row -->
 </div>

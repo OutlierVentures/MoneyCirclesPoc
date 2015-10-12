@@ -30,7 +30,8 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav" ng-show="isLoggedIn">
-                        <li data-match-route="/circle/list"><a href="/circle/list">Circles</a></li>
+                        <li data-match-route="/circle/*"><a href="/circle/list">Circles</a></li>
+                        <li data-match-route="/loan/"><a href="/loan/list">Loans</a></li>
                         <li data-match-route="/user/security"><a href="/user/security">Security</a></li>
                         <li data-match-route="/audit"><a href="/audit">Audit</a></li>
                     </ul>
@@ -76,9 +77,9 @@
         <footer>
             <div class="container">
                 <img src="images/logo-footer.png">
-                <br /><br />
-                <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License." style="border-width:0"
-                     src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
+                <br>
+                <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License." style="border-width:0;"
+                     src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" class="mc-license"/></a>
             </div>
         </footer>
     </div>

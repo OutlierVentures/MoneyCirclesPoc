@@ -69,6 +69,12 @@ body {
   }
 }
 
+// Breadcrumbs =====================================================================
+
+.breadcrumb {
+  margin-top: 20px;
+}
+
 // Buttons ====================================================================
 
 .btn {
@@ -374,6 +380,10 @@ a.list-group-item {
   box-shadow:         0px 4px 8px 0px rgba(91, 90, 94, 0.07);
 }
 
+.panel-body:not(:first-child) {
+  border-top: 1px solid @gray-light;
+}
+
 .modal {
   .close {
     color: @text-color;
@@ -384,13 +394,14 @@ a.list-group-item {
   color: @text-color;
 }
 
+.bg-white {
+  background-color: #fff;
+}
+
 // Headings =======================================================================
 h1, h2 {
   font-weight: 300;
 }
-/*h1, h2, h3 {
-  font-weight: 300;
-}*/
 
 a {
   h1, h2, h3, h4, h5, h6 {
@@ -408,6 +419,12 @@ a:hover {
   border-bottom: 1px solid darken(@gray-light, 5%);
   padding-bottom: 20px;
   margin-bottom: 20px;
+}
+
+.mc-error-code-left {
+  /*color: @link-color!important;*/
+  float: left;
+  margin: 0 20px 0 0;
 }
 
 // Footer =================================================================
@@ -446,4 +463,8 @@ footer {
       z-index: -1;
 
     }
+}
+
+.mc-license {
+  margin-top: 20px;
 }
