@@ -81,19 +81,19 @@ export interface IBitReserveCard {
     ]
 }
 
-interface IBitReserveTransactionCallback {
+export interface IBitReserveTransactionCallback {
     (error: any, transaction: IBitReserveTransaction);
 }
 
-interface IBitReserveTransactionsCallback {
+export interface IBitReserveTransactionsCallback {
     (error: any, transactions: IBitReserveTransaction[]);
 }
 
-interface IBitReserveCardsCallback {
+export interface IBitReserveCardsCallback {
     (error: any, cards: Array<IBitReserveCard>);
 }
 
-interface IBitReserveCardCallback {
+export interface IBitReserveCardCallback {
     (error: any, card: IBitReserveCard);
 }
 

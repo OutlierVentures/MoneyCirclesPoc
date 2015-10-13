@@ -39,8 +39,10 @@
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <h3>{{loan.purpose}}</h3>
-                                        <p>Amount: {{loan.amount}} GBP</p>
                                         <p>Borrowed from: {{loan.circleId.name}}</p>
+                                        <p>Amount: {{loan.amount | number: 2}} GBP</p>
+                                        <p>Interest percentage: {{loan.interestPercentage | number: 2}}%</p>
+                                        <p>Amount to repay: {{loan.amountToRepay | number: 2}} GBP</p>
                                         <p ng-show="loan.transactionId">See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
                                         <div class="col-lg-12">
                                             <div class="btn-group">
@@ -76,7 +78,9 @@
                                     <div class="col-lg-12">
                                         <h3>{{loan.purpose}}</h3>
                                         <p>Borrowed from: {{loan.circleId.name}}</p>
-                                        <p>Amount: {{loan.amount}} GBP</p>
+                                        <p>Amount: {{loan.amount | number: 2}} GBP</p>
+                                        <p>Interest percentage: {{loan.interestPercentage | number: 2}}%</p>
+                                        <p>Amount to repay: {{loan.amountToRepay | number: 2}} GBP</p>
                                         <p ng-show="loan.transactionId">See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
                                         <p>See the <a href="https://bitreserve.org/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">repayment transaction</a></p>
                                         <div class="col-lg-12">

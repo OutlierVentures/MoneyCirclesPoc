@@ -2,7 +2,9 @@
 
 export var loanSchema = new mongoose.Schema({
     contractAddress: String,
-    amount: String,
+    amount: Number,
+    interestPercentage: Number,
+    amountToRepay: Number,
     circleId: { type: mongoose.Schema.Types.ObjectId, ref: 'Circles' },
     userId: mongoose.Schema.Types.ObjectId,
     transactionId: String,
@@ -15,6 +17,8 @@ export var loanSchema = new mongoose.Schema({
 export interface ILoan extends mongoose.Document {
     contractAddress: string;
     amount: number;
+    interestPercentage: number;
+    amountToRepay: number;
     circleId: string;
     userId: string;
     transactionId: string;

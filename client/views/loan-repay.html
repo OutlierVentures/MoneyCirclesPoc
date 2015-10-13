@@ -14,7 +14,7 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-lg-12">
-                        <p>You are repaying your loan of {{loan.amount}} GBP from Circle {{loan.circleId.name}}.</p>
+                        <p>You are repaying your loan of {{loan.amount | number: 2}} GBP from Circle {{loan.circleId.name}}. Including interest the amount to pay is {{loan.amountToRepay | number: 2}} GBP.</p>
                         <form role="form" name="circleForm" novalidate>
                             <fieldset ng-disabled="processMessage || successMessage">
                                 <div class="form-group">

@@ -71,6 +71,8 @@ interface IDeposit extends IDocument {
 interface ILoan extends IDocument {
     contractAddress: string;
     amount: number;
+    interestPercentage: number;
+    amountToRepay: number;
     circleId: string;
     userId: string;
     transactionId: string

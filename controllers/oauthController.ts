@@ -55,7 +55,7 @@ interface IOAuthControllerConfig {
 export class OAuthController {
 
 
-    private config: IOAuthControllerConfig;
+    config: IOAuthControllerConfig;
     /** 
      * The simple-oauth2 module, which has no typings.
      */

@@ -4,6 +4,17 @@ import userModel = require('../models/userModel');
 import loanModel = require('../models/loanModel');
 import web3plus = require('../node_modules/web3plus/lib/web3plus');
 import bitReserveService = require('../services/bitReserveService');
+import serviceFactory = require('../services/serviceFactory');
+import _ = require('underscore');
+
+var enhanceLoanData = function (l: loanModel.ILoan) {
+    if (l.interestPercentage == undefined) {
+        l.interestPercentage = 0;
+    }
+
+    l.amountToRepay = (1 + l.interestPercentage / 100) * l.amount;
+}
+
 
 /**
  * Controller for Circle admin operations.
@@ -33,6 +44,8 @@ export class LoanController {
                     .populate('circleId')
                     .exec()
                     .then(function (loans) {
+                        _(loans).each(enhanceLoanData);
+
                         res.json(loans);
                     }, function (loanErr) {
                         res.status(500).json({
@@ -63,6 +76,7 @@ export class LoanController {
                     .populate('circleId')
                     .exec()
                     .then(function (loan) {
+                        enhanceLoanData(loan);
                         res.json(loan);
                     }, function (loanErr) {
                         res.status(500).json({
@@ -147,7 +161,7 @@ export class LoanController {
                         }
 
 
-                        var brs = new bitReserveService.BitReserveService(token);
+                        var brs = serviceFactory.createBitreserveService(token);
                                        
                         // 1. Create the BitReserve transaction                 
                         brs.createTransaction(fromCard, loan.amount, loan.currency, vaultAddress, (createErr, createRes) => {

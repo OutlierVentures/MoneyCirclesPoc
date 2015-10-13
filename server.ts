@@ -14,40 +14,9 @@ import fs = require('fs');
 
 import indexRoute = require('./routes/index');
 import oauthController = require('./controllers/oauthController');
+import configurationService = require('./services/configurationService');
 
-
-/*************** Configuration ********************/
-var CONFIG_FILE = './config.json';
-var config: IApplicationConfig;
-var configString: string;
-
-// We don't use fs.exists() to try to read the file; the recommended method is just opening and
-// handling an error: https://nodejs.org/api/fs.html#fs_fs_exists_path_callback
-try {
-    configString = fs.readFileSync(CONFIG_FILE, 'utf8');
-}
-catch (e) {
-    try {
-        CONFIG_FILE = './config.default.json';
-        configString = fs.readFileSync(CONFIG_FILE, 'utf8');
-    }
-    catch (e2) {
-        console.log("Error while loading config file: " + e2);
-        // TODO: exit with error. No run without a valid config.
-    }
-}
-
-console.log("Using configuration from " + CONFIG_FILE);
-// Strip the BOM character as readFileSync doesn't do that.
-configString = configString.replace(/^\uFEFF/, '');
-try {
-    // Parse config file.
-    config = JSON.parse(configString);
-}
-catch (e) {
-    console.log("Error while parsing config file: " + e);
-    // TODO: exit with error. No run without a valid config.
-}
+var config = new configurationService.ConfigurationService().getConfiguration();
 
 console.log("My configuration:");
 console.log(config);
@@ -92,19 +61,35 @@ var bitReserveConfig = {
 
 var bitReserveOauthController = new oauthController.OAuthController(bitReserveConfig);
 import bitReserveService = require('./services/bitReserveService');
+import serviceFactory = require('./services/serviceFactory');
 
 /**
  * Create a new BitReserve service and get user info from it.
  */
 function getBitReserveUserInfo(token: string, callback) {
-    var brs = new bitReserveService.BitReserveService(token);
+    var brs = serviceFactory.createBitreserveService(token);
     brs.getUser(callback);
 }
 
 bitReserveOauthController.setGetUserInfoFunction(getBitReserveUserInfo);
 
+import stubOauthController = require('./controllers/stubOauthController');
+
+import stubBitReserveService = require('./services/stubBitReserveService');
+
+if (config.useStubs) {
+    // Create a stub controller from the real controller.
+    var stubController = new stubOauthController.StubOAuthController(bitReserveOauthController);
+   
+
+    // Replace the handlers of the real controller by the stubs.
+    bitReserveOauthController.auth = stubController.auth;
+    bitReserveOauthController.callback = stubController.callback;
+}
+
 /******** Ethereum / web3 setup *************/
 
+// TODO: make the server not crash badly when the eth connection fails.
 var web3plus = web3config.createWeb3(config.ethereum.jsonRpcUrl);
 
 /******** Express and route setup ***********/

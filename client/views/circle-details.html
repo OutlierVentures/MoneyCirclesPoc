@@ -20,6 +20,9 @@
                         <p>
                             <strong>Common bond:</strong> {{circle.commonBond}}
                         </p>
+                        <p>
+                            <strong>Interest percentage:</strong> {{circle.interestPercentage | number: 2 }}
+                        </p>
                         <form role="form" name="circleForm" novalidate>
                             <a href="/circle/{{circle._id}}/deposit" class="btn btn-primary">
                                 Invest money

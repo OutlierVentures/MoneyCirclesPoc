@@ -1,4 +1,5 @@
 ﻿interface IApplicationConfig {
+    "useStubs": boolean,
     "server": {
         "httpPort": number,
         "httpsPort": number,

@@ -4,6 +4,7 @@ import userModel = require('../models/userModel');
 import depositModel = require('../models/depositModel');
 import loanModel = require('../models/loanModel');
 import bitReserveService = require('../services/bitReserveService');
+import serviceFactory = require('../services/serviceFactory');
 import circleService = require('../services/circleService');
 import web3plus = require('../node_modules/web3plus/lib/web3plus');
 import _ = require('underscore');
@@ -62,6 +63,24 @@ export class CircleMemberController {
                     "error_location": "getting circle statistics"
                 });
             });
+    }
+
+    getMembers = (req: express.Request, res: express.Response) => {
+        var token = req.header("AccessToken");
+
+        var cs = new circleService.CircleService(token);
+
+        // TODO: implement
+        //cs.getCircleStatistics(req.params.id)
+        //    .then((stats) => {
+        //        res.json(stats);
+        //    })
+        //    .catch((err) => {
+        //        res.status(500).json({
+        //            "error": err,
+        //            "error_location": "getting circle statistics"
+        //        });
+        //    });
     }
 
     join = (req: express.Request, res: express.Response) => {
@@ -162,7 +181,7 @@ export class CircleMemberController {
 
         var vaultAddress = this.config.bitReserve.circleVaultAccount.cardBitcoinAddress;
 
-        var brs = new bitReserveService.BitReserveService(token);
+        var brs = serviceFactory.createBitreserveService(token);
 
         // Sequence:
         // 1. Create the BitReserve transaction
@@ -335,7 +354,7 @@ export class CircleMemberController {
                 userModel.User.findOne({ externalId: adminAccount }).exec()
                     .then((adminUserRes) => {
                         // Create BitReserve connector for global admin user.
-                        var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
+                        var brs = serviceFactory.createBitreserveService(adminUserRes.accessToken);
 
                         // Create the transaction.
                         brs.createTransaction(vaultCardId, loanData.amount, loanData.currency, userRes.externalId, (createErr, createRes) => {

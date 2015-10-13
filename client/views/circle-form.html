@@ -33,6 +33,13 @@
                                     </p>
                                     <input class="form-control" type="text" ng-model="circle.commonBond" required>
                                 </div>
+                                <div class="form-group">
+                                    <label>Interest percentage</label>
+                                    <p class="help-block">
+                                        What is the interest percentage that has to be paid for loans taken out of this circle? Please use a dot as the decimal separator, for example <strong>5.5</strong> for five and a half percent.
+                                    </p>
+                                    <input class="form-control" type="text" ng-model="circle.interestPercentage" required>
+                                </div>
                                 <button name="saveButton" ng-click="vm.create()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
                                     Create my circle
                                 </button>
