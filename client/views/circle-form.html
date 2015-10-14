@@ -1,14 +1,16 @@
-﻿<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header" id="page-header">Create a new circle</h1>
-    </div>
-    <!-- /.col-lg-12 -->
+﻿<div class="container">
+    <ol class="breadcrumb mc-breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/circle/list">Circles</a></li>
+      <li class"active">Create Circle</li>
+    </ol>
 </div>
+<div class="container">
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <i class="fa fa-mail-forward fa-fw"></i> New circle
+                <h2>Create a new circle</h2>
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
@@ -18,24 +20,48 @@
                             Please describe your new circle.
                         </p>
                         <form role="form" name="circleForm" novalidate>
-                            <div class="form-group">
-                                <label>Name</label>
-                                <p class="help-block">
-                                    Give your circle a descriptive name.
-                                </p>
-                                <input class="form-control" type="text" ng-model="circle.name" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Common bond</label>
-                                <p class="help-block">
-                                    What is the common bond all members of this circle have?
-                                </p>
-                                <input class="form-control" type="text" ng-model="circle.commonBond" required>
-                            </div>
-                            <button name="saveButton" ng-click="vm.create()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
-                                Create my circle
-                            </button>
+                            <fieldset ng-disabled="processMessage || successMessage">
+                                <div class="form-group">
+                                    <label>Name</label>
+                                    <p class="help-block">
+                                        Give your circle a descriptive name.
+                                    </p>
+                                    <input class="form-control" type="text" ng-model="circle.name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Common bond</label>
+                                    <p class="help-block">
+                                        What is the common bond all members of this circle have?
+                                    </p>
+                                    <input class="form-control" type="text" ng-model="circle.commonBond" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Interest percentage</label>
+                                    <p class="help-block">
+                                        What is the interest percentage that has to be paid for loans taken out of this circle? Please use a dot as the decimal separator, for example <strong>5.5</strong> for five and a half percent.
+                                    </p>
+                                    <input class="form-control" type="text" ng-model="circle.interestPercentage" required>
+                                </div>
+                                <button name="saveButton" ng-click="vm.create()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                                    Create my circle
+                                </button>
+                            </fieldset>
                         </form>
+                        <div class="panel panel-default" style="margin-top:1em;" ng-show="processMessage">
+                            <div class="panel-heading">Processing</div>
+                            <div class="panel-body">{{processMessage}}</div>
+                        </div>
+                        <div class="panel panel-danger" style="margin-top:1em;" ng-show="errorMessage">
+                            <div class="panel-heading">There was an error processing your request.</div>
+                            <div class="panel-body">{{errorMessage}}</div>
+                        </div>
+                        <div class="panel panel-success" style="margin-top:1em;" ng-show="successMessage">
+                            <div class="panel-heading">Success</div>
+                            <div class="panel-body">
+                                <p>{{successMessage}}</p>
+                                <p>Smart contract address: <strong>{{circle.contractAddress}}</strong>.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <!-- /.col-lg-8 (nested) -->
@@ -47,3 +73,4 @@
     <!-- /.col-lg-12 -->
 </div>
 <!-- /.row -->
+</div>

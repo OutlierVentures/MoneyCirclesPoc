@@ -1,4 +1,5 @@
 ﻿interface IApplicationConfig {
+    "useStubs": boolean,
     "server": {
         "httpPort": number,
         "httpsPort": number,
@@ -12,8 +13,14 @@
             "clientID": string,
             "clientSecret": string
         },
-        "mainAccount": {
-            "userName": string
+        "circleVaultAccount": {
+            "userName": string,
+            "cardBitcoinAddress": string,
+            "cardId": string
         }
+    },
+    "ethereum": {
+        "jsonRpcUrl": string,
+        "nodeUrl": string
     }
 }

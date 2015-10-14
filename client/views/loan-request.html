@@ -1,14 +1,17 @@
-﻿<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header" id="page-header">Borrow money</h1>
-    </div>
-    <!-- /.col-lg-12 -->
+﻿<div class="container">
+    <ol class="breadcrumb mc-breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/circle/list">Circles</a></li>
+      <li><a href="/circle/{{circle._id}}">{{circle.name}}</a></li>
+      <li class"active">Borrow Money</li>
+    </ol>
 </div>
+<div class="container">
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h2>{{circle.name}}</h2>
+                <h2>Borrow Money</h2>
             </div>
             <!-- /.panel-heading -->
             <div class="panel-body">
@@ -28,7 +31,7 @@
                                     <p class="help-block">
                                         What is the purpose of your loan?
                                     </p>
-                                    <input class="form-control" type="text" ng-model="loan.purpose" name="purpose" required ng-minlength="50">
+                                    <input class="form-control" type="text" ng-model="loan.purpose" name="purpose" required ng-minlength="10">
                                     <div ng-show="circleForm.purpose.$error.minlength">
                                         Please describe the purpose to some detail.
                                     </div>
@@ -50,7 +53,7 @@
                             <div class="panel-heading">Success</div>
                             <div class="panel-body">
                                 <p>{{successMessage}}</p>
-                                <p>Transaction ID: <strong>{{loan.transactionId}}</strong>. See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">transaction details</a>.</p>
+                                <p>Transaction ID: <strong>{{loan.transactionId}}</strong>. See the <a href="https://uphold.com/reserve/transactions/{{loan.transactionId}}" target="_blank">transaction details</a>.</p>
                             </div>
                         </div>
                     </div>
@@ -64,3 +67,4 @@
     <!-- /.col-lg-12 -->
 </div>
 <!-- /.row -->
+</div>

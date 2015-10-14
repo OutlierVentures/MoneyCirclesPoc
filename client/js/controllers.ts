@@ -31,12 +31,12 @@ class LoginController {
         $scope.isAuthenticated = function (): boolean {
             return identityService.isAuthenticated();
         }
-        
+
         // See if sessionStorage contains valid login info. If so, we can consider the user to be logged in.
         var tokenFromSession = $window.sessionStorage.getItem("bitReserveToken");
         var userStringFromSession = $window.sessionStorage.getItem("bitReserveUserInfo");
 
-        // We prefer a login from the session, even when processing the callback from the OAuth provider. If the 
+        // We prefer a login from the session, even when processing the callback from the OAuth provider. If the
         // token is stale, it should be cleared before a new login attempt.
         // TODO: detect that token is stale/incorrect and clear it.
 
@@ -93,7 +93,7 @@ class LoginController {
                 console.log("Successful call to OAuth callback on API. Result:");
                 console.log(resultData);
 
-                // Store token in BitReserve identity provider
+                // Store token in Uphold identity provider
                 var brip = new BitReserveIdentityProvider();
                 brip.setToken(resultData.user.accessToken, $window);
                 brip.setUserInfo(resultData.user, $window);
@@ -105,7 +105,7 @@ class LoginController {
 
                 // Store in scope to show in view
                 $scope.userInfo = resultData.user;
-            }).error(function (error) {                
+            }).error(function (error) {
                 // Handle error
                 console.log("Error on OAuth callback to API:");
                 console.log(error);
@@ -164,7 +164,7 @@ class DashboardController {
     }
 
     private loadBitReserveData() {
-        // Load BitReserve data        
+        // Load Uphold data
         var t = this;
 
         this.$http({
@@ -172,14 +172,14 @@ class DashboardController {
             url: apiUrl + '/bitreserve/me/cards',
             headers: { AccessToken: t.$scope.userInfo.accessToken }
         }).success(function (cards: any) {
-            console.log("Success on BitReserve call through our API. Result:");
+            console.log("Success on Uphold call through our API. Result:");
             console.log(cards);
 
             // Store in scope to show in view
             t.$scope.allCards = cards;
-        }).error(function (error) {                
+        }).error(function (error) {
             // Handle error
-            console.log("Error on BitReserve call through our API:");
+            console.log("Error on Uphold call through our API:");
             console.log(error);
 
             // TODO: further handling

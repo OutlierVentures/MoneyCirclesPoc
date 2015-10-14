@@ -1,15 +1,15 @@
 # MoneyCirclesBitReserve
-The Proof of Concept implementation of MoneyCircles using the BitReserve API.
+The Proof of Concept implementation of MoneyCircles using the Uphold API.
 
 The implementation consists of:
 - Node.js backend (using TypeScript) - directory /
 - AngularJS frontend (using TypeScript, Bootstrap) - directory /client/
 - MongoDB database - external
-- BitReserve API - external
- 
+- Uphold API - external
+
 ## Test environment
 
-A version of the development branch is running here: https://poc1-test.moneycircles.projects.blockstars.io:3124/. This version uses a different BitReserve app and database than the development configuration suggested below.
+A version of the development branch is running here: https://poc1-test.moneycircles.projects.blockstars.io:3124/. This version uses a different Uphold app and database than the development configuration suggested below.
 
 ## Installation
 
@@ -21,11 +21,11 @@ The installation steps assume the default configuration in [config.default.json]
 
 * An Ubuntu 14.04 install with root access (preferrably a virtual machine)
 * A MongoDB instance. An instance at MongoLab is configured in the default configuration.
-* A BitReserve application. An existing application has been configured in the default configuration, which requires the app to be using the URL https://poc1-dev.moneycircles.com:3124. To facilitate this, do one of the following:
+* A Uphold application. An existing application has been configured in the default configuration, which requires the app to be using the URL https://poc1-dev.moneycircles.com:3124. To facilitate this, do one of the following:
  * Ensure that `poc1-dev.moneycircles.com` resolves to the IP of your development machine (e.g. by adding `127.0.0.1 poc1-dev.moneycircles.com` to your hosts file)
- * Create a BitReserve application of your own, configure it like you want it and configure its attributes like Client ID in `config.json`.
-* A [BitReserve account](https://bitreserve.org/signup) for authenticating as a user
-* A second [BitReserve account](https://bitreserve.org/signup) to serve as the global administrator account (e.g. @moneycircles). The global administrator needs to use Pound Stering as the Currency in the BitReserve settings.
+ * Create a Uphold application of your own, configure it like you want it and configure its attributes like Client ID in `config.json`.
+* An [Uphold account](https://uphold.com/signup) for authenticating as a user
+* A second [Uphold account](https://uphold.com/signup) to serve as the global Circle Vault account (e.g. @moneycircles). The Circle Vault needs to use Pound Sterling as the Currency in the Uphold settings.
 
 ### Install instructions
 
@@ -128,7 +128,7 @@ Running "concurrent:watchers" (concurrent) task
 
    Note: Because we currently use a self-signed certificate, the browser will prevent opening the page. Bypass these warnings to open the app.
 
-3. Log in as the global administrator account (by default @moneycircles) once. The access token for the global administrator is neccesary to pay out loans.
+3. Log in as the global Circle Vault account (by default @MoneyCircles) once. The access token for the global Circle Vault is necessary to pay out loans.
 
 ### Live building
 

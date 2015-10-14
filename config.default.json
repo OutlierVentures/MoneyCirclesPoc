@@ -13,9 +13,15 @@
             "clientID": "e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c",
             "clientSecret": "b3df38816602d936c304774c43420d56eda8358f"
         },
-        "mainAccount": {
-            "__comment": "The main account that stores funds of Circles.",
-            "userName": "moneycircles"
+        "circleVaultAccount": {
+            "__comment": "The main Uphold account that stores funds of Circles.",
+            "userName": "MoneyCircles",
+            "cardId": "",
+            "cardBitcoinAddress":  ""
         }
+    },
+    "ethereum": {
+        "jsonRpcUrl": "http://americano.servers.blockstars.io:8101",
+        "nodeUrl": "poc1-dev.moneycircles.com:30301"
     }
 }

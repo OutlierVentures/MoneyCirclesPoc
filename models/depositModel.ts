@@ -6,6 +6,7 @@ export var depositSchema = new mongoose.Schema({
     circleId: mongoose.Schema.Types.ObjectId,
     userId: mongoose.Schema.Types.ObjectId,
     transactionId: String,
+    depositIndex: Number,
     currency: String,
     dateTime: Date
 });
@@ -15,7 +16,8 @@ export interface IDeposit extends mongoose.Document {
     amount: number;
     circleId: string;
     userId: string;
-    transactionId: string
+    transactionId: string;
+    depositIndex: number;
     currency: string;
     dateTime: Date;
 }

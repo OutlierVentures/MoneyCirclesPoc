@@ -32,11 +32,11 @@ interface IIdentityProvider {
 }
 
 /**
- * Identity provider for BitReserve using OAuth backend. The OAuth token is stored in the session storage.
+ * Identity provider for Uphold using OAuth backend. The OAuth token is stored in the session storage.
  */
 class BitReserveIdentityProvider implements IIdentityProvider {
     /**
-     * OAuth token as received from BitReserve.
+     * OAuth token as received from Uphold.
      */
     private _oauthToken: string;
 

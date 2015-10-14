@@ -14,8 +14,14 @@ interface IDocument {
 }
 
 interface ICircle extends IDocument {
+    contractAddress: string;
     name: string;
     commonBond: string;
+    interestPercentage: number;
+    /**
+     * Circle administrators, by user ID
+     */
+    administrators: string[];
 }
 
 /**
@@ -36,7 +42,7 @@ class CircleMembership {
      * Join date
      */
     startDate: Date;
-    
+
     /**
      * Date the user left the circle.
      */
@@ -57,18 +63,103 @@ interface IDeposit extends IDocument {
     amount: number;
     circleId: string;
     userId: string;
-    transactionId: string
+    transactionId: string;
+    depositIndex: number;
     currency: string;
     dateTime: Date;
 }
 
 interface ILoan extends IDocument {
+    contractAddress: string;
     amount: number;
+    interestPercentage: number;
+    amountToRepay: number;
     circleId: string;
     userId: string;
     transactionId: string
+    repaymentTransactionId: string;
     currency: string;
     dateTime: Date;
     purpose: string;
 }
 
+interface IAuditList {
+    items: IAuditListItem[],
+    totals: ICircleStatistics
+}
+
+interface IAuditListItem {
+    circle: ICircle,
+    statistics: ICircleStatistics
+}
+
+interface IAuditDetails {
+    circle: ICircle,
+    statistics: ICircleStatistics,
+    loans: [ILoan],
+    deposits: [IDeposit]
+}
+
+interface IBitReserveTransaction {
+    "id": string,
+    "type": string,
+    "message": string,
+    "status": string,
+    "RefundedById": string,
+    "createdAt": string,
+    "denomination": {
+        "amount": number,
+        "currency": string,
+        "pair": string,
+        "rate": number
+    },
+    "origin": {
+        "CardId": string,
+        "amount": number,
+        "base": number,
+        "commission": number,
+        "currency": string,
+        "description": string,
+        "fee": number,
+        "rate": number,
+        "type": string,
+        "username": string
+    },
+    "destination": {
+        "CardId": string,
+        "amount": number,
+        "base": number,
+        "commission": number,
+        "currency": string,
+        "description": string,
+        "fee": number,
+        "rate": number,
+        "type": string,
+        "username": string
+    },
+    "params": {
+        "currency": string,
+        "margin": number,
+        "pair": string,
+        "rate": number,
+        "ttl": number,
+        "type": string
+    }
+}
+
+interface ICircleVaultStatistics {
+    balance: number,
+    transactions: IBitReserveTransaction[]
+    totals: {
+        debit: number,
+        credit: number
+    }
+}
+
+interface IApplicationInfo {
+    blockchain: {
+        nodeUrl: string,
+        smartContractSourceCode: string,
+        genesisBlock: any
+    }
+}

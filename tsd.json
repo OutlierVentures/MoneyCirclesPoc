@@ -34,6 +34,12 @@
     },
     "underscore/underscore.d.ts": {
       "commit": "7f07bd88d1083e995a0dae317a333c9641320cc8"
+    },
+    "q/Q.d.ts": {
+      "commit": "32029fcb4e1a3ef8968711b545d77b584435729d"
+    },
+    "mocha/mocha.d.ts": {
+      "commit": "32029fcb4e1a3ef8968711b545d77b584435729d"
     }
   }
 }
