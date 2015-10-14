@@ -54,8 +54,8 @@ var bitReserveConfig = {
     // The "site" parameter also may not be empty.
     // As a workaround, we use the greatest common denominator of the two URLs: "https://".
     oauthSite: "https://",
-    oauthTokenPath: 'api.bitreserve.org/oauth2/token',
-    oauthAuthorizationPath: 'bitreserve.org/authorize/' + config.bitReserve.app.clientID,
+    oauthTokenPath: 'api.uphold.com/oauth2/token',
+    oauthAuthorizationPath: 'uphold.com/authorize/' + config.bitReserve.app.clientID,
     adminUserId: config.bitReserve.circleVaultAccount.userName
 }
 
