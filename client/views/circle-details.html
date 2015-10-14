@@ -1,82 +1,46 @@
-﻿<div class="row">
-    <div class="col-lg-12">
-        <h1 class="page-header" id="page-header">Circle details</h1>
-    </div>
-    <!-- /.col-lg-12 -->
+﻿
+<div class="container">
+    <ol class="breadcrumb mc-breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/circle/list">Circles</a></li>
+      <li class"active">{{circle.name}}</li>
+    </ol>
 </div>
-<div class="row">
-    <div class="col-lg-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h2>{{circle.name}}</h2>
-            </div>
-            <!-- /.panel-heading -->
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <p>
-                            <strong>Smart contract address:</strong> {{circle.contractAddress}}
-                        </p>
-                        <p>
-                            <strong>Common bond:</strong> {{circle.commonBond}}
-                        </p>
-                        <p>
-                            <strong>Interest percentage:</strong> {{(circle.interestPercentage || 0) | number: 2 }}%
-                        </p>
-                        <form role="form" name="circleForm" novalidate>
-                            <a href="/circle/{{circle._id}}/deposit" class="btn btn-primary">
-                                Invest money
-                            </a>
-                            <a href="/circle/{{circle._id}}/loan" class="btn btn-primary">
-                                Borrow money
-                            </a>
-                        </form>
-
-                        <div class="panel panel-danger" style="margin-top:1em;" ng-show="errorMessage">
-                            <div class="panel-heading">There was an error processing your request.</div>
-                            <div class="panel-body">{{errorMessage}}</div>
-                        </div>
-
-                        <div class="panel panel-default" style="margin-top:1em;">
-                            <div class="panel-heading">
-                                <h3>Statistics</h3>
-                            </div>
-                            <div class="panel-body" ng-hide="statistics">
-                                <p>Crunching the numbers to get you the latest Circle statistics, please bear with us...</p>
-                            </div>
-                            <!-- /.panel-heading -->
-                            <div class="panel-body" ng-show="statistics">
-                                <p>
-                                    <strong>Circle balance:</strong> {{statistics.balance | number: 2}} GBP
-                                </p>
-                                <p>
-                                    <strong>Circle available balance:</strong> {{statistics.availableBalance | number: 2 }} GBP
-                                </p>
-                                <p>
-                                    <strong>Your balance:</strong> {{statistics.memberBalance | number: 2 }} GBP
-                                </p>
-                                <p>
-                                    <strong>Total amount of active loans:</strong> {{statistics.totalActiveLoansAmount | number: 2 }} GBP
-                                </p>
-                                <p>
-                                    <strong>Total amount of repaid loans:</strong> {{statistics.totalRepaidLoansAmount | number: 2 }} GBP
-                                </p>
-                                <p>
-                                    <strong>Total amount of repaid interest:</strong> {{statistics.totalRepaidInterestAmount | number: 2 }} GBP
-                                </p>
-                                <p>
-                                    <strong>Total amount of deposits:</strong> {{statistics.totalDepositsAmount | number: 2 }} GBP
-                                </p>
-                            </div>
-                        </div>
-                        <!-- /.col-lg-8 (nested) -->
-                    </div>
-                </div>
-            </div>
-            <!-- /.panel-body -->
+<div class="container">
+    <div class="panel panel-danger" ng-show="errorMessage">
+        <div class="panel-heading">There was an error processing your request.</div>
+        <div class="panel-body">{{errorMessage}}</div>
+    </div>
+    <div class="jumbotron">
+        <h2>{{circle.name}}</h2>
+        <p class="text-muted">{{circle.commonBond}}</p>
+		<span class="small">Interest percentage: <span class="text-muted">{{(circle.interestPercentage || 0) | number: 2}} %</span><br><br>
+		
+		<span class="small pull-right text-right">Smart Contact Address:<br><span class="text-muted">{{circle.contractAddress}}</span></span>
+        <form role="form" name="circleForm" novalidate>
+            <a href="/circle/{{circle._id}}/deposit" class="btn btn-brand">
+                Invest money
+            </a>
+            <a href="/circle/{{circle._id}}/loan" class="btn btn-primary">
+                Borrow money
+            </a>
+        </form>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Statistics
         </div>
-        <!-- /.panel -->
+        <div class="panel-body" ng-hide="statistics">
+            Crunching the numbers to get you the latest Circle statistics, please bear with us...
+        </div>
+        <div class="list-group" ng-show="statistics">
+            <a href="#" class="list-group-item">Circle balance: <span class="pull-right text-muted">{{statistics.balance | number: 2}} GBP</span></a>
+            <a href="#" class="list-group-item">Circle available balance: <span class="pull-right text-muted">{{statistics.availableBalance | number: 2 }} GBP</span></a>
+            <a href="#" class="list-group-item">Your balance: <span class="pull-right text-muted">{{statistics.memberBalance | number: 2 }} GBP</span></a>
+            <a href="#" class="list-group-item">Total amount of active loans: <span class="pull-right text-muted">{{statistics.totalActiveLoansAmount | number: 2 }} GBP</span></a>
+            <a href="#" class="list-group-item">Total amount of repaid loans: <span class="pull-right text-muted">{{statistics.totalRepaidLoansAmount | number: 2 }} GBP</span></a>
+            <a href="#" class="list-group-item">Total amount of repaid interest: <span class="pull-right text-muted">{{statistics.totalRepaidInterestAmount | number: 2 }} GBP</span></a>
+            <a href="#" class="list-group-item">Total amount of deposits: <span class="pull-right text-muted">{{statistics.totalDepositsAmount | number: 2 }} GBP</span></a>
+        </div>
     </div>
-    <!-- /.col-lg-12 -->
 </div>
-<!-- /.row -->

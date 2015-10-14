@@ -1,24 +1,17 @@
-﻿<div>
-    <div class="row">
-        <div class="col-lg-12">
-            <h1 class="page-header" id="page-header">Audit</h1>
+﻿<div class="jumbotron">
+    <div class="container">
+        <h5>Circles Audit</h5>
+        <p>This public audit allows everyone to inspect the financial streams within MoneyCircles.</p>
         </div>
-        <!-- /.col-lg-12 -->
     </div>
-    <!-- /.row -->
-    <div class="row">
-        <div class="col-lg-12">
+<div class="container">
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h2>Circles audit</h2>
-                </div>
-                <!-- /.panel-heading -->
                 <div class="panel-body">
-                    <p>The financials of MoneyCircles are governed by incorruptible smart contracts on a blockchain. You can regard MoneyCircles as a glass bank: everybody can see what's going on inside, but no one can act in ways that are not allowed by the contracts. Not even us.</p>
-                    <p>This public audit allows everyone to inspect the financial streams within MoneyCircles. All amounts are in GBP.</p>
+            <h3>Audit</h3>
+            <p>The financials of MoneyCircles are governed by incorruptible smart contracts on a blockchain. You can regard MoneyCircles as a glass bank: everybody can see what's going on inside, but no one can act in ways that are not allowed by the contracts. Not even us. All amounts are in GBP.</p>
                     <div class="btn-group">
-                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#help">Help</button>
-                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#tech-info">Technical info</button>
+                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#help">Help</button>
+                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#tech-info">Technical info</button>
                     </div>
                     <div id="help" class="collapse panel panel-default" style="margin-top:1em">
                         <div class="panel-heading">
@@ -65,12 +58,14 @@
                             <p>Use the following genesis block:</p>
                             <pre>{{applicationInfo.blockchain.genesisBlock | json }}</pre>
                             <p>To inspect the smart contracts, it's not required but helpful to have the source code at hand. The contract source code is released under the <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a> license.</p>
-                            <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#contract-source-code" style="margin-bottom:1em;">Show contracts source code</button>
+                    <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#contract-source-code" style="margin-bottom:1em;">Show contracts source code</button>
                             <pre class="collapse pre-scrollable" id="contract-source-code">{{applicationInfo.blockchain.smartContractSourceCode}}</pre>
                             <p>In this way you can verify that of the calculations on this page are reported correctly.</p>
                         </div>
                     </div>
-                    <div><h3>Circle financials</h3></div>
+        </div>
+        <div class="panel-body">
+            <h3>Circle Financials</h3>
                     <div ng-show="!items" style="margin-top:1em;">
                         <p><i>We're calculating the latest numbers, please bear with us...</i></p>
                     </div>
@@ -80,7 +75,7 @@
                     <div ng-show="items && items.length>0" style="margin-top:1em;">
                         <p><strong>Total circle balance:</strong> {{totals.balance | number : 2}} GBP</p>
 
-                        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#circle-list">Show circle details</button>
+                <button type="button" class="btn btn-primary" data-toggle="collapse" data-target="#circle-list">Show circle details</button>
 
                         <table class="table table-striped collapse" id="circle-list">
                             <thead>
@@ -120,7 +115,8 @@
                         </table>
                         <!-- /.col-lg-4 (nested) -->
                     </div>
-                    <div><h3>Financial reserves</h3></div>
+            <br>
+            <h3>Financial reserves</h3>
                     <div ng-show="!vaultStatistics">
                         <p><i>Loading financial reserves data...</i></p>
                     </div>
@@ -128,10 +124,8 @@
                         <p><strong>Total financial reserves:</strong> {{vaultStatistics.balance | number: 2}} GBP</p>
 
                         <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#vault-transactions">Show all transactions</button>
-
+                <br>
                         <div class="collapse" id="vault-transactions">
-
-                            <h4>All transactions</h4>
 
                             <table class="table table-striped">
                                 <thead>
@@ -158,14 +152,7 @@
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
-
-                    <!-- /.panel-body -->
                 </div>
             </div>
-            <!-- /.col-lg-12 -->
-        </div>
-        <!-- /.row -->
-    </div>
 </div>

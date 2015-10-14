@@ -9,16 +9,25 @@
     <link href="vendors/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
     <!-- Font Awesome CSS -->
     <link href="vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <style type="text/css">
-        /* Override ng-hide here to hide panels before angular loads */
-        .ng-hide {
-            /* this is just another form of hiding an element */
-            display: block !important;
-            position: absolute;
-            top: -9999px;
-            left: -9999px;
-        }
-    </style>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/images/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/images/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/images/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/images/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/images/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/images/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/images/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/images/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="/images/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/images/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/images/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+
 </head>
 <body>
     <div ng-app="moneyCirclesApp">
@@ -40,8 +49,10 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav" ng-show="isLoggedIn">
-                        <li data-match-route="/circle/list"><a href="/circle/list">Circles</a></li>
-                        <li><a href="/loan/list">Loans</a></li>                        <li data-match-route="/audit"><a href="/audit">Audit</a></li>
+                        <li data-match-route="/circle/*"><a href="/circle/list">Circles</a></li>
+                        <li data-match-route="/loan/"><a href="/loan/list">Loans</a></li>
+                        <li data-match-route="/user/security"><a href="/user/security">Security</a></li>
+                        <li data-match-route="/audit"><a href="/audit">Audit</a></li>
                     </ul>
                     <!-- <form class="navbar-form navbar-left">
                         <input type="text" class="form-control" placeholder="Search">
@@ -84,11 +95,11 @@
         </div>
         <footer>
             <div class="container">
-            <img src="images/logo-footer.png">
-            <br /><br />
-            <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License." style="border-width:0"
-                 src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a>
-             </div>
+                <img src="images/logo-footer.png">
+                <br>
+                <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License." style="border-width:0;"
+                     src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" class="mc-license"/></a>
+            </div>
         </footer>
     </div>
 
