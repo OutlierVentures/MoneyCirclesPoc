@@ -39,7 +39,8 @@
                                 <li><label>Total deposits</label>: the total amount deposited in the Circle.</li>
                                 <li><label>Total active loans</label>: the total amount of loans that haven't been repaid.</li>
                                 <li><label>Total repaid loans</label>: the total amount of historical loans, that have been repaid.</li>
-                                <li><label>Balance</label>: the total balance of the Circle, which is calculated as <strong>Total deposits</strong> - <strong>Total active loans</strong>.</li>
+                                <li><label>Total repaid interest</label>: the total amount of interest of that has been repaid with loans.</li>
+                                <li><label>Balance</label>: the total balance of the Circle, which is calculated as <strong>Total deposits</strong> - <strong>Total active loans</strong> + <strong>Total repaid interest</strong>.</li>
                                 <li><label>Available balance</label>: the balance that is available for new loans.</li>
                             </ul>
                             <h3>Financial transactions</h3>
@@ -89,6 +90,7 @@
                                     <th>Total deposits</th>
                                     <th>Total active loans</th>
                                     <th>Total repaid loans</th>
+                                    <th>Total repaid interest</th>
                                     <th>Balance</th>
                                     <th>Available balance</th>
                                 </tr>
@@ -100,6 +102,7 @@
                                     <td>{{stat.statistics.totalDepositsAmount | number : 2}}</td>
                                     <td>{{stat.statistics.totalActiveLoansAmount | number : 2}}</td>
                                     <td>{{stat.statistics.totalRepaidLoansAmount | number : 2}}</td>
+                                    <td>{{stat.statistics.totalRepaidInterestAmount | number : 2}}</td>
                                     <td>{{stat.statistics.balance | number : 2}}</td>
                                     <td>{{stat.statistics.availableBalance | number : 2}}</td>
                                 </tr>
@@ -109,6 +112,7 @@
                                     <td>{{totals.totalDepositsAmount | number : 2}}</td>
                                     <td>{{totals.totalActiveLoansAmount | number : 2}}</td>
                                     <td>{{totals.totalRepaidLoansAmount | number : 2}}</td>
+                                    <td>{{totals.totalRepaidInterestAmount | number : 2}}</td>
                                     <td>{{totals.balance | number : 2}}</td>
                                     <td>{{totals.availableBalance | number : 2}}</td>
                                 </tr>
