@@ -11,6 +11,7 @@ describe("Circle financial transactions", () => {
     var circleContract;
     var testName = "A testing circle";
     var testCommonBond = "For all of those who love testing";
+    var testInterestPercentage = 200;
 
     var timeBeforeDeployment: number;
     var timeAfterDeployment: number;
@@ -32,7 +33,8 @@ describe("Circle financial transactions", () => {
                 done(err);
             },
             testName,
-            testCommonBond);
+            testCommonBond,
+            testInterestPercentage);
     });
 
     it("should create a loan and then return it", function (done) {
@@ -73,7 +75,6 @@ describe("Circle financial transactions", () => {
                 assert.equal(loanContract.userId(), userId);
                 assert.equal(loanContract.amount().toNumber(), amount);
                 assert.equal(loanContract.circle(), circleContract.address);
-
 
                 done();
             })
@@ -339,6 +340,83 @@ describe("Circle financial transactions", () => {
             });
     });
 
+    it("should compute interest correctly", function (done) {
+        // It can take quite a while til transactions are processed.
+        this.timeout(180000);
+
+        var amount = 2000;
+        var userId = "user" + Math.round(Math.random() * 1000000);
+        var username1 = "The lucky lender";
+
+        var newLoanAddress;
+        var loanContract;
+
+        var depositTxId = "tx" + Math.round(Math.random() * 1000000);
+        var payoutTxId = "tx" + Math.round(Math.random() * 1000000);
+        var repaymentTxId = "tx" + Math.round(Math.random() * 1000000);
+
+        var loanIndexBefore = circleContract.loanIndex().toNumber();
+
+        // First create a new member to ensure we create a loan for a member (and this test
+        // can be run independently)
+        circleContract.addMember(userId, username1, { gas: 2500000 })
+            .then(web3plus.promiseCommital)
+            .then(function deposit(tx) {
+                // Create a large deposit.
+                return circleContract.createDeposit(userId, amount * 10, depositTxId, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function createLoan(tx) {
+                // Create the loan.
+                return circleContract.createLoan(userId, amount, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testLoan(tx) {
+                var loanIndex = circleContract.loanIndex().toNumber();
+                assert.equal(loanIndex, loanIndexBefore + 1);
+
+                newLoanAddress = circleContract.loans(loanIndex);
+
+                // Verify loan contract is indeed a valid address
+                assert.notEqual(newLoanAddress, "0x0000000000000000000000000000000000000000");
+
+                var loanContractDefinition = circleContract.allContractTypes.Loan.contractDefinition;
+                loanContract = loanContractDefinition.at(newLoanAddress);
+    
+                assert.equal(loanContract.getInterestAmount().toNumber(), 40);
+                assert.equal(loanContract.getRepaymentAmount().toNumber(), 2040);
+
+                return circleContract.setPaidOut(newLoanAddress, payoutTxId, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function doRepayment(tx) {
+                // Get loan repayment info through the sub contract
+
+                // Verify payout
+                assert.equal(loanContract.payoutTransactionId(), payoutTxId, "payout transaction ID");
+
+                // After payout, set it as repaid
+                return circleContract.setRepaid(newLoanAddress, repaymentTxId, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testRepayment(tx) {
+
+
+                // Verify basics
+                assert.equal(loanContract.userId(), userId, "user ID");
+                assert.equal(loanContract.amount().toNumber(), amount, "amount");
+                assert.equal(loanContract.circle(), circleContract.address, "circle address");
+
+                // Verify repayment
+                assert.equal(loanContract.repaymentTransactionId(), repaymentTxId, "repayment transaction ID");
+                assert.ok(loanContract.isRepaid(), "isRepaid()");
+
+                done();
+            })
+            .catch((reason) => {
+                done(reason);
+            });
+    });
 
 });
 

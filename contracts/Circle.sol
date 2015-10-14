@@ -6,6 +6,12 @@ contract Loan {
      * The amount that was loaned, in pence GBP.
      */
     uint public amount;
+    
+    /**
+     * The interest percentage in hundredths of a percent point. I.e.
+     * a value of 1 means 0.01%.
+     */
+    uint public interestPercentage;
 
     /**
      * The MoneyCircles userId that took out the loan. The userId is
@@ -40,6 +46,21 @@ contract Loan {
     string public repaymentTransactionId;
 
     bool public isRepaid;
+    
+    /**
+     * Returns the total amount of interest, rounded to pence GBP.
+     */
+    function getInterestAmount() constant returns (uint interestAmount) {
+        interestAmount = (interestPercentage * amount) / 10000;
+        return interestAmount;
+    }
+    
+    /**
+     * Returns the total amount to be repaid including interest.
+     */ 
+    function getRepaymentAmount() constant returns (uint repaymentAmount) {
+        repaymentAmount = amount + getInterestAmount();
+    }
 
     /**
      * Confirm that the loan has been paid out by referring to the BitReserve
@@ -86,7 +107,7 @@ contract Loan {
         isRepaid = true;
     }
 
-    function Loan(string newUserId, uint newAmount) {
+    function Loan(string newUserId, uint newAmount, uint newInterestPercentage) {
         userId = newUserId;
         userIdHash = sha3(newUserId);
         amount = newAmount;
@@ -95,6 +116,7 @@ contract Loan {
         // Loan, and the address would not be from a Circle contract, that
         // Loan is not considered valid.
         circle = msg.sender;
+        interestPercentage = newInterestPercentage;
     }
 }
 
@@ -107,15 +129,23 @@ contract Circle {
     address public creator;
     
     /**
+     * The interest percentage for loans in hundredths of a percent 
+     * point. I.e. a value of 1 means 0.01%.
+     */
+    uint public interestPercentage;
+    
+    
+    /**
      * The minimal percentage of deposited funds that must remain in
      * the Circle. No loans can be taken out below this percentage.
      */
     uint public constant minimumBalancePercentage = 20;
 
-    function Circle(string newName, string newCommonBond){
+    function Circle(string newName, string newCommonBond, uint newInterestPercentage) {
         name = newName;
         commonBond = newCommonBond;
         creator = msg.sender;
+        interestPercentage = newInterestPercentage;
     }
 
     struct Member {
@@ -215,7 +245,7 @@ contract Circle {
 
         loanIndex++;
 
-        l = new Loan(memberId, amount);
+        l = new Loan(memberId, amount, interestPercentage);
         loans[loanIndex] = l;
 
         return l;
@@ -333,7 +363,23 @@ contract Circle {
         return totalLoansAmount;
     }
     
-        /**
+    /**
+     * Get the total amount of interest that has been repaid.
+     */
+    function getTotalRepaidInterestAmount() constant returns (uint totalInterestAmount) {
+        for (uint i = 1; i <= loanIndex; i++) 
+        {
+            var l = loans[i];
+            if(l.isRepaid())
+            {
+                totalInterestAmount += l.getInterestAmount();
+            }
+        }
+        
+        return totalInterestAmount;
+    }
+
+    /**
      * Get the total amount of all loans, excluding the ones that haven't
      * been paid out.
      */
@@ -343,18 +389,19 @@ contract Circle {
             var l = loans[i];
             if(l.isRepaid())
             {
-                totalLoansAmount += l.amount();
+                totalLoansAmount += l.getRepaymentAmount();
             }
         }
         
         return totalLoansAmount;
     }
+    
     /**
      * Get the current balance of the circle, i.e.:
-     * [total deposit amount] - [total loan amount]
+     * [total deposit amount] - [total loan amount] + [total repaid interest amount]
      */
     function getBalance() constant returns (uint balance) {
-        balance = getTotalDepositsAmount() - getTotalActiveLoansAmount();
+        balance = getTotalDepositsAmount() - getTotalActiveLoansAmount() + getTotalRepaidInterestAmount();
         return balance;
     }
     
@@ -367,12 +414,15 @@ contract Circle {
         uint totalLoansAmount;
         
         var memberIdHash = sha3(memberId);
+        
+        // All deposits of the member contribute to the balance.
         for (uint i = 1; i <= depositIndex; i++) 
         {
             if(deposits[i].memberIdHash == memberIdHash)
                 totalDepositsAmount += deposits[i].amount;
         }
         
+        // Loans that have not been repaid are subtracted.
         for (uint j = 1; j <= loanIndex; j++) 
         {
             Loan l = loans[j];
@@ -380,9 +430,12 @@ contract Circle {
             if(l.userIdHash() == memberIdHash && !l.isRepaid())
                 totalLoansAmount += loans[j].amount();
         }
+        
+        // TODO: Add dividends, withdrawals
 
         amount = totalDepositsAmount - totalLoansAmount;
         return amount;
     }
 
 }
+     

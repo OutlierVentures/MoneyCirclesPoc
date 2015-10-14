@@ -123,6 +123,7 @@ export class LoanController {
                 .populate("circleId")
                 .exec()
                 .then(function (loan) {
+                    enhanceLoanData(loan);
 
                     if (!loan.contractAddress) {
                         // Early testing loan, no contract
@@ -164,7 +165,7 @@ export class LoanController {
                         var brs = serviceFactory.createBitreserveService(token);
                                        
                         // 1. Create the BitReserve transaction                 
-                        brs.createTransaction(fromCard, loan.amount, loan.currency, vaultAddress, (createErr, createRes) => {
+                        brs.createTransaction(fromCard, loan.amountToRepay, loan.currency, vaultAddress, (createErr, createRes) => {
                             if (createErr) {
                                 res.status(500).json({
                                     "error": createErr,

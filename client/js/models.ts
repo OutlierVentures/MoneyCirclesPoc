@@ -17,6 +17,7 @@ interface ICircle extends IDocument {
     contractAddress: string;
     name: string;
     commonBond: string;
+    interestPercentage: number;
     /**
      * Circle administrators, by user ID
      */

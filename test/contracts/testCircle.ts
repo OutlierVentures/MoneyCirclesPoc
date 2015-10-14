@@ -12,6 +12,7 @@ describe("Circle", () => {
     var circleContract;
     var testName = "A testing circle";
     var testCommonBond = "For all of those who love testing";
+    var testInterestPercentage = 200;
 
     var timeBeforeDeployment: number;
     var timeAfterDeployment: number;
@@ -33,7 +34,8 @@ describe("Circle", () => {
                 done(err);
             },
             testName,
-            testCommonBond);
+            testCommonBond,
+            testInterestPercentage);
     });
 
     it("should have the properties set at construction", function (done) {
@@ -41,6 +43,7 @@ describe("Circle", () => {
 
         assert.equal(circleContract.name(), testName);
         assert.equal(circleContract.commonBond(), testCommonBond);
+        assert.equal(circleContract.interestPercentage().toNumber(), testInterestPercentage);
         done();
     });
 

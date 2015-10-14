@@ -21,7 +21,7 @@
                             <strong>Common bond:</strong> {{circle.commonBond}}
                         </p>
                         <p>
-                            <strong>Interest percentage:</strong> {{circle.interestPercentage | number: 2 }}
+                            <strong>Interest percentage:</strong> {{(circle.interestPercentage || 0) | number: 2 }}%
                         </p>
                         <form role="form" name="circleForm" novalidate>
                             <a href="/circle/{{circle._id}}/deposit" class="btn btn-primary">
@@ -60,6 +60,9 @@
                                 </p>
                                 <p>
                                     <strong>Total amount of repaid loans:</strong> {{statistics.totalRepaidLoansAmount | number: 2 }} GBP
+                                </p>
+                                <p>
+                                    <strong>Total amount of repaid interest:</strong> {{statistics.totalRepaidInterestAmount | number: 2 }} GBP
                                 </p>
                                 <p>
                                     <strong>Total amount of deposits:</strong> {{statistics.totalDepositsAmount | number: 2 }} GBP

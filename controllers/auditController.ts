@@ -101,7 +101,8 @@ export class AuditController {
                             totalActiveLoansAmount: 0,
                             totalDepositsAmount: 0,
                             totalPaidLoansAmount: 0,
-                            totalRepaidLoansAmount: 0
+                            totalRepaidLoansAmount: 0,
+                            totalRepaidInterestAmount: 0
                         };
 
                         for (var k in totals) {

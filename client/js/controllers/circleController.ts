@@ -5,7 +5,8 @@
     totalActiveLoansAmount: number,
     totalPaidLoansAmount: number,
     totalRepaidLoansAmount: number,
-    totalDepositsAmount: number
+    totalDepositsAmount: number,
+    totalRepaidInterestAmount: number
 }
 
 interface ICircleScope extends ng.IScope {

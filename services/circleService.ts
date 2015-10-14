@@ -71,7 +71,8 @@ export class CircleService {
                     Q.denodeify<IBigNumber>(circleContract.getTotalActiveLoansAmount)(),
                     Q.denodeify<IBigNumber>(circleContract.getTotalPaidLoansAmount)(),
                     Q.denodeify<IBigNumber>(circleContract.getTotalRepaidLoansAmount)(),
-                    Q.denodeify<IBigNumber>(circleContract.getTotalDepositsAmount)()
+                    Q.denodeify<IBigNumber>(circleContract.getTotalDepositsAmount)(),
+                    Q.denodeify<IBigNumber>(circleContract.getTotalRepaidInterestAmount)()
                     );
 
                 if (user)
@@ -92,6 +93,7 @@ export class CircleService {
                             totalPaidLoansAmount: normalizedResults[3],
                             totalRepaidLoansAmount: normalizedResults[4],
                             totalDepositsAmount: normalizedResults[5],
+                            totalRepaidInterestAmount: normalizedResults[6],
                             memberBalance: undefined,
                         };
                         if (numberResults.length > 5)

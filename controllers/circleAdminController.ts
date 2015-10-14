@@ -93,7 +93,20 @@ export class CircleAdminController {
                                 return;
                             }
 
-                            res.send(circleRes);
+                            // Always add the creator as a member.
+                            circleContract.addMember(userRes._id.toString(), userRes.externalId, { gas: 2500000 })
+                                .then(web3plus.promiseCommital)
+                                .then(function (tx) {
+                                    res.send(circleRes);
+                                })
+                                .catch(function (addMemberError) {
+                                    res.status(500).json({
+                                        "error": addMemberError,
+                                        "error_location": "adding user to Circle members data",
+                                    });
+                                    return;
+                                });
+
                         });
 
                     });
@@ -121,7 +134,8 @@ export class CircleAdminController {
                 true,
                 afterDeploy,
                 circleData.name,
-                circleData.commonBond);
+                circleData.commonBond,
+                circleData.interestPercentage * 100);
         });
 
     }

@@ -418,6 +418,7 @@ export class CircleMemberController {
                                             loan.contractAddress = loanContract.address;
                                             loan.currency = loanData.currency;
                                             loan.purpose = loanData.purpose;
+                                            loan.interestPercentage = circle.interestPercentage;
                                             loan.dateTime = new Date();
                                             loan.circleId = circleId;
                                             loan.userId = userRes.id;
