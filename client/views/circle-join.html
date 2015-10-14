@@ -18,11 +18,18 @@
                             Do you want to join <strong>{{circle.name}}</strong>?
                         </p>
                         <form role="form" name="circleForm" novalidate>
-                            <button name="saveButton" ng-click="vm.joinConfirm()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
-                                Join this circle
-                            </button>
+                            <fieldset ng-disabled="processMessage || successMessage">
+
+                                <button name="saveButton" ng-click="vm.joinConfirm()" ng-disabled="circleForm.$invalid" class="btn btn-primary">
+                                    Join this circle
+                                </button>
+                            </fieldset>
                         </form>
 
+                        <div class="panel panel-default" style="margin-top:1em;" ng-show="processMessage">
+                            <div class="panel-heading">Processing</div>
+                            <div class="panel-body">{{processMessage}}</div>
+                        </div>
                         <div class="panel panel-danger" style="margin-top:1em;" ng-show="errorMessage">
                             <div class="panel-heading">There was an error processing your request.</div>
                             <div class="panel-body">{{errorMessage}}</div>
