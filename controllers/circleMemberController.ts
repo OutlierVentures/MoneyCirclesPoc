@@ -28,10 +28,37 @@ export class CircleMemberController {
     getAll = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
-        circleModel.Circle.find({}, (err, circleRes) => {
-            res.send(circleRes);
+        circleModel.Circle.find({}, (err, circleList) => {
+            userModel.getUserByAccessToken(token, function (userErr, user) {
+                if (userErr) {
+                    res.status(500).json({
+                        "error": userErr,
+                        "error_location": "getting user data",
+                        "status": "Error",
+                    });
+                    return;
+                } 
+
+                // Add property to show whether user is a member
+
+                _(circleList).each(function (circle) {
+                    // Check for existing membership
+                    if (user.circleMemberships.some(
+                        (value, index, arr) => {
+                            return value.circleId.toString() == circle.id && !value.endDate;
+                        })) {
+                        var circleAny: any;
+                        circleAny = circle;
+                        // Set the custom property on the _doc, so that it will be serialized.
+                        circleAny._doc.userIsMember = true;
+                    }
+                    });
+
+                res.json(circleList);
+        });
         });
     }
+
 
     getOne = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
@@ -105,7 +132,7 @@ export class CircleMemberController {
                         // Check for existing membership
                         if (user.circleMemberships.some(
                             (value, index, arr) => {
-                                return value.circleId === circleData._id.toString() && !value.endDate;
+                                return value.circleId.toString() == circle.id && !value.endDate;
                             })) {
                             res.status(500).json({
                                 "error": "User is already a member of this circle",
