@@ -28,6 +28,16 @@
     <meta name="msapplication-TileImage" content="/images/favicon/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
 
+    <style type="text/css">
+        /* Override ng-hide here to hide panels before angular loads */
+        .ng-hide {
+            /* this is just another form of hiding an element */
+            display: block !important;
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+    </style>
 </head>
 <body>
     <div ng-app="moneyCirclesApp">
