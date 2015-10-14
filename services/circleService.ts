@@ -96,8 +96,8 @@ export class CircleService {
                             totalRepaidInterestAmount: normalizedResults[6],
                             memberBalance: undefined,
                         };
-                        if (numberResults.length > 5)
-                            statistics.memberBalance = normalizedResults[6];
+                        if (numberResults.length > 6)
+                            statistics.memberBalance = normalizedResults[7];
 
                         deferred.resolve(statistics);
                         console.log("After calling contract methods:" + Date());
