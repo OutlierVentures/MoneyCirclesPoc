@@ -54,10 +54,13 @@
                         <!-- <span class="glyphicon glyphicon-home" aria-hidden="true"></span> -->
                     </a>
                     <a class="navbar-brand" href="/" ng-hide="isLoggedIn">
-                        <img src="images/logo.png">
+                        <img class="logo" src="images/logo.png">
                     </a>
                 </div>
                 <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav" ng-show="!isLoggedIn">
+                        <li data-match-route="/audit"><a href="/audit">Audit</a></li>
+                    </ul>
                     <ul class="nav navbar-nav" ng-show="isLoggedIn">
                         <li data-match-route="/circle/*"><a href="/circle/list">Circles</a></li>
                         <li data-match-route="/loan/"><a href="/loan/list">Loans</a></li>
