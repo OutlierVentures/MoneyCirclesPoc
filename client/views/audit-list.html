@@ -138,7 +138,7 @@
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="transaction in vaultStatistics.transactions track by transaction.id">
-                                        <td><code><a target="_blank" href="https://bitreserve.org/reserve/transactions/{{transaction.id}}">{{transaction.id}}</a></code></td>
+                                        <td><code><a target="_blank" href="https://uphold.com/reserve/transactions/{{transaction.id}}">{{transaction.id}}</a></code></td>
                                         <td>{{transaction.createdAt}}</td>
                                         <td>{{transaction.debitAmount | number : 2}}</td>
                                         <td>{{transaction.creditAmount | number : 2}}</td>

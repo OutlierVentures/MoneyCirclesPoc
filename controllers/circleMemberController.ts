@@ -211,8 +211,8 @@ export class CircleMemberController {
         var brs = serviceFactory.createBitreserveService(token);
 
         // Sequence:
-        // 1. Create the BitReserve transaction
-        // 2. Commit the BitReserve transaction
+        // 1. Create the Uphold transaction
+        // 2. Commit the Uphold transaction
         // 3. Register the deposit in the contract
         // 4. Register the deposit in MongoDB
 
@@ -292,7 +292,7 @@ export class CircleMemberController {
                                     // the mean time.
                                     if (depositIndex != lastDepositIndex + 1) {
                                         res.status(500).json({
-                                            "error": "Your deposit was not registered. The BitReserve transaction ID is: " + commitRes.id,
+                                            "error": "Your deposit was not registered. The Uphold transaction ID is: " + commitRes.id,
                                             "error_location": "creating loan contract"
                                         });
                                         return;
@@ -301,7 +301,7 @@ export class CircleMemberController {
                                     // 4. Register the deposit in MongoDB.
 
                                     // Note: this method is very fragile. Any transaction to the value store should be atomically stored
-                                    // on our side. This could be realized when the value store of a circle has an individual BitReserve
+                                    // on our side. This could be realized when the value store of a circle has an individual Uphold
                                     // identity. Storage of the transaction then doesn't have to be completed in this request, but could
                                     // be done by an idempotent background process.
                                     var dep = new depositModel.Deposit();
@@ -346,12 +346,12 @@ export class CircleMemberController {
         var vaultCardId = this.config.bitReserve.circleVaultAccount.cardId;
 
         // Steps:
-        // 1. Create BitReserve transaction from the global vault to the borrower
+        // 1. Create Uphold transaction from the global vault to the borrower
         // 2. Create Loan smart contract by calling the Circle contract
         // 3. Store in MongoDB
-        // 4. Store BitReserve transaction ID with loan contract.
-        // 5. Store BitReserve transaction ID in MongoDB.
-        // 6. Confirm BitReserve transaction (or not if the Loan contract denies)
+        // 4. Store Uphold transaction ID with loan contract.
+        // 5. Store Uphold transaction ID in MongoDB.
+        // 6. Confirm Uphold transaction (or not if the Loan contract denies)
 
         // Rationale: the Circle Loan contract is the primary judge of whether the loan
         // is allowed (1). If it is, we want to store the new contract address ASAP (2).
@@ -380,7 +380,7 @@ export class CircleMemberController {
                 // Get global Circle Vault account
                 userModel.User.findOne({ externalId: adminAccount }).exec()
                     .then((adminUserRes) => {
-                        // Create BitReserve connector for global admin user.
+                        // Create Uphold connector for global admin user.
                         var brs = serviceFactory.createBitreserveService(adminUserRes.accessToken);
 
                         // Create the transaction.
@@ -439,7 +439,7 @@ export class CircleMemberController {
                                             // Store it in our loan storage.
                                             var loan = new loanModel.Loan();
 
-                                            // Store the exact amount from the transaction. BitReserve
+                                            // Store the exact amount from the transaction. Uphold
                                             // rounds amounts like 0.005 to 0.01.
                                             loan.amount = createRes.denomination.amount;
                                             loan.contractAddress = loanContract.address;
@@ -458,7 +458,7 @@ export class CircleMemberController {
                                                     return;
                                                 } 
 
-                                                // Commit the BitReserve transaction
+                                                // Commit the Uphold transaction
                                                 brs.commitTransaction(createRes, (commitErr, commitRes) => {
                                                     if (commitErr) {
                                                         res.status(500).json({

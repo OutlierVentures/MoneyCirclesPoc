@@ -1,7 +1,7 @@
 {
   "name": "moneycircles-bitreserve-poc",
   "version": "0.3.0",
-  "description": "MoneyCircles BitReserve Proof of Concept implementation",
+  "description": "MoneyCircles Uphold Proof of Concept implementation",
   "main": "server.js",
   "repository": "https://github.com/OutlierVentures/MoneyCirclesBitReserve",
   "private": true,

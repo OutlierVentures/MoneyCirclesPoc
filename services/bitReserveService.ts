@@ -137,7 +137,7 @@ export class BitReserveService {
      */
     getUser = (callback) => {
         console.log("Calling API with token: " + this.authorizationToken);
-        request.get('https://api.bitreserve.org/v0/me',
+        request.get('https://api.uphold.com/v0/me',
             {
                 headers: {
                     "Authorization": "Bearer " + this.authorizationToken
@@ -166,7 +166,7 @@ export class BitReserveService {
     getCards = (callback: IBitReserveCardsCallback) => {
 
         console.log("Calling API with token: " + this.authorizationToken);
-        request.get('https://api.bitreserve.org/v0/me/cards',
+        request.get('https://api.uphold.com/v0/me/cards',
             {
                 headers: {
                     "Authorization": "Bearer " + this.authorizationToken
@@ -184,7 +184,7 @@ export class BitReserveService {
     }
 
     getCardTransactions = (cardId: string, callback: IBitReserveTransactionsCallback) => {
-        request.get('https://api.bitreserve.org/v0/me/cards/' + cardId + '/transactions',
+        request.get('https://api.uphold.com/v0/me/cards/' + cardId + '/transactions',
             {
                 headers: {
                     "Authorization": "Bearer " + this.authorizationToken
@@ -206,7 +206,7 @@ export class BitReserveService {
      */
     createCard = (label: string, callback: IBitReserveCardCallback) => {
         console.log("Calling API with token: " + this.authorizationToken);
-        request.post('https://api.bitreserve.org/v0/me/cards',
+        request.post('https://api.uphold.com/v0/me/cards',
             {
                 headers: {
                     "Authorization": "Bearer " + this.authorizationToken
@@ -237,7 +237,7 @@ export class BitReserveService {
         callback: IBitReserveTransactionCallback) => {
 
         // denomination[currency]=BTC&denomination[amount]=0.1&destination=foo@bar.com
-        request.post('https://api.bitreserve.org/v0/me/cards/' + fromCard + '/transactions',
+        request.post('https://api.uphold.com/v0/me/cards/' + fromCard + '/transactions',
             {
                 headers: {
                     "Authorization": "Bearer " + this.authorizationToken
@@ -259,9 +259,9 @@ export class BitReserveService {
     }
 
     commitTransaction = (transaction: IBitReserveTransaction, callback: IBitReserveTransactionCallback) => {
-        // POST https://api.bitreserve.org/v0/me/cards/:card/transactions/:id/commit
+        // POST https://api.uphold.com/v0/me/cards/:card/transactions/:id/commit
 
-        request.post('https://api.bitreserve.org/v0/me/cards/' + transaction.origin.CardId
+        request.post('https://api.uphold.com/v0/me/cards/' + transaction.origin.CardId
             + '/transactions/' + transaction.id + '/commit',
             {
                 headers: {

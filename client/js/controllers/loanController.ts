@@ -8,7 +8,7 @@
         fromCard: string;
     }
     /**
-     * BitReserve cards to deposit from
+     * Uphold cards to deposit from
      */
     cards: any;
 }
@@ -90,21 +90,21 @@ class LoanController {
         t.getLoanData(loanId, function (err, res) {
             if (err) {
             } else {
-                // Get BitReserve cards with >0 funds
+                // Get Uphold cards with >0 funds
                 // TODO: call in parallel; use promises for that.
                 t.$http({
                     method: 'GET',
                     url: apiUrl + '/bitreserve/me/cards/withBalance',
                     headers: { AccessToken: t.$rootScope.userInfo.accessToken }
                 }).success(function (cards: any) {
-                    console.log("Success on BitReserve call through our API. Result:");
+                    console.log("Success on Uphold call through our API. Result:");
                     console.log(cards);
 
                     // Store in scope to show in view
                     t.$scope.cards = cards;
                 }).error(function (error) {
                     // Handle error
-                    console.log("Error on BitReserve call through our API:");
+                    console.log("Error on Uphold call through our API:");
                     console.log(error);
 
                     // TODO: further handling

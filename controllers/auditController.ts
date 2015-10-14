@@ -141,7 +141,7 @@ export class AuditController {
         // Get global Circle Vault account
         userModel.User.findOne({ externalId: adminAccount }).exec()
             .then((adminUserRes) => {
-                // Create BitReserve connector for global admin user.
+                // Create Uphold connector for global admin user.
                 var brs = serviceFactory.createBitreserveService(adminUserRes.accessToken);
 
                 // Get the circle vault card.

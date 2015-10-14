@@ -42,7 +42,7 @@ export var userSchema = new mongoose.Schema({
 export interface IUser extends mongoose.Document {
     name: string;
     /**
-     * For users primarily defined by an external authenticator, the User ID. E.g. BitReserve user name.
+     * For users primarily defined by an external authenticator, the User ID. E.g. Uphold user name.
      */
     externalId: string;
 

@@ -20,7 +20,7 @@
                                 <div class="form-group">
                                     <label>Card to repay from</label>
                                     <p class="help-block">
-                                        Which BitReserve card do you want to repay your loan from?
+                                        Which Uphold card do you want to repay your loan from?
                                     </p>
                                     <select class="form-control" ng-model="loan.repayFromCard" required>
                                         <option ng-hide="cards.length > 0">Loading your cards...</option>
@@ -44,7 +44,7 @@
                             <div class="panel-heading">Success</div>
                             <div class="panel-body">
                                 <p>{{successMessage}}</p>
-                                <p>Transaction ID: <strong>{{loan.repaymentTransactionId}}</strong>. See the <a href="https://bitreserve.org/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">transaction details</a>.</p>
+                                <p>Transaction ID: <strong>{{loan.repaymentTransactionId}}</strong>. See the <a href="https://uphold.com/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">transaction details</a>.</p>
                             </div>
                         </div>
                     </div>

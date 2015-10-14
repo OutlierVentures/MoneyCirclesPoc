@@ -23,7 +23,7 @@
                     <h4>{{loan.purpose}}</h4>
                     <p>Amount: {{loan.amount}} GBP</p>
                     <p>Borrowed from: <a href="/circle/{{loan.circleId._id}}">{{loan.circleId.name}}</a></p>
-                    <p ng-show="loan.transactionId">See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
+                    <p ng-show="loan.transactionId">See the <a href="https://uphold.com/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
                     <a class="btn btn-primary btn-block" ng-hide="loan.repaymentTransactionId" href="/loan/{{loan._id}}/repay">Repay this loan</a>
                 </div>
             </div>
@@ -35,8 +35,8 @@
                     <h4>{{loan.purpose}}</h4>
                     <p>Amount: {{loan.amount}} GBP</p>
                     <p>Borrowed from: <a href="/circle/{{loan.circleId._id}}">{{loan.circleId.name}}</a></p>
-                    <p ng-show="loan.transactionId">See the <a href="https://bitreserve.org/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
-                    <p>See the <a href="https://bitreserve.org/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">repayment transaction</a></p>
+                    <p ng-show="loan.transactionId">See the <a href="https://uphold.com/reserve/transactions/{{loan.transactionId}}" target="_blank">payout transaction</a></p>
+                    <p>See the <a href="https://uphold.com/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">repayment transaction</a></p>
                 </div>
             </div>
         </div>

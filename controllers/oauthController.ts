@@ -257,7 +257,7 @@ export class OAuthController {
             var accessToken: string;
 
             if (token.token.access_token)
-                // Cases where the token response is parsed, e.g. BitReserve
+                // Cases where the token response is parsed, e.g. Uphold
                 accessToken = token.token.access_token;
             else {
                 // Cases where the token response isn't parsed and arrives as a query string (access_token=...&scope=...), e.g. GitHub

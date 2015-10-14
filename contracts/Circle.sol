@@ -32,7 +32,7 @@ contract Loan {
     address public circle;
 
     /**
-     * The BitReserve transaction ID where this loan was payed out.
+     * The Uphold transaction ID where this loan was payed out.
      */
     string public payoutTransactionId;
 
@@ -41,7 +41,7 @@ contract Loan {
     bool public isPaidOut;
 
     /**
-     * The BitReserve transaction ID where this loan was payed repaid.
+     * The Uphold transaction ID where this loan was payed repaid.
      */
     string public repaymentTransactionId;
 
@@ -63,7 +63,7 @@ contract Loan {
     }
 
     /**
-     * Confirm that the loan has been paid out by referring to the BitReserve
+     * Confirm that the loan has been paid out by referring to the Uphold
      * transaction in which it was paid.
      */
     function setPaidOut(string bitReserveTxId) {
@@ -88,7 +88,7 @@ contract Loan {
     }
 
     /**
-     * Confirm that the loan has been repaid by referring to the BitReserve
+     * Confirm that the loan has been repaid by referring to the Uphold
      * transaction in which it was paid.
      */
     function setRepaid(string bitReserveTxId) {
@@ -168,7 +168,7 @@ contract Circle {
          */
         uint amount;
         /**
-         * The BitReserve transaction of the member to the Circle.
+         * The Uphold transaction of the member to the Circle.
          */
         string transactionId;
     }
@@ -252,7 +252,7 @@ contract Circle {
     }
 
     /**
-     * Confirm that the loan has been paid out by referring to the BitReserve
+     * Confirm that the loan has been paid out by referring to the Uphold
      * transaction in which it was paid.
      */
    function setPaidOut(Loan l, string bitReserveTxId) {
@@ -266,7 +266,7 @@ contract Circle {
     }
 
     /**
-     * Confirm that the loan has been repaid by referring to the BitReserve
+     * Confirm that the loan has been repaid by referring to the Uphold
      * transaction in which it was paid.
      */
     function setRepaid(Loan l, string bitReserveTxId) {

@@ -104,8 +104,8 @@ export class LoanController {
         req.body.fromCard = undefined;
 
         // Sequence for repayments:
-        // 1. Create BitReserve transaction
-        // 2. Commit BitReserve transaction
+        // 1. Create Uphold transaction
+        // 2. Commit Uphold transaction
         // 3. Store it in the Loan contract
         // 4. Store it in the Loan database item
 
@@ -164,7 +164,7 @@ export class LoanController {
 
                         var brs = serviceFactory.createBitreserveService(token);
                                        
-                        // 1. Create the BitReserve transaction                 
+                        // 1. Create the Uphold transaction                 
                         brs.createTransaction(fromCard, loan.amountToRepay, loan.currency, vaultAddress, (createErr, createRes) => {
                             if (createErr) {
                                 res.status(500).json({
@@ -174,7 +174,7 @@ export class LoanController {
                                 return;
                             }
 
-                            // 2. Commit the BitReserve transaction
+                            // 2. Commit the Uphold transaction
                             brs.commitTransaction(createRes, (commitErr, commitRes) => {
                                 if (commitErr) {
                                     res.status(500).json({

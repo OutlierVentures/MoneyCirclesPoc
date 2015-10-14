@@ -50,7 +50,7 @@ var bitReserveConfig = {
     clientSecret: config.bitReserve.app.clientSecret,
 
     scope: "cards:read,cards:write,transactions:read,transactions:write,user:read",
-    // BitReserve uses a different domain for the authorization URL. simple-oauth2 doesn't support that.
+    // Uphold uses a different domain for the authorization URL. simple-oauth2 doesn't support that.
     // The "site" parameter also may not be empty.
     // As a workaround, we use the greatest common denominator of the two URLs: "https://".
     oauthSite: "https://",
@@ -64,7 +64,7 @@ import bitReserveService = require('./services/bitReserveService');
 import serviceFactory = require('./services/serviceFactory');
 
 /**
- * Create a new BitReserve service and get user info from it.
+ * Create a new Uphold service and get user info from it.
  */
 function getBitReserveUserInfo(token: string, callback) {
     var brs = serviceFactory.createBitreserveService(token);
@@ -141,7 +141,7 @@ app.get(bitReserveOauthController.getAuthRoute(), bitReserveOauthController.auth
 app.post(bitReserveOauthController.getCallbackApiRoute(), bitReserveOauthController.callback);
 app.get(bitReserveOauthController.getCallbackPublicRoute(), indexRoute.index);
 
-// BitReserve API wrapper
+// Uphold API wrapper
 import bitReserveController = require('./controllers/bitReserveController');
 var brc = new bitReserveController.BitReserveController();
 app.get("/api/bitreserve/me/cards", brc.getCards);
