@@ -75,6 +75,38 @@
     <TypeScriptCompile Include="server.ts" />
     <TypeScriptCompile Include="routes\index.ts" />
     <Content Include="client\bower.json" />
+    <Content Include="client\images\avatar.png" />
+    <Content Include="client\images\favicon\android-icon-144x144.png" />
+    <Content Include="client\images\favicon\android-icon-192x192.png" />
+    <Content Include="client\images\favicon\android-icon-36x36.png" />
+    <Content Include="client\images\favicon\android-icon-48x48.png" />
+    <Content Include="client\images\favicon\android-icon-72x72.png" />
+    <Content Include="client\images\favicon\android-icon-96x96.png" />
+    <Content Include="client\images\favicon\apple-icon-114x114.png" />
+    <Content Include="client\images\favicon\apple-icon-120x120.png" />
+    <Content Include="client\images\favicon\apple-icon-144x144.png" />
+    <Content Include="client\images\favicon\apple-icon-152x152.png" />
+    <Content Include="client\images\favicon\apple-icon-180x180.png" />
+    <Content Include="client\images\favicon\apple-icon-57x57.png" />
+    <Content Include="client\images\favicon\apple-icon-60x60.png" />
+    <Content Include="client\images\favicon\apple-icon-72x72.png" />
+    <Content Include="client\images\favicon\apple-icon-76x76.png" />
+    <Content Include="client\images\favicon\apple-icon-precomposed.png" />
+    <Content Include="client\images\favicon\apple-icon.png" />
+    <Content Include="client\images\favicon\browserconfig.xml" />
+    <Content Include="client\images\favicon\favicon-16x16.png" />
+    <Content Include="client\images\favicon\favicon-32x32.png" />
+    <Content Include="client\images\favicon\favicon-96x96.png" />
+    <Content Include="client\images\favicon\favicon.ico" />
+    <Content Include="client\images\favicon\manifest.json" />
+    <Content Include="client\images\favicon\ms-icon-144x144.png" />
+    <Content Include="client\images\favicon\ms-icon-150x150.png" />
+    <Content Include="client\images\favicon\ms-icon-310x310.png" />
+    <Content Include="client\images\favicon\ms-icon-70x70.png" />
+    <Content Include="client\images\logo-dot.png" />
+    <Content Include="client\images\logo-footer.png" />
+    <Content Include="client\images\logo.png" />
+    <Content Include="client\images\uphold-connect-with-gray%401x.png" />
     <Content Include="client\index.html" />
     <Content Include="client\vendors\angular-resource\.bower.json" />
     <Content Include="client\vendors\angular-resource\angular-resource.min.js.map" />
@@ -408,6 +440,8 @@
     <TypeScriptCompile Include="typings\underscore\underscore.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="client\images\" />
+    <Folder Include="client\images\favicon\" />
     <Folder Include="client\js\" />
     <Folder Include="client\js\controllers\" />
     <Folder Include="client\vendors\" />
