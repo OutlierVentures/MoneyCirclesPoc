@@ -79,66 +79,6 @@ describe("Circle calculations", () => {
             });
     });
 
-    /**
-     * The deposits total can also be computed by calling the function transactionally.
-     * To get the results, a Solidity event is used.
-     */
-    // DISABLED because it was strongly correlated to geth crashing.
-    //it("should calculate total deposits using a transaction and an event", function (done) {
-    //    // It can take quite a while til transactions are processed.
-    //    this.timeout(180000);
-
-    //    var amount = 2000;
-    //    var userId = "user" + Math.round(Math.random() * 1000000);
-    //    var username1 = "The lucky lender";
-
-    //    var depositIndexBefore = circleContract.depositIndex().toNumber();
-    //    var totalDepositsBefore = circleContract.getTotalDepositsAmount().toNumber();
-
-    //    // First create a new member to ensure we create a deposit for a member (and this test
-    //    // can be run independently)
-    //    circleContract.addMember(userId, username1, { gas: 2500000 })
-    //        .then(web3plus.promiseCommital)
-    //        .then(function testGetMember(tx) {
-    //            return circleContract.createDeposit(userId, amount, "tx114", { gas: 2500000 });
-    //        })
-    //        .then(web3plus.promiseCommital)
-    //        .then(function testGetMember(tx) {
-    //            // Create a second deposit
-    //            return circleContract.createDeposit(userId, amount, "tx115", { gas: 2500000 });
-    //        })
-    //        .then(web3plus.promiseCommital)
-    //        .then(function testLoan(tx) {
-    //            var depositIndex = circleContract.depositIndex().toNumber();
-    //            assert.equal(depositIndex, depositIndexBefore + 2);
-
-    //            // Use an event to get the result of the calculation.
-    //            var depositsComputedEvent = circleContract.DepositsAmountComputed();
-
-    //            depositsComputedEvent.watch(function (error, result) {
-    //                if (error)
-    //                    done(error);
-    //                else {
-    //                    // The outputs of the event arrive in the property "args", by name.
-    //                    // In this case the string "value" is the name of the return parameter
-    //                    // of event DepositsAmountComputed.
-    //                    var total = result.args.value.toNumber();
-
-    //                    // Verify deposit properties.
-    //                    assert.equal(total, totalDepositsBefore + 2 * amount);
-
-    //                    done();
-    //                }
-
-    //            });
-
-    //            circleContract.calculateTotalDepositsAmount();
-    //        })
-    //        .catch((reason) => {
-    //            done(reason);
-    //        });
-    //});
-
     it("should calculate the total loans amount", function (done) {
         // It can take quite a while til transactions are processed.
         this.timeout(180000);
