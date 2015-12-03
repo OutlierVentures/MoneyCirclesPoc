@@ -2,7 +2,7 @@ development:
   rpc_host: 0.0.0.0
   rpc_port: 8101
   rpc_whitelist: "*"
-  minerthreads: 1
+  minerthreads: 2
   genesis_block: config/genesis/dev_genesis.json
   datadir: /blockchain/mcpoc_dev
   chains: config/chains/development.json
@@ -11,6 +11,7 @@ development:
   gas_limit: 500000
   gas_price: 10000000000000
   console: false
+  geth_extra_opts: --ipcpath /root/.ethereum/geth_mcpoc_staging.ipc
   account:
     init: true
     password: config/password
@@ -18,7 +19,7 @@ staging:
   rpc_host: 0.0.0.0
   rpc_port: 8101
   rpc_whitelist: "*"
-  minerthreads: 1
+  minerthreads: 2
   genesis_block: config/genesis/staging_genesis.json
   datadir: /blockchain/mcpoc_staging
   chains: config/chains/staging.json
@@ -27,6 +28,7 @@ staging:
   gas_limit: 500000
   gas_price: 10000000000000
   console: false
+  geth_extra_opts: --ipcpath /root/.ethereum/geth_mcpoc_staging.ipc
   account:
     init: true
     password: config/password_staging
