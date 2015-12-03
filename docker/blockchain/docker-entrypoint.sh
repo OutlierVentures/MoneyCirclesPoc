@@ -1,5 +1,19 @@
 #!/bin/sh
 
+# The entry point for the blockchain container which starts the local
+# Ethereum blockchain through Embark. The blockchain data resides on the host,
+# in a directory mapped to /blockchain in the container.
+
+# On first run the directory is created and several blocks are mined to fund
+# the main account. That takes some time.
+
+# When running on Windows with the files mapped from an NTFS volume, the first
+# two runs run into an error because of filesystem issues. This is worked
+# around the dumb way by starting three times. In each of the first two tries
+# a part of the blockchain data structure is created successfully, which
+# makes it possible for the third run onwards to be successful. Any runs
+# using the same blockchain structure after that are successful.
+
 # TODO: parameterize environment (development, staging, production)
 
 echo "Starting embark blockchain..."
