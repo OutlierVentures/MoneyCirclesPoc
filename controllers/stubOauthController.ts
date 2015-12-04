@@ -1,7 +1,7 @@
 ﻿import querystring = require('querystring');
 import userModel = require('../models/userModel');
 import express = require('express');
-import oc = require('oauthController');
+import oc = require('./oauthController');
 
 export class StubOAuthController {
     

@@ -1,4 +1,4 @@
-﻿import bitReserveService = require('bitReserveService');
+﻿import bitReserveService = require('./bitReserveService');
 import userModel = require('../models/userModel');
 
 export class StubBitReserveService {
