@@ -17,5 +17,6 @@ fi
 
 # Update the version number here after building an image with a new version number.
 docker run -p 8101:8101 \
+	-e "MCPOC_ENVIRONMENT=$ENVIRONMENT" \
  	-v /`pwd`/../../mcpoc_blockchain_data:/blockchain \
 	--name $CONTAINER_NAME -t -i blockstars/mcpoc_blockchain:1.0.1 bash

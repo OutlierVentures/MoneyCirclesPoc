@@ -18,17 +18,19 @@
 
 # TODO: parameterize environment (development, staging, production)
 
-echo "Starting embark blockchain..."
-embark blockchain staging
+echo "My environment is: $MCPOC_ENVIRONMENT"
 
-if [ ! -e /blockchain/mcpoc_staging/dapp ]; then
+echo "Starting embark blockchain..."
+embark blockchain $MCPOC_ENVIRONMENT
+
+if [ ! -e /blockchain/mcpoc_$MCPOC_ENVIRONMENT/dapp ]; then
     echo "Blockchain dapp data dir not created. You are on Windows, right? Trying again..."
-    embark blockchain staging
+    embark blockchain $MCPOC_ENVIRONMENT
 fi
 
-if [ ! -e /blockchain/mcpoc_staging/nodes ]; then
+if [ ! -e /blockchain/mcpoc_$MCPOC_ENVIRONMENT/nodes ]; then
     echo "Blockchain nodes dir not created. You are on Windows, right? Trying again..."
-    embark blockchain staging
+    embark blockchain $MCPOC_ENVIRONMENT
 fi
 
 echo "Command finished. Press enter to continue. To inspect the container, try running "docker exec -ti CONTAINER bash" while it is still running and look around."
