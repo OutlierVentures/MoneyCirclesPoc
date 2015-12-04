@@ -80,7 +80,7 @@ import stubBitReserveService = require('./services/stubBitReserveService');
 if (config.useStubs) {
     // Create a stub controller from the real controller.
     var stubController = new stubOauthController.StubOAuthController(bitReserveOauthController);
-   
+
 
     // Replace the handlers of the real controller by the stubs.
     bitReserveOauthController.auth = stubController.auth;

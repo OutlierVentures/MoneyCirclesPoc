@@ -8,11 +8,13 @@
 # the main account. That takes some time.
 
 # When running on Windows with the files mapped from an NTFS volume, the first
-# two runs run into an error because of filesystem issues. This is worked
-# around the dumb way by starting three times. In each of the first two tries
-# a part of the blockchain data structure is created successfully, which
-# makes it possible for the third run onwards to be successful. Any runs
-# using the same blockchain structure after that are successful.
+# two runs run into an error because of filesystem issues:
+# Fatal: blockchain db err: fsync: invalid argument
+# This is worked  around the dumb way by starting three times. In each of the
+# first two tries  a part of the blockchain data structure is created
+# successfully, which makes it possible for the third run onwards to be
+# successful. Any runs using the same blockchain structure after that are
+# successful.
 
 # TODO: parameterize environment (development, staging, production)
 
@@ -20,12 +22,12 @@ echo "Starting embark blockchain..."
 embark blockchain staging
 
 if [ ! -e /blockchain/mcpoc_staging/dapp ]; then
-    echo "Blockchain dapp data dir not created. You are on Windows, right? Trying again."
+    echo "Blockchain dapp data dir not created. You are on Windows, right? Trying again..."
     embark blockchain staging
 fi
 
 if [ ! -e /blockchain/mcpoc_staging/nodes ]; then
-    echo "Blockchain nodes dir not created. You are on Windows, right? Trying again."
+    echo "Blockchain nodes dir not created. You are on Windows, right? Trying again..."
     embark blockchain staging
 fi
 
