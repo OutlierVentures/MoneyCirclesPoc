@@ -1,6 +1,6 @@
 development:
   rpc_host: 0.0.0.0
-  rpc_port: 8101
+  rpc_port: 8001
   rpc_whitelist: "*"
   minerthreads: 2
   genesis_block: config/genesis/dev_genesis.json
@@ -11,13 +11,13 @@ development:
   gas_limit: 500000
   gas_price: 10000000000000
   console: false
-  geth_extra_opts: --ipcpath /root/.ethereum/geth_mcpoc_staging.ipc
+  geth_extra_opts: --ipcpath /root/.ethereum/geth_mcpoc_development.ipc
   account:
     init: true
     password: config/password
 staging:
   rpc_host: 0.0.0.0
-  rpc_port: 8101
+  rpc_port: 8002
   rpc_whitelist: "*"
   minerthreads: 2
   genesis_block: config/genesis/staging_genesis.json
