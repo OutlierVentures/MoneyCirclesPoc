@@ -8,6 +8,3 @@ tsd install
 cd client
 bower install --config.interactive=false --allow-root
 tsd install 
-
-cd mc-theme
-npm install

@@ -4,16 +4,111 @@ The Proof of Concept implementation of MoneyCircles using the Uphold API.
 The implementation consists of:
 - Node.js backend (using TypeScript) - directory /
 - AngularJS frontend (using TypeScript, Bootstrap) - directory /client/
-- MongoDB database - external
+- MongoDB database
+- Ethereum private blockchain
 - Uphold API - external
 
-## Test environment
+# Environments
 
-A version of the development branch is running here: https://poc1-test.moneycircles.projects.blockstars.io:3124/. This version uses a different Uphold app and database than the development configuration suggested below.
+## Production environment
 
-## Installation
+The live version runs here: https://www.blockstars.io:3124/. It has its own instance of MongoDB, Eth blockchain and Uphold app.
 
-The following instructions have been tested on a clean Ubuntu 14.04 installation.
+# Installation
+
+For development on your local machine, at least the Node.js backend should run locally. You'll need access to the following components:
+
+- MongoDB database
+- Ethereum node 
+- Uphold API. If you don't have internet access, the app can be configured to use stubs for limited offline functionality with fake data.
+
+If you don't have MongoDB running locally, use the sandbox database on MongoLab listed in [config.default.json](config.default.json).
+
+The MongoDB database and the contracts on the Ethereum node contain data that refers to each other, hence they need to be in sync. For example each Circle is represented as a smart contract on the Ethereum blockchain, the address of which is stored in the MongoDB. If you run the node backend using an existing MongoDB database and a local Ethereum node that doesn't contain the smart contracts that this database refers to, you'll run into errors. 
+
+## Docker installation (preferred)
+
+Installation using the Docker containers is preferred for maximal portability. The Docker installation is used for live deployment. It consists of two containers. The containers haven't been added to the public Docker registry; they have to be built locally from the `Dockerfile` on the machine where they will be run. 
+
+* `blockstars/mcpoc_blockchain`: Ethereum node with `geth`, including the [Embark framework](https://github.com/iurimatias/embark-framework) to manage the private blockchain. 
+* `blockstars/mcpoc_server`: Node.js backend with all dependencies to run the backend.
+
+The commands to build and run the containers have been automated in scripts in the directory `docker/`. These scripts contain further comments on which commands are run and why.
+
+### Prerequisites
+
+* Docker 1.9.1. Tested on Ubuntu 14.04 and Windows 8.1, should run on any system where Docker runs.
+
+#### Running on Windos
+When running on **Windows**: Docker uses a virtual Linux machine running in VirtualBox as the machine that runs the containers. This has consequences for the way you can interact with the containers. 
+
+* **RAM for the virtual machine**: Configure the Docker machine with at least 2GB RAM and preferrably >3GB. This speeds up mining considerably. This is configured within VirtualBox in the settings of the `default` VM.
+* **Shared folder mapping**: Make sure the Docker machine has access to the source code of this repository. By default, only the folder `C:\Users` and below is made available within the Docker machine as `/c/Users`. If your working folder is outside of this path, add a shared folder in the Settings of the `default` VM within VirtualBox.
+* **Unix line endings**: Configure git to use Unix line endings for the repository. As they will be accessed from a Linux VM, the default Windows line endings (CR+LF) will cause all kinds of errors.
+
+Configure the checked out repository to use Unix Line endings:
+
+```
+git config core.autocrlf false
+git config core.eol lf
+```
+
+Update the line endings of the files on disk:
+
+```
+git rm --cached -rf .
+git reset --hard HEAD
+```
+
+* **Access services through the docker machine**: To access services exposed on the containers (for example the JSON RPC port of the blockchain node), understand that these will be available on the Docker machine which has a different IP address. Hence not `https://localhost:3124` but for example `https://192.168.99.100:3124`. The IP address of the Docker machine is shown when you open Docker Quickstart Terminal.
+
+### Installation instructions
+
+The installation instructions assume an installation under `/p/MoneyCircles/MoneyCirclesBitReserve` and using the `development` environment. When running on Windows, use the Docker Quickstart Terminal to execute these commands. On Linux / Mac OS a regular terminal will do.
+
+#### Blockchain container
+Building:
+
+```
+cd /p/MoneyCircles/MoneyCirclesBitReserve/docker
+sh ./build-blockchain.sh
+```
+
+Building takes a long time (10-20 minutes) because it downloads quite a lot of data, installs a lot of libraries and builds the "DAG" needed for Ethereum mining.
+
+Running:
+
+```
+sh ./run-blockchain.sh development
+```
+
+The first run might take several minutes as the data structure is created and the first blocks are mined; after that it should start in under one minute.
+
+#### Server container
+
+Building:
+
+```
+cd /p/MoneyCircles/MoneyCirclesBitReserve/docker
+sh ./build-server.sh
+```
+
+Building is slightly faster than the blockchain container.
+
+Running:
+
+```
+sh ./run-server.sh development
+```
+
+On **Windows** the install steps cannot be executed correctly from within the container. Make sure you run `npm install` before running the container. The `run` command will report some errors, but the service should run correctly.
+
+You should now be able to open the app on the local machine by loading `https://[docker IP or mapped hostname]:3124` in a browser.  
+
+
+## Local installation
+
+The following instructions have been tested on a clean Ubuntu 14.04 installation. They might be slightly outdated. The commands in [the Dockerfile for the `server` container](docker/server/Dockerfile) are up-to-date.
 
 The installation steps assume the default configuration in [config.default.json](config.default.json). To use a different configuration, copy that file to `config.json` and change what you need.
 
@@ -67,7 +162,8 @@ tsd install
 bower install
 ```
 
-TODO: automate the package installs with grunt tasks.
+The install steps can be run in one go from `install.sh`.
+
 
 ### Building
 
@@ -193,3 +289,11 @@ When any .ts file is changed, a rebuild occurs, which looks like this:
 
 * Use classes for controllers, services, models
 * Use `bower` for all dependencies
+
+### Tools
+
+I've found the following tools to be helpful:
+
+* Visual Studio Community 2013
+* Node Tools for Visual Studio - allows for step-through debugging of Node.js code
+* Atom Editor with the TypeStrong TypeScript extension. This doesn't have debugging functionality, but it's lighter and quicker than Visual Studio and the design-time checks and enhancements (syntax completion/checking etc) are practically on the same level.
