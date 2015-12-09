@@ -193,3 +193,6 @@ When any .ts file is changed, a rebuild occurs, which looks like this:
 
 * Use classes for controllers, services, models
 * Use `bower` for all dependencies
+
+### Bart dd 9-12-2015
+Test: editen op github.com
