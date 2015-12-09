@@ -19,18 +19,18 @@ The live version runs here: https://www.blockstars.io:3124/. It has its own inst
 For development on your local machine, at least the Node.js backend should run locally. You'll need access to the following components:
 
 - MongoDB database
-- Ethereum node 
+- Ethereum node
 - Uphold API. If you don't have internet access, the app can be configured to use stubs for limited offline functionality with fake data.
 
 If you don't have MongoDB running locally, use the sandbox database on MongoLab listed in [config.default.json](config.default.json).
 
-The MongoDB database and the contracts on the Ethereum node contain data that refers to each other, hence they need to be in sync. For example each Circle is represented as a smart contract on the Ethereum blockchain, the address of which is stored in the MongoDB. If you run the node backend using an existing MongoDB database and a local Ethereum node that doesn't contain the smart contracts that this database refers to, you'll run into errors. 
+The MongoDB database and the contracts on the Ethereum node contain data that refers to each other, hence they need to be in sync. For example each Circle is represented as a smart contract on the Ethereum blockchain, the address of which is stored in the MongoDB. If you run the node backend using an existing MongoDB database and a local Ethereum node that doesn't contain the smart contracts that this database refers to, you'll run into errors.
 
 ## Docker installation (preferred)
 
-Installation using the Docker containers is preferred for maximal portability. The Docker installation is used for live deployment. It consists of two containers. The containers haven't been added to the public Docker registry; they have to be built locally from the `Dockerfile` on the machine where they will be run. 
+Installation using the Docker containers is preferred for maximal portability. The Docker installation is used for live deployment. It consists of two containers. The containers haven't been added to the public Docker registry; they have to be built locally from the `Dockerfile` on the machine where they will be run.
 
-* `blockstars/mcpoc_blockchain`: Ethereum node with `geth`, including the [Embark framework](https://github.com/iurimatias/embark-framework) to manage the private blockchain. 
+* `blockstars/mcpoc_blockchain`: Ethereum node with `geth`, including the [Embark framework](https://github.com/iurimatias/embark-framework) to manage the private blockchain.
 * `blockstars/mcpoc_server`: Node.js backend with all dependencies to run the backend.
 
 The commands to build and run the containers have been automated in scripts in the directory `docker/`. These scripts contain further comments on which commands are run and why.
@@ -39,8 +39,8 @@ The commands to build and run the containers have been automated in scripts in t
 
 * Docker 1.9.1. Tested on Ubuntu 14.04 and Windows 8.1, should run on any system where Docker runs.
 
-#### Running on Windos
-When running on **Windows**: Docker uses a virtual Linux machine running in VirtualBox as the machine that runs the containers. This has consequences for the way you can interact with the containers. 
+#### Running on Windows
+When running on **Windows**: Docker uses a virtual Linux machine running in VirtualBox as the machine that runs the containers. This has consequences for the way you can interact with the containers.
 
 * **RAM for the virtual machine**: Configure the Docker machine with at least 2GB RAM and preferrably >3GB. This speeds up mining considerably. This is configured within VirtualBox in the settings of the `default` VM.
 * **Shared folder mapping**: Make sure the Docker machine has access to the source code of this repository. By default, only the folder `C:\Users` and below is made available within the Docker machine as `/c/Users`. If your working folder is outside of this path, add a shared folder in the Settings of the `default` VM within VirtualBox.
@@ -104,7 +104,6 @@ sh ./run-server.sh development
 On **Windows** the install steps cannot be executed correctly from within the container. Make sure you run `npm install` before running the container. The `run` command will report some errors, but the service should run correctly.
 
 You should now be able to open the app on the local machine by loading `https://[docker IP or mapped hostname]:3124` in a browser.  
-
 
 ## Local installation
 
