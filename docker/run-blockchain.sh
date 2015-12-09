@@ -16,7 +16,7 @@ if [ "`docker ps -a | grep $CONTAINER_NAME`" ]; then
 fi
 
 # Update the version number here after building an image with a new version number.
-docker run -p 8101:8101 \
+docker run -p 8101:8101 -p 8001:8001 -p 8002:8002 \
 	-e "MCPOC_ENVIRONMENT=$ENVIRONMENT" \
  	-v /`pwd`/../../mcpoc_blockchain_data:/blockchain \
 	--name $CONTAINER_NAME -t -i blockstars/mcpoc_blockchain:1.0.1 bash
