@@ -271,6 +271,25 @@ When any .ts file is changed, a rebuild occurs, which looks like this:
     https server started on port 3124
 ```
 
+# Tests
+
+Unit tests are available for the contracts. The unit tests are run just like normal interactions with the smart contracts, on a blockchain node. This makes them very slow: the current test sets takes around 10 minutes to run completely on a powerful laptop.
+
+## Configuration
+
+Because they are run in a special environment, the tests have a separate configuration file [tests/web3config.ts](tests/web3config.ts).
+
+## Running tests
+
+### Command line
+
+Run:
+
+`npm test`
+
+### Visual Studio with Node Tools for Visual Studio
+
+NTVS recognizes the unit tests and makes them available in the Visual Studio Test Explorer. Debugging them works well, and is a great way to see the contracts run.
 
 # Development guidelines
 
