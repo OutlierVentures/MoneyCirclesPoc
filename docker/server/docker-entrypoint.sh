@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # The entry point for the server container which starts the local
 # Node.js server. The web files reside on the host.

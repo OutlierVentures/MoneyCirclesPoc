@@ -105,6 +105,31 @@ On **Windows** the install steps cannot be executed correctly from within the co
 
 You should now be able to open the app on the local machine by loading `https://[docker IP or mapped hostname]:3124` in a browser.  
 
+### Troubleshooting
+
+#### Server: source files volume not mapped correctly
+
+If you get output like this:
+
+```
+$ ./run-server.sh development
+mcpoc_server_development
+Running install...
+sh: 0: Can't open ./install.sh
+Running first Grunt build...
+grunt-cli: The grunt command line interface. (v0.1.13)
+
+Fatal error: Unable to find local grunt.
+
+If you're seeing this message, either a Gruntfile wasn't found or grunt
+hasn't been installed locally to your project. For more information about
+installing and configuring grunt, please see the Getting Started guide:
+
+http://gruntjs.com/getting-started
+```
+
+Then the source files on the host aren't available from within the container. Debug this by opening a bash in the container.
+
 ## Local installation
 
 The following instructions have been tested on a clean Ubuntu 14.04 installation. They might be slightly outdated. The commands in [the Dockerfile for the `server` container](docker/server/Dockerfile) are up-to-date.

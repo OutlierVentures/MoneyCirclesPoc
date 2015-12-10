@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # The entry point for the blockchain container which starts the local
 # Ethereum blockchain through Embark. The blockchain data resides on the host,
