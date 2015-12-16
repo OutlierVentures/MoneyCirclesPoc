@@ -4,7 +4,7 @@ development:
   rpc_whitelist: "*"
   minerthreads: 2
   genesis_block: config/genesis/dev_genesis.json
-  datadir: /blockchain/mcpoc_dev
+  datadir: /blockchain/mcpoc_development
   chains: config/chains/development.json
   mine_when_needed: true
   max_peers: 0
