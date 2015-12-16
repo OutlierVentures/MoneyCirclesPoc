@@ -8,7 +8,7 @@
     <LaunchUrl>https://poc1-dev.moneycircles.com:3124</LaunchUrl>
     <Environment>
     </Environment>
-    <ToolsVersionPromptShown>1.6</ToolsVersionPromptShown>
+    <ToolsVersionPromptShown>1.7</ToolsVersionPromptShown>
     <TypeScriptToolsVersion>1.6</TypeScriptToolsVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
