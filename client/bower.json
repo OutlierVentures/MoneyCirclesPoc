@@ -1,5 +1,4 @@
 {
-    "directory": "vendors",
     "name": "moneycircles-client",
     "dependencies": {
         "jquery": "~2.0.2",
