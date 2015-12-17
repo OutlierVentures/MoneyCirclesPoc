@@ -5,7 +5,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>MoneyCirclesBitReserve</Name>
     <RootNamespace>HelloOAuthNode</RootNamespace>
-    <LaunchUrl>https://poc1-dev.moneycircles.com:3124</LaunchUrl>
+    <LaunchUrl>https://selfsigned.blockstars.io:3124</LaunchUrl>
     <Environment>
     </Environment>
     <ToolsVersionPromptShown>1.7</ToolsVersionPromptShown>
