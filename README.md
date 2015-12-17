@@ -340,3 +340,18 @@ I've found the following tools to be helpful:
 * Visual Studio Community 2013
 * Node Tools for Visual Studio - allows for step-through debugging of Node.js code
 * Atom Editor with the TypeStrong TypeScript extension. This doesn't have debugging functionality, but it's lighter and quicker than Visual Studio and the design-time checks and enhancements (syntax completion/checking etc) are practically on the same level.
+
+### Addition Bart after install 9-12-2015 (on Mac)
+Install and run Ubuntu using:
+```bash
+docker run -it unbuntu:latest
+```
+
+Cloning the repo without setting up the SSH key etc., can be done by cloning the `https://` address instead of `git@github..`:
+`git clone https://github.com/OutlierVentures/MoneyCirclesBitReserve.git`
+
+I then had the `master` branch locally. I then got also the development branch and created own branch from the 'development' branch with:
+`git checkout -b development origin/development`
+
+followed by:
+`git checkout -b development-bart`
