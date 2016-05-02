@@ -33,7 +33,7 @@ export class CircleAdminController {
         // too bad; this "circle" will never show up anywhere.
 
 
-        userModel.getUserByAccessToken(token, function (userErr, userRes) {
+        userModel.getUserByAccessToken(token, function (userErr, user) {
             var afterDeploy = (contractErr, circleContract) => {
                 if (contractErr) {
                     circleContract.status(500).json({
@@ -46,7 +46,7 @@ export class CircleAdminController {
                 circleData.contractAddress = circleContract.address;
 
                 // Add the current user as the first admin.
-                circleData.administrators = [userRes.id];
+                circleData.administrators = [user.id];
 
                 // TODO: let the user join the Circle here. The user is now an administrator,
                 // but not a member.
@@ -84,7 +84,7 @@ export class CircleAdminController {
                         //    circleData.cardBitcoinAddress = card.address.bitcoin;
                             
                         // Store in MongoDB and return.
-                        circleModel.Circle.create(circleData, (err, circleRes) => {
+                        circleModel.Circle.create(circleData, (err, circle) => {
                             if (err) {
                                 res.status(500).json({
                                     "error": userErr,
@@ -93,7 +93,42 @@ export class CircleAdminController {
                                 return;
                             }
 
-                            res.send(circleRes);
+                            // Always add the creator as a member.
+                            // TODO: remove duplication with circleMemberController.join()
+                            // TOOD: remove duplication between MongoDB and the contract. Use the contract.
+                            // 1. Store in the contract
+                            circleContract.addMember(user._id.toString(), user.externalId, { gas: 2500000 })
+                                .then(web3plus.promiseCommital)
+                                .then(function (tx) {
+                                    // 2. Register in MongoDB
+
+                                    var cm = new userModel.CircleMembership();
+                                    cm.circleId = circle.id;
+                                    cm.startDate = new Date();
+                                    user.circleMemberships.push(cm);
+
+                                    user.save(function (saveErr, saveRes) {
+                                        if (saveErr) {
+                                            res.status(500).json({
+                                                "error": saveErr,
+                                                "error_location": "saving user data",
+                                                "status": "Error",
+                                            });
+                                            return;
+                                        }
+
+                                        res.send(circle);
+                                    });
+
+                                })
+                                .catch(function (addMemberError) {
+                                    res.status(500).json({
+                                        "error": addMemberError,
+                                        "error_location": "adding user to Circle members data",
+                                    });
+                                    return;
+                                });
+
                         });
 
                     });
@@ -121,7 +156,8 @@ export class CircleAdminController {
                 true,
                 afterDeploy,
                 circleData.name,
-                circleData.commonBond);
+                circleData.commonBond,
+                circleData.interestPercentage * 100);
         });
 
     }

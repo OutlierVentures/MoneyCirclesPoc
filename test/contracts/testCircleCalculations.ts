@@ -12,6 +12,7 @@ describe("Circle calculations", () => {
     var circleContract;
     var testName = "A testing circle";
     var testCommonBond = "For all of those who love testing";
+    var testInterest = 200;
 
     var timeBeforeDeployment: number;
     var timeAfterDeployment: number;
@@ -33,7 +34,8 @@ describe("Circle calculations", () => {
                 done(err);
             },
             testName,
-            testCommonBond);
+            testCommonBond,
+            testInterest);
     });
 
 
@@ -76,66 +78,6 @@ describe("Circle calculations", () => {
                 done(reason);
             });
     });
-
-    /**
-     * The deposits total can also be computed by calling the function transactionally.
-     * To get the results, a Solidity event is used.
-     */
-    // DISABLED because it was strongly correlated to geth crashing.
-    //it("should calculate total deposits using a transaction and an event", function (done) {
-    //    // It can take quite a while til transactions are processed.
-    //    this.timeout(180000);
-
-    //    var amount = 2000;
-    //    var userId = "user" + Math.round(Math.random() * 1000000);
-    //    var username1 = "The lucky lender";
-
-    //    var depositIndexBefore = circleContract.depositIndex().toNumber();
-    //    var totalDepositsBefore = circleContract.getTotalDepositsAmount().toNumber();
-
-    //    // First create a new member to ensure we create a deposit for a member (and this test
-    //    // can be run independently)
-    //    circleContract.addMember(userId, username1, { gas: 2500000 })
-    //        .then(web3plus.promiseCommital)
-    //        .then(function testGetMember(tx) {
-    //            return circleContract.createDeposit(userId, amount, "tx114", { gas: 2500000 });
-    //        })
-    //        .then(web3plus.promiseCommital)
-    //        .then(function testGetMember(tx) {
-    //            // Create a second deposit
-    //            return circleContract.createDeposit(userId, amount, "tx115", { gas: 2500000 });
-    //        })
-    //        .then(web3plus.promiseCommital)
-    //        .then(function testLoan(tx) {
-    //            var depositIndex = circleContract.depositIndex().toNumber();
-    //            assert.equal(depositIndex, depositIndexBefore + 2);
-
-    //            // Use an event to get the result of the calculation.
-    //            var depositsComputedEvent = circleContract.DepositsAmountComputed();
-
-    //            depositsComputedEvent.watch(function (error, result) {
-    //                if (error)
-    //                    done(error);
-    //                else {
-    //                    // The outputs of the event arrive in the property "args", by name.
-    //                    // In this case the string "value" is the name of the return parameter
-    //                    // of event DepositsAmountComputed.
-    //                    var total = result.args.value.toNumber();
-
-    //                    // Verify deposit properties.
-    //                    assert.equal(total, totalDepositsBefore + 2 * amount);
-
-    //                    done();
-    //                }
-
-    //            });
-
-    //            circleContract.calculateTotalDepositsAmount();
-    //        })
-    //        .catch((reason) => {
-    //            done(reason);
-    //        });
-    //});
 
     it("should calculate the total loans amount", function (done) {
         // It can take quite a while til transactions are processed.
@@ -263,7 +205,8 @@ describe("Circle calculations", () => {
             })
             .then(web3plus.promiseCommital)
             .then(function testCalculation(tx) {
-                // Calculate and check balance
+                // Calculate and check balance. No loans were repaid, so interest is
+                // of no influence.
                 var balance = circleContract.getBalance().toNumber();
                 assert.equal(balance, balanceBefore + 2 * amount - 100);
 
@@ -273,6 +216,73 @@ describe("Circle calculations", () => {
                 done(reason);
             });
     });
+
+    it("should calculate the interest amount", function (done) {
+        // It can take quite a while til transactions are processed.
+        this.timeout(180000);
+
+        var amount = 1000;
+        var userId = "user" + Math.round(Math.random() * 1000000);
+        var username1 = "The lucky lender";
+
+        var loanIndexBefore = circleContract.loanIndex().toNumber();
+        var loanIndex;
+        var loanAddress;
+
+        var balanceBefore = circleContract.getBalance().toNumber();
+        var interestBefore = circleContract.getTotalRepaidInterestAmount().toNumber();
+
+        // We create 1 deposit and 1 loan, then compute the balance.
+
+        // First create a new member to ensure we create a loan for a member (and this test
+        // can be run independently)
+        circleContract.addMember(userId, username1, { gas: 2500000 })
+            .then(web3plus.promiseCommital)
+            .then(function createDeposit(tx) {
+                // Deposit of 3x amount
+                return circleContract.createDeposit(userId, amount * 3, "tx111", { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function createFirstLoan(tx) {
+                // Loan of 1x amount + 100, paid out
+                return circleContract.createLoan(userId, amount + 100, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function setFirstLoanPaidOut(tx) {
+
+                loanIndex = circleContract.loanIndex().toNumber();
+                assert.equal(loanIndex, loanIndexBefore + 1);
+
+                loanAddress = circleContract.loans(loanIndex);
+
+                return circleContract.setPaidOut(loanAddress, "tx" + loanIndex, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function setFirstLoanRepaid(tx) {
+                return circleContract.setRepaid(loanAddress, "txrepaid" + loanIndex, { gas: 2500000 });
+            })
+            .then(web3plus.promiseCommital)
+            .then(function testCalculation(tx) {
+                // Calculate and check balance
+                var balance = circleContract.getBalance().toNumber();
+                var interest = circleContract.getTotalRepaidInterestAmount().toNumber();
+                var interestDifference = interest - interestBefore;
+
+                // The change in balance should be equal to:
+                // + deposit of 3x amount
+                // no influence of the loan as it has been repaid
+                // + the interest of the repaid loan
+                assert.equal(balance, balanceBefore + 3 * amount + interestDifference);
+
+                assert.equal(interest, interestBefore + (amount + 100) * (testInterest / 10000));
+
+                done();
+            })
+            .catch((reason) => {
+                done(reason);
+            });
+    });
+
 
     it("should calculate the member balance", function (done) {
         // It can take quite a while til transactions are processed.

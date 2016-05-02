@@ -3,7 +3,7 @@ MAINTAINER Aron van Ammers
 
 RUN apt-get update
 RUN apt-get install -y \
-	curl \ 
+	curl \
 	git \
 	# python \
 	screen
@@ -16,4 +16,12 @@ RUN npm install -g grunt-cli bower tsd typescript
 
 WORKDIR /app
 
-ENTRYPOINT screen bash -c 'sh install.sh; grunt; grunt serve'
+# The ENTRYPOINT commands are in a separate startup script. We copy the script
+# to the container and start it.
+COPY ./docker-entrypoint.sh /
+
+# Just use a bash shell as entry point. Use for debugging purposes to inspect
+# the container installation without starting the normal entry point.
+# ENTRYPOINT bash
+
+ENTRYPOINT [ "/docker-entrypoint.sh"]

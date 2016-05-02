@@ -15,11 +15,24 @@ module.exports = function (grunt) {
 			}
 		},
 
+		less: {
+	      development: {
+	        options: {
+	          compress: true,
+	          yuicompress: true,
+	          optimization: 2
+	        },
+	        files: {
+	          "client/vendors/bootstrap/dist/css/bootstrap.css": "client/mc-theme/bootstrap.less" // destination file and source file
+	        }
+	      }
+	    },
+
 		watch : {
 			scripts : {
-				files : ['**/*.ts', '!node_modules/**/*.ts'], // the watched files
+				files : ['**/*.ts', '!node_modules/**/*.ts', '**/**/*.less'], // the watched files
 				// tasks : ["newer:tslint:all", "ts:build"], // the task to run
-				tasks : ["ts:build"], // the task to run
+				tasks : ['ts:build', 'less'], // the task to run
 				options : {
 					spawn : false // makes the watch task faster
 				}
@@ -58,11 +71,12 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-nodemon");
 	grunt.loadNpmTasks("grunt-concurrent");
+	grunt.loadNpmTasks('grunt-contrib-less');
 
 	// Default tasks.
 	grunt.registerTask("serve", ["concurrent:watchers"]);
 	// tslint disabled for now, gives 'Warning: Task "tslint:all" not found. Use --force to continue.'
 	// Even with latest tslint.
 	// grunt.registerTask('default', ["tslint:all", "ts:build"]);
-	grunt.registerTask('default', ["ts:build"]);
+	grunt.registerTask('default', ["ts:build", "less"]);
 };

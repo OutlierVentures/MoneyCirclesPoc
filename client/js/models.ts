@@ -17,6 +17,7 @@ interface ICircle extends IDocument {
     contractAddress: string;
     name: string;
     commonBond: string;
+    interestPercentage: number;
     /**
      * Circle administrators, by user ID
      */
@@ -71,6 +72,8 @@ interface IDeposit extends IDocument {
 interface ILoan extends IDocument {
     contractAddress: string;
     amount: number;
+    interestPercentage: number;
+    amountToRepay: number;
     circleId: string;
     userId: string;
     transactionId: string

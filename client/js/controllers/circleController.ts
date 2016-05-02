@@ -5,7 +5,8 @@
     totalActiveLoansAmount: number,
     totalPaidLoansAmount: number,
     totalRepaidLoansAmount: number,
-    totalDepositsAmount: number
+    totalDepositsAmount: number,
+    totalRepaidInterestAmount: number
 }
 
 interface ICircleScope extends ng.IScope {
@@ -18,7 +19,7 @@ interface ICircleScope extends ng.IScope {
     totalInvestmentAmount: number;
     totalLoanAmount: number;
     /**
-     * BitReserve cards to deposit from
+     * Uphold cards to deposit from
      */
     cards: any;
 
@@ -225,21 +226,21 @@ class CircleController {
         t.getCircleData(circleId, function(err, res) {
             if (err) {
             } else {
-                // Get BitReserve cards with >0 funds
+                // Get Uphold cards with >0 funds
                 // TODO: call in parallel; use promises for that.
                 t.$http({
                     method: 'GET',
                     url: apiUrl + '/bitreserve/me/cards/withBalance',
                     headers: { AccessToken: t.$rootScope.userInfo.accessToken }
                 }).success(function(cards: any) {
-                    console.log("Success on BitReserve call through our API. Result:");
+                    console.log("Success on Uphold call through our API. Result:");
                     console.log(cards);
 
                     // Store in scope to show in view
                     t.$scope.cards = cards;
                 }).error(function(error) {
                     // Handle error
-                    console.log("Error on BitReserve call through our API:");
+                    console.log("Error on Uphold call through our API:");
                     console.log(error);
 
                     // TODO: further handling
@@ -322,7 +323,7 @@ class CircleController {
 
             t.$scope.loan.amount = resultData.amount;
             t.$scope.loan.transactionId = resultData.transactionId;
-            t.$scope.successMessage = "Your loan of " + resultData.currency + " " + resultData.amount + " was approved! The money has been transferred to your BitReserve account. Taking you back to the Circle...";
+            t.$scope.successMessage = "Your loan of " + resultData.currency + " " + resultData.amount + " was approved! The money has been transferred to your Uphold account. Taking you back to the Circle...";
             t.$timeout(() => {
             }, 10000).then((promiseValue) => {
                 // Redirect to the circle view

@@ -1,5 +1,4 @@
-﻿<div>
-    <div ng-show="circles.length==0">
+﻿    <div ng-show="circles.length==0">
         <div class="jumbotron">
             <div class="container">
                 <h5>Money Circles</h5>
@@ -16,9 +15,22 @@
         </div>
     </div>
     <div class="container" ng-show="circles.length>0">
-        <h5 class="mc-page-heading">{{circles.length}} Circles Available</h5>
+        <h5 class="mc-page-heading">My Circles</h5>
         <div class="row">
-            <div ng-repeat="circle in circles track by circle._id" class="col-lg-4 col-md-6">
+            <div ng-repeat="circle in circles | filter: {userIsMember: true} track by circle._id" class="col-lg-4 col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <a href="/circle/{{circle._id}}"><h4>{{circle.name}}</h4></a>
+                        <p>{{circle.commonBond}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container" ng-show="circles.length>0">
+        <h5 class="mc-page-heading">{{(circles | filter: {userIsMember: '!'}).length}} Circles Available</h5>
+        <div class="row">
+            <div ng-repeat="circle in circles | filter: {userIsMember: '!'} track by circle._id" class="col-lg-4 col-md-6">
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <a href="/circle/{{circle._id}}"><h4>{{circle.name}}</h4></a>
@@ -29,4 +41,3 @@
             </div>
         </div>
     </div>
-</div>

@@ -93,7 +93,7 @@ class LoginController {
                 console.log("Successful call to OAuth callback on API. Result:");
                 console.log(resultData);
 
-                // Store token in BitReserve identity provider
+                // Store token in Uphold identity provider
                 var brip = new BitReserveIdentityProvider();
                 brip.setToken(resultData.user.accessToken, $window);
                 brip.setUserInfo(resultData.user, $window);
@@ -164,7 +164,7 @@ class DashboardController {
     }
 
     private loadBitReserveData() {
-        // Load BitReserve data
+        // Load Uphold data
         var t = this;
 
         this.$http({
@@ -172,14 +172,14 @@ class DashboardController {
             url: apiUrl + '/bitreserve/me/cards',
             headers: { AccessToken: t.$scope.userInfo.accessToken }
         }).success(function (cards: any) {
-            console.log("Success on BitReserve call through our API. Result:");
+            console.log("Success on Uphold call through our API. Result:");
             console.log(cards);
 
             // Store in scope to show in view
             t.$scope.allCards = cards;
         }).error(function (error) {
             // Handle error
-            console.log("Error on BitReserve call through our API:");
+            console.log("Error on Uphold call through our API:");
             console.log(error);
 
             // TODO: further handling

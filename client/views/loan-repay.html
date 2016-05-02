@@ -1,4 +1,12 @@
-﻿<div class="row">
+﻿<div class="container">
+    <ol class="breadcrumb mc-breadcrumb">
+      <li><a href="/">Home</a></li>
+      <li><a href="/loan/list">Loans</a></li>
+      <li class"active">Repay Loan</li>
+    </ol>
+</div>
+<div class="container">
+<div class="row">
     <div class="col-lg-12">
         <h1 class="page-header" id="page-header">Repay my loan</h1>
     </div>
@@ -14,13 +22,13 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-lg-12">
-                        <p>You are repaying your loan of {{loan.amount}} GBP from Circle {{loan.circleId.name}}.</p>
+                        <p>You are repaying your loan of {{loan.amount | number: 2}} GBP from Circle {{loan.circleId.name}}. Including interest the amount to pay is {{loan.amountToRepay | number: 2}} GBP.</p>
                         <form role="form" name="circleForm" novalidate>
                             <fieldset ng-disabled="processMessage || successMessage">
                                 <div class="form-group">
                                     <label>Card to repay from</label>
                                     <p class="help-block">
-                                        Which BitReserve card do you want to repay your loan from?
+                                        Which Uphold card do you want to repay your loan from?
                                     </p>
                                     <select class="form-control" ng-model="loan.repayFromCard" required>
                                         <option ng-hide="cards.length > 0">Loading your cards...</option>
@@ -44,7 +52,7 @@
                             <div class="panel-heading">Success</div>
                             <div class="panel-body">
                                 <p>{{successMessage}}</p>
-                                <p>Transaction ID: <strong>{{loan.repaymentTransactionId}}</strong>. See the <a href="https://bitreserve.org/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">transaction details</a>.</p>
+                                <p>Transaction ID: <strong>{{loan.repaymentTransactionId}}</strong>. See the <a href="https://uphold.com/reserve/transactions/{{loan.repaymentTransactionId}}" target="_blank">transaction details</a>.</p>
                             </div>
                         </div>
                     </div>
@@ -58,3 +66,4 @@
     <!-- /.col-lg-12 -->
 </div>
 <!-- /.row -->
+</div>

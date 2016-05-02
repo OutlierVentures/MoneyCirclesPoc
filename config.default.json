@@ -14,14 +14,14 @@
             "clientSecret": "b3df38816602d936c304774c43420d56eda8358f"
         },
         "circleVaultAccount": {
-            "__comment": "The main BitReserve account that stores funds of Circles.",
+            "__comment": "The main Uphold account that stores funds of Circles.",
             "userName": "MoneyCircles",
             "cardId": "",
             "cardBitcoinAddress":  ""
         }
     },
     "ethereum": {
-        "jsonRpcUrl": "http://poc1-dev.moneycircles.com:8545",
+        "jsonRpcUrl": "http://poc1-dev.moneycircles.com:8101",
         "nodeUrl": "poc1-dev.moneycircles.com:30301"
     }
 }

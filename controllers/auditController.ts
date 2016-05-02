@@ -5,6 +5,7 @@ import depositModel = require('../models/depositModel');
 import loanModel = require('../models/loanModel');
 import circleService = require('../services/circleService');
 import bitReserveService = require('../services/bitReserveService');
+import serviceFactory = require('../services/serviceFactory');
 import web3plus = require('../node_modules/web3plus/lib/web3plus');
 import _ = require('underscore');
 import Q = require('q');
@@ -100,7 +101,8 @@ export class AuditController {
                             totalActiveLoansAmount: 0,
                             totalDepositsAmount: 0,
                             totalPaidLoansAmount: 0,
-                            totalRepaidLoansAmount: 0
+                            totalRepaidLoansAmount: 0,
+                            totalRepaidInterestAmount: 0
                         };
 
                         for (var k in totals) {
@@ -139,8 +141,8 @@ export class AuditController {
         // Get global Circle Vault account
         userModel.User.findOne({ externalId: adminAccount }).exec()
             .then((adminUserRes) => {
-                // Create BitReserve connector for global admin user.
-                var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
+                // Create Uphold connector for global admin user.
+                var brs = serviceFactory.createBitreserveService(adminUserRes.accessToken);
 
                 // Get the circle vault card.
                 brs.getCards((cardsErr, cardsRes) => {
@@ -155,7 +157,7 @@ export class AuditController {
                     var vaultCard = _(cardsRes).find((c) => {
                         return c.address.bitcoin == t.config.bitReserve.circleVaultAccount.cardBitcoinAddress;
                     });
-                    
+
                     if (vaultCard == null) {
                         res.status(500).json({
                             "error": "can't find circle vault card",
@@ -180,7 +182,7 @@ export class AuditController {
                         // user.
                         // Also enhance the data and compute totals.
                         var totalDebit = 0;
-                        var totalCredit = 0;                        
+                        var totalCredit = 0;
 
                         _(transactions).each(function (t) {
                             // Mark it as a debit or credit transaction

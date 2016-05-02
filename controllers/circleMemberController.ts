@@ -4,6 +4,7 @@ import userModel = require('../models/userModel');
 import depositModel = require('../models/depositModel');
 import loanModel = require('../models/loanModel');
 import bitReserveService = require('../services/bitReserveService');
+import serviceFactory = require('../services/serviceFactory');
 import circleService = require('../services/circleService');
 import web3plus = require('../node_modules/web3plus/lib/web3plus');
 import _ = require('underscore');
@@ -27,10 +28,37 @@ export class CircleMemberController {
     getAll = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
-        circleModel.Circle.find({}, (err, circleRes) => {
-            res.send(circleRes);
+        circleModel.Circle.find({}, (err, circleList) => {
+            userModel.getUserByAccessToken(token, function(userErr, user) {
+                if (userErr) {
+                    res.status(500).json({
+                        "error": userErr,
+                        "error_location": "getting user data",
+                        "status": "Error",
+                    });
+                    return;
+                }
+
+                // Add property to show whether user is a member
+
+                _(circleList).each(function(circle) {
+                    // Check for existing membership
+                    if (user.circleMemberships.some(
+                        (value, index, arr) => {
+                            return value.circleId.toString() == circle.id && !value.endDate;
+                        })) {
+                        var circleAny: any;
+                        circleAny = circle;
+                        // Set the custom property on the _doc, so that it will be serialized.
+                        circleAny._doc.userIsMember = true;
+                    }
+                });
+
+                res.json(circleList);
+            });
         });
     }
+
 
     getOne = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
@@ -64,6 +92,24 @@ export class CircleMemberController {
             });
     }
 
+    getMembers = (req: express.Request, res: express.Response) => {
+        var token = req.header("AccessToken");
+
+        var cs = new circleService.CircleService(token);
+
+        // TODO: implement
+        //cs.getCircleStatistics(req.params.id)
+        //    .then((stats) => {
+        //        res.json(stats);
+        //    })
+        //    .catch((err) => {
+        //        res.status(500).json({
+        //            "error": err,
+        //            "error_location": "getting circle statistics"
+        //        });
+        //    });
+    }
+
     join = (req: express.Request, res: express.Response) => {
         var token = req.header("AccessToken");
 
@@ -72,85 +118,82 @@ export class CircleMemberController {
         circleModel.Circle.findOne({ _id: circleData._id }).exec()
             .then((circle) => {
 
-                userModel.getUserByAccessToken(token, function (userErr, userRes) {
+                userModel.getUserByAccessToken(token, function(userErr, userRes) {
                     if (userErr) {
                         res.status(500).json({
                             "error": userErr,
                             "error_location": "getting user data",
                             "status": "Error",
                         });
-                    } else {
-                        // Add the user to this circle
-                        var user = <userModel.IUser>userRes;
-
-                        // Check for existing membership
-                        if (user.circleMemberships.some(
-                            (value, index, arr) => {
-                                return value.circleId === circleData._id.toString() && !value.endDate;
-                            })) {
-                            res.status(500).json({
-                                "error": "User is already a member of this circle",
-                                "error_location": "joining circle",
-                                "status": "Error",
-                            });
-                        } else {
-                            // 1. Add to the Contract
-                            var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function (loadContractError, circleContract) {
-                                if (loadContractError) {
-                                    res.status(500).json({
-                                        "error": loadContractError,
-                                        "error_location": "loading circle contract",
-                                    });
-                                } else {
-                                    // We need to call user._id.toString() to prevent it being passed as ObjectId,
-                                    // which web3 doesn't know how to handle.
-                                    circleContract.addMember(user._id.toString(), user.externalId, { gas: 2500000 })
-                                        .then(web3plus.promiseCommital)
-                                        .then(function (tx) {
-                                            // 2. Register in MongoDB
-
-                                            var cm = new userModel.CircleMembership();
-                                            cm.circleId = circleData._id.toString();
-                                            cm.startDate = new Date();
-                                            user.circleMemberships.push(cm);
-
-                                            user.save(function (saveErr, saveRes) {
-                                                if (saveErr) {
-                                                    res.status(500).json({
-                                                        "error": saveErr,
-                                                        "error_location": "saving user data",
-                                                        "status": "Error",
-                                                    });
-                                                } else {
-                                                    res.status(200).json(saveRes);
-                                                }
-                                            });
-                                        })
-                                        .catch(function (addMemberToContractError) {
-                                            res.status(500).json({
-                                                "error": addMemberToContractError,
-                                                "error_location": "adding member to circle contract",
-                                                "status": "Error",
-                                            });
-
-                                        });
-                                }
-
-                            });
-
-
-                        }
+                        return;
                     }
+                    // Add the user to this circle
+                    var user = <userModel.IUser>userRes;
+
+                    // Check for existing membership
+                    if (user.circleMemberships.some(
+                        (value, index, arr) => {
+                            return value.circleId.toString() == circle.id && !value.endDate;
+                        })) {
+                        res.status(500).json({
+                            "error": "User is already a member of this circle",
+                            "error_location": "joining circle",
+                            "status": "Error",
+                        });
+                        return;
+                    }
+                    // 1. Add to the Contract
+                    var circleContract = web3plus.loadContractFromFile('Circle.sol', 'Circle', circle.contractAddress, true, function(loadContractError, circleContract) {
+                        if (loadContractError) {
+                            res.status(500).json({
+                                "error": loadContractError,
+                                "error_location": "loading circle contract",
+                            });
+                            return;
+                        }
+                        // We need to call user._id.toString() to prevent it being passed as ObjectId,
+                        // which web3 doesn't know how to handle.
+                        circleContract.addMember(user._id.toString(), user.externalId, { gas: 2500000 })
+                            .then(web3plus.promiseCommital)
+                            .then(function(tx) {
+                                // 2. Register in MongoDB
+
+                                var cm = new userModel.CircleMembership();
+                                cm.circleId = circleData._id.toString();
+                                cm.startDate = new Date();
+                                user.circleMemberships.push(cm);
+
+                                user.save(function(saveErr, saveRes) {
+                                    if (saveErr) {
+                                        res.status(500).json({
+                                            "error": saveErr,
+                                            "error_location": "saving user data",
+                                            "status": "Error",
+                                        });
+                                    } else {
+                                        res.status(200).json(saveRes);
+                                    }
+                                });
+                            })
+                            .catch(function(addMemberToContractError) {
+                                res.status(500).json({
+                                    "error": addMemberToContractError,
+                                    "error_location": "adding member to circle contract",
+                                    "status": "Error",
+                                });
+
+                            });
+                    });
                 });
             },
-                function (loadCircleError) {
-                    res.status(500).json({
-                        "error": loadCircleError,
-                        "error_location": "saving user data",
-                        "status": "Error",
-                    });
-
+            function(loadCircleError) {
+                res.status(500).json({
+                    "error": loadCircleError,
+                    "error_location": "saving user data",
+                    "status": "Error",
                 });
+
+            });
     }
 
     deposit = (req: express.Request, res: express.Response) => {
@@ -162,11 +205,11 @@ export class CircleMemberController {
 
         var vaultAddress = this.config.bitReserve.circleVaultAccount.cardBitcoinAddress;
 
-        var brs = new bitReserveService.BitReserveService(token);
+        var brs = serviceFactory.createBitreserveService(token);
 
         // Sequence:
-        // 1. Create the BitReserve transaction
-        // 2. Commit the BitReserve transaction
+        // 1. Create the Uphold transaction
+        // 2. Commit the Uphold transaction
         // 3. Register the deposit in the contract
         // 4. Register the deposit in MongoDB
 
@@ -180,7 +223,7 @@ export class CircleMemberController {
                 return;
             }
 
-            // Is the user a member? Check this to prevent doing a BR transaction and 
+            // Is the user a member? Check this to prevent doing a BR transaction and
             // finding out the user isn't a member afterwards.
             if (!_(userRes.circleMemberships).any((cm) => {
                 return cm.circleId == circleId;
@@ -202,7 +245,7 @@ export class CircleMemberController {
                     });
                     return;
                 }
-                    
+
                 // 2. Commit it
                 brs.commitTransaction(createRes, (commitErr, commitRes) => {
                     if (commitErr) {
@@ -214,7 +257,7 @@ export class CircleMemberController {
                     }
 
                     // Get the Circle data
-                    circleModel.Circle.findOne({ _id: circleId }, function (loadCircleErr, circle) {
+                    circleModel.Circle.findOne({ _id: circleId }, function(loadCircleErr, circle) {
                         if (loadCircleErr) {
                             res.status(500).json({
                                 "error": loadCircleErr,
@@ -246,16 +289,16 @@ export class CircleMemberController {
                                     // the mean time.
                                     if (depositIndex != lastDepositIndex + 1) {
                                         res.status(500).json({
-                                            "error": "Your deposit was not registered. The BitReserve transaction ID is: " + commitRes.id,
+                                            "error": "Your deposit was not registered. The Uphold transaction ID is: " + commitRes.id,
                                             "error_location": "creating loan contract"
                                         });
                                         return;
                                     }
-                                    
+
                                     // 4. Register the deposit in MongoDB.
 
                                     // Note: this method is very fragile. Any transaction to the value store should be atomically stored
-                                    // on our side. This could be realized when the value store of a circle has an individual BitReserve
+                                    // on our side. This could be realized when the value store of a circle has an individual Uphold
                                     // identity. Storage of the transaction then doesn't have to be completed in this request, but could
                                     // be done by an idempotent background process.
                                     var dep = new depositModel.Deposit();
@@ -275,7 +318,7 @@ export class CircleMemberController {
 
                                     res.json(dep);
                                 })
-                                .catch(function (createDepositError) {
+                                .catch(function(createDepositError) {
                                     res.status(500).json({
                                         "error": createDepositError,
                                         "error_location": "registering deposit in contract"
@@ -300,12 +343,12 @@ export class CircleMemberController {
         var vaultCardId = this.config.bitReserve.circleVaultAccount.cardId;
 
         // Steps:
-        // 1. Create BitReserve transaction from the global vault to the borrower
+        // 1. Create Uphold transaction from the global vault to the borrower
         // 2. Create Loan smart contract by calling the Circle contract
         // 3. Store in MongoDB
-        // 4. Store BitReserve transaction ID with loan contract.
-        // 5. Store BitReserve transaction ID in MongoDB.
-        // 6. Confirm BitReserve transaction (or not if the Loan contract denies)
+        // 4. Store Uphold transaction ID with loan contract.
+        // 5. Store Uphold transaction ID in MongoDB.
+        // 6. Confirm Uphold transaction (or not if the Loan contract denies)
 
         // Rationale: the Circle Loan contract is the primary judge of whether the loan
         // is allowed (1). If it is, we want to store the new contract address ASAP (2).
@@ -330,12 +373,12 @@ export class CircleMemberController {
                     });
                     return;
                 }
-                
+
                 // Get global Circle Vault account
                 userModel.User.findOne({ externalId: adminAccount }).exec()
                     .then((adminUserRes) => {
-                        // Create BitReserve connector for global admin user.
-                        var brs = new bitReserveService.BitReserveService(adminUserRes.accessToken);
+                        // Create Uphold connector for global admin user.
+                        var brs = serviceFactory.createBitreserveService(adminUserRes.accessToken);
 
                         // Create the transaction.
                         brs.createTransaction(vaultCardId, loanData.amount, loanData.currency, userRes.externalId, (createErr, createRes) => {
@@ -347,7 +390,7 @@ export class CircleMemberController {
                                 return;
                             }
 
-                            circleModel.Circle.findOne({ _id: circleId }, function (loadCircleErr, circle) {
+                            circleModel.Circle.findOne({ _id: circleId }, function(loadCircleErr, circle) {
                                 if (loadCircleErr) {
                                     res.status(500).json({
                                         "error": loadCircleErr,
@@ -393,25 +436,26 @@ export class CircleMemberController {
                                             // Store it in our loan storage.
                                             var loan = new loanModel.Loan();
 
-                                            // Store the exact amount from the transaction. BitReserve
+                                            // Store the exact amount from the transaction. Uphold
                                             // rounds amounts like 0.005 to 0.01.
                                             loan.amount = createRes.denomination.amount;
                                             loan.contractAddress = loanContract.address;
                                             loan.currency = loanData.currency;
                                             loan.purpose = loanData.purpose;
+                                            loan.interestPercentage = circle.interestPercentage;
                                             loan.dateTime = new Date();
                                             loan.circleId = circleId;
                                             loan.userId = userRes.id;
-                                            loan.save(function (loanSaveErr, loanSaveRes) {
+                                            loan.save(function(loanSaveErr, loanSaveRes) {
                                                 if (loanSaveErr) {
                                                     res.status(500).json({
                                                         "error": loanSaveErr,
                                                         "error_location": "saving loan"
                                                     });
                                                     return;
-                                                } 
+                                                }
 
-                                                // Commit the BitReserve transaction
+                                                // Commit the Uphold transaction
                                                 brs.commitTransaction(createRes, (commitErr, commitRes) => {
                                                     if (commitErr) {
                                                         res.status(500).json({
@@ -419,7 +463,7 @@ export class CircleMemberController {
                                                             "error_location": "committing transaction"
                                                         });
                                                         return;
-                                                    } 
+                                                    }
 
                                                     // Set the contract as paid
                                                     circleContract.setPaidOut(newLoanAddress, commitRes.id, { gas: 2500000 })
@@ -427,7 +471,7 @@ export class CircleMemberController {
                                                         .then(function afterSetPaid(tx) {
                                                             // Store the tx ID in the loan db storage.
                                                             loan.transactionId = commitRes.id;
-                                                            loan.save(function (loanTxSaveErr, loanTxSaveRes) {
+                                                            loan.save(function(loanTxSaveErr, loanTxSaveRes) {
                                                                 if (loanTxSaveErr) {
                                                                     res.status(500).json({
                                                                         "error": loanTxSaveErr,
@@ -435,12 +479,12 @@ export class CircleMemberController {
                                                                     });
                                                                     return;
                                                                 }
-                                                                
+
                                                                 // All done. Return database loan.
                                                                 res.json(loan);
                                                             });
                                                         })
-                                                        .catch(function (setPaidError) {
+                                                        .catch(function(setPaidError) {
                                                             res.status(500).json({
                                                                 "error": setPaidError,
                                                                 "error_location": "setting loan contract as paid"
@@ -449,7 +493,7 @@ export class CircleMemberController {
                                                 });
                                             });
                                         })
-                                        .catch(function (createLoanError) {
+                                        .catch(function(createLoanError) {
                                             res.status(500).json({
                                                 "error": createLoanError,
                                                 "error_location": "creating loan contract"
@@ -459,13 +503,13 @@ export class CircleMemberController {
                             });
                         });
                     },
-                        function (loadUserErr) {
-                            res.status(500).json({
-                                "error": loadUserErr,
-                                "error_location": "loading circle vault"
-                            });
-
+                    function(loadUserErr) {
+                        res.status(500).json({
+                            "error": loadUserErr,
+                            "error_location": "loading circle vault"
                         });
+
+                    });
             });
     }
 }

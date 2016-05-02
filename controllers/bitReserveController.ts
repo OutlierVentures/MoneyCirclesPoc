@@ -1,12 +1,13 @@
 ﻿import express = require("express");
 import _ = require('underscore');
 import bitReserveService = require("../services/bitReserveService");
+import serviceFactory = require('../services/serviceFactory');
 
 export class BitReserveController {
     getCards(req: express.Request, res: express.Response) {
         var token = req.header("AccessToken");
 
-        var brs = new bitReserveService.BitReserveService(token);
+        var brs = serviceFactory.createBitreserveService(token);
 
         brs.getCards(function (err, cards) {
             if (err) {
@@ -24,7 +25,7 @@ export class BitReserveController {
     getCardsWithBalance(req: express.Request, res: express.Response) {
         var token = req.header("AccessToken");
 
-        var brs = new bitReserveService.BitReserveService(token);
+        var brs = serviceFactory.createBitreserveService(token);
 
         brs.getCards(function (err, cards) {
             if (err) {
