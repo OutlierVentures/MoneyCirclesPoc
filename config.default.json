@@ -1,5 +1,6 @@
 ﻿{
     "__comment": "This is the default configuration file. If you want custom configuration, copy this file to 'config.json' and adapt.",
+    "useStubs": false,
     "server": {
         "httpPort": 3123,
         "httpsPort": 3124,
@@ -10,15 +11,30 @@
     },
     "bitReserve": {
         "app": {
+            "description": "development",
             "clientID": "e75aef1e3bfc8f6f49fcf4f1ebf0bbf30dd8988c",
             "clientSecret": "b3df38816602d936c304774c43420d56eda8358f"
         },
+        "_app": {
+            "description": "production",
+            "clientID": "d76ae319266108f6854a088df95ed31070e259eb",
+            "clientSecret": "16ec6ab95cbc2e6cdae907a95a27f3804d425b04"
+        },
         "circleVaultAccount": {
+            "description": "development",
             "__comment": "The main Uphold account that stores funds of Circles.",
+            "userName": "AronVanAmmers",
+            "cardId": "b3d06666-5a59-48ec-a4bb-5b85ab681270",
+            "cardBitcoinAddress": "14SPsVshnRoSE94X3jcdYzwiKjwmXSknPj"
+        },
+        "_circleVaultAccount": {
+            "description": "production",
+            "__comment": "The main account that stores funds of Circles.",
             "userName": "MoneyCircles",
-            "cardId": "",
-            "cardBitcoinAddress":  ""
+            "cardBitcoinAddress": "1B32w2VfScdyAPc9S77GTfxoL7oBGiHd5k",
+            "cardId": "206b0c1e-fa2e-4849-b820-f43938202db3"
         }
+
     },
     "ethereum": {
         "jsonRpcUrl": "http://poc1-dev.moneycircles.com:8101",
