@@ -20,7 +20,7 @@ interface IOAuthControllerConfig {
      * URL of the external OAuth site, e.g. 'https://github.com/login'
      */
     oauthSite: string;
-    
+
     /**
      * Path of the OAuth provider to request a token.
      */
@@ -86,7 +86,7 @@ export class OAuthController {
     }
 
     /**
-     * Gets the route this controller exposes to initiate an authentication request, e.g. /api/auth/bitreserve.
+     * Gets the route this controller exposes to initiate an authentication request, e.g. /api/auth/uphold.
      */
     getAuthRoute(): string {
         return this.config.basePath;
@@ -103,15 +103,15 @@ export class OAuthController {
      * Gets the route used for callbacks.
      */
     getCallbackPublicRoute(): string {
-        // The callback should be to the world-facing URL (e.g. /auth/bitreserve/callback) and not to 
-        // the API (e.g. /api/auth/bitreserve/callback). So strip '/api/'.
+        // The callback should be to the world-facing URL (e.g. /auth/uphold/callback) and not to 
+        // the API (e.g. /api/auth/uphold/callback). So strip '/api/'.
         // TODO: allow configuring this specifically, or improve convention so that no string replace has to be done.
         return this.config.basePath.replace('/api/', '/') + '/callback';
     }
 
     /**
      * Gets the full callback URL that the OAuth provider has to redirect back to.
-     * Example: http://localhost:3124/#/auth/bitreserve/callback
+     * Example: http://localhost:3124/#/auth/uphold/callback
      */
     getCallbackUrl(): string {
         return this.config.baseUrl + this.getCallbackPublicRoute();
@@ -203,7 +203,7 @@ export class OAuthController {
     auth = (req: express.Request, res: express.Response) => {
         res.redirect(this.authorization_uri);
     };
-    
+
     /**
      * Callback operation parsing the authorization token and asking for the access token from
      * the OAuth provider.
@@ -218,6 +218,7 @@ export class OAuthController {
                     "status": "Error",
                     "error": "Error returned by OAuth provider on callback: " + reqData.error
                 });
+            return;
         }
 
         var code = reqData.code;
@@ -269,33 +270,31 @@ export class OAuthController {
             // TODO: clean up callback hell and duplication. Use Promises (Q library).
 
             // Get the user from the OAuth provider
-            t.getUserInfo(accessToken, function (err, userInfo: IUser) {
+            t.getUserInfo(accessToken, function (err, userInfo: userModel.IUser) {
                 var externalUserId: string;
                 var name = "New user";
                 var email: string;
 
                 if (err) {
-                    res.json(
-                        500,
-                        {
-                            "error": err,
-                            "error_location": "getting user data",
-                            "status": "Error"
-                        });;
+                    res.status(500).json({
+                        "error": err,
+                        "error_location": "getting user data",
+                        "status": "Error"
+                    });;
+                    return;
                 } else if (userInfo) {
                     name = userInfo.name;
                     externalUserId = userInfo.externalId;
                     email = userInfo.email;
                 } else {
-                    res.json(
-                        500,
-                        {
-                            "error": "User info is empty",
-                            "error_location": "getting user data",
-                            "status": "Error"
-                        });;
+                    res.status(500).json({
+                        "error": "User info is empty",
+                        "error_location": "getting user data",
+                        "status": "Error"
+                    });
+                    return;
                 }
-        
+
                 // Get the user from our side, or create it.
                 // If the MongoDB connection fails, this call times out and the result is never sent.
                 // TODO: handle that.
@@ -324,16 +323,15 @@ export class OAuthController {
                         user.email = email;
 
                         // Save it
-                        userModel.User.update({ _id: user._id}, user, function (saveErr, affectedRows, raw) {
+                        userModel.User.update({ _id: user._id }, user, function (saveErr, affectedRows, raw) {
                             if (saveErr) {
-                                res.json(
-                                    500,
-                                    {
-                                        "error": saveErr,
-                                        "error_location": "saving user data",
-                                        "status": "Error",
-                                        "user": user,
-                                    });;
+                                res.status(500).json({
+                                    "error": saveErr,
+                                    "error_location": "saving user data",
+                                    "status": "Error",
+                                    "user": user,
+                                });
+                                return;
                             } else {
                                 res.json({
                                     "status": "Ok",
