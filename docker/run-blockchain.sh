@@ -19,4 +19,4 @@ fi
 docker run -p 8101:8101 -p 8001:8001 -p 8002:8002 \
 	-e "MCPOC_ENVIRONMENT=$ENVIRONMENT" \
  	-v /`pwd`/../../mcpoc_blockchain_data:/blockchain \
-	--name $CONTAINER_NAME -t -i blockstars/mcpoc_blockchain:1.0.1 bash
+	--name $CONTAINER_NAME -t -i blockstars/mcpoc_blockchain:1.0.2 bash
