@@ -154,10 +154,10 @@ The installation steps assume the default configuration in [config.default.json]
 
 2. Install Node 0.10 from the PPA using [these instructions](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-an-ubuntu-14-04-server). In summary:
    ```
-curl -sL https://deb.nodesource.com/setup | sudo bash -
-sudo apt-get install nodejs
-sudo apt-get install build-essential
-```
+   curl -sL https://deb.nodesource.com/setup | sudo bash -
+   sudo apt-get install nodejs
+   sudo apt-get install build-essential
+   ```
 
 3. `git clone` this repository into a folder, say `~/dev/MoneyCirclesBitReserve`. As this is a private repository, make sure an SSH key or token has been configured.
 
@@ -166,21 +166,21 @@ sudo apt-get install build-essential
 4. Install global dependencies from `npm`:
 
    ```
-sudo npm install -g typescript nodemon grunt-cli tsd bower node-gyp
-sudo chown -R $USER.$USER ~/.npm
-```
+   sudo npm install -g typescript nodemon grunt-cli tsd bower node-gyp
+   sudo chown -R $USER.$USER ~/.npm
+   ```
 
 4. Run package installs for the server side:
 
    ```
-cd ~/dev/MoneyCirclesBitReserve
-npm install
-tsd install
-```
+   cd ~/dev/MoneyCirclesBitReserve
+   npm install
+   tsd install
+   ```
 
 5. Run package installs for the client side:
 
-   ```
+```
 cd ~/dev/MoneyCirclesBitReserve/client
 tsd install
 bower install
@@ -221,18 +221,18 @@ Done, without errors.
    The output should look something like this:
 
    ```
-aron@orangeblack:~/dev/MoneyCirclesBitReserve$ grunt serve
-Running "concurrent:watchers" (concurrent) task
-    Running "watch" task
-    Waiting...
-    Running "nodemon:dev" (nodemon) task
-    [nodemon] v1.3.8
-    [nodemon] to restart at any time, enter `rs`
-    [nodemon] watching: *.*
-    [nodemon] starting `node server.js`
-    http server started on port 3123
-    https server started on port 3124
-```
+   aron@orangeblack:~/dev/MoneyCirclesBitReserve$ grunt serve
+   Running "concurrent:watchers" (concurrent) task
+       Running "watch" task
+       Waiting...
+       Running "nodemon:dev" (nodemon) task
+       [nodemon] v1.3.8
+       [nodemon] to restart at any time, enter `rs`
+       [nodemon] watching: *.*
+       [nodemon] starting `node server.js`
+       http server started on port 3123
+       https server started on port 3124
+   ```
 
 2. Open https://poc1-dev.moneycircles.com:3124 in a browser
 
@@ -244,7 +244,7 @@ Running "concurrent:watchers" (concurrent) task
     GET /vendors/angular-sanitize/angular-sanitize.min.js 200 22.721 ms - 6082
     GET /js/services.js 200 24.549 ms - 2487
     ...
-```
+   ```
 
    Note: Because we currently use a self-signed certificate, the browser will prevent opening the page. Bypass these warnings to open the app.
 
@@ -256,7 +256,7 @@ The `grunt serve` task includes modules to detect changes to the TypeScript file
 
 When any .ts file is changed, a rebuild occurs, which looks like this:
 
-```
+   ```
     >> File "client/js/app.ts" changed.
     >> File "server.ts" changed.
 
@@ -294,7 +294,7 @@ When any .ts file is changed, a rebuild occurs, which looks like this:
     [nodemon] starting `node server.js`
     http server started on port 3123
     https server started on port 3124
-```
+   ```
 
 # Tests
 
@@ -343,7 +343,8 @@ I've found the following tools to be helpful:
 
 ### Addition Bart after install 9-12-2015 (on Mac)
 Install and run Ubuntu using:
-```bash
+```
+bash
 docker run -it unbuntu:latest
 ```
 
